@@ -18,3 +18,10 @@ section.canvas {
     width: 100%;
     padding-left: 300px;
 }
+
+section.canvas .frame {
+    width: 200px;
+    height: 200px;
+    background-color: #999;
+    border: 1px solid cadetblue; 
+}
