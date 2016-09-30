@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "ES5",
+        "watch": true
+    },
+    "files": [
+        "app/"
+    ],
+    "exclude": [
+        "node_modules",
+        "./dist"
+    ]
+}

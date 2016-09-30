@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "amd",
+        "sourceMap": true,
+        "outFile": "dist/app.js",
+        "outDir": "dist/",
+        "watch": true
+    },
+    "include": [
+        "app/*.ts",
+        "app/**/*.ts"
+    ]
+}

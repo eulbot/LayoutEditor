@@ -1,0 +1,20 @@
+html, body, div.editor, section.toolbar, section.canvas {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+section.toolbar {
+    position: fixed;
+    border-right: 4px solid #ddd;
+    width: 300px;
+}
+
+section.canvas {
+    width: 100%;
+    padding-left: 300px;
+}

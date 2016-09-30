@@ -1,0 +1,17 @@
+{
+  "name": "layout-editor",
+  "description": "Demo with InteractJs to provide a layout editor for printing mapps",
+  "main": "index.js",
+  "authors": [
+    "Ulrich Fischer"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
