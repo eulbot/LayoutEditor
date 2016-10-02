@@ -1,4 +1,4 @@
-html, body, div.editor, section.toolbar, section.canvas {
+html, body, div.editor, section.menu, section.canvas {
     height: 100%;
     box-sizing: border-box;
 }
@@ -8,20 +8,46 @@ body {
     padding: 0;
 }
 
-section.toolbar {
+section.menu {
     position: fixed;
+    background-color: white;
     border-right: 4px solid #ddd;
     width: 300px;
+}
+
+section.menu .menu-element {
+    position: relative;
+    margin: 20px;
+}
+
+section.menu .menu-element > *:first-child {
+    position: absolute;
 }
 
 section.canvas {
     width: 100%;
     padding-left: 300px;
+    background-color: #ddd;
 }
 
-section.canvas .frame {
+section.canvas div.page {
+    background-color: white;
+    border: 2px solid white;
+    width: 900px;
+    height: 600px;
+}
+
+section.canvas div.page > * {
+    position: absolute;
+}
+
+section.canvas div.page.drop-active {
+    border: 2px solid darkseagreen;
+}
+
+div.editor .frame {
     width: 200px;
     height: 200px;
-    background-color: #999;
-    border: 1px solid cadetblue; 
+    border: 3px solid #ddd; 
+    transform: translate(0px, 0px);
 }

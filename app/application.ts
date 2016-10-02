@@ -1,18 +1,13 @@
 /// <reference path="../typings/index.d.ts" />
 
-module mapp {
+module mapp.ple {
     export class app {
 
-        private elements: KnockoutObservableArray<IEditorObject>;
+        private Editor: KnockoutObservable<mapp.ple.Editor>;
         
         constructor() {
             
-            this.elements = ko.observableArray<IEditorObject>();
-
-            let f1 = new Frame();
-            let f2 = new Frame();
-            this.elements.push(f1);
-            this.elements.push(f2);
+            this.Editor = ko.observable(new mapp.ple.Editor());
         }
 
         public static loadTemplates(): JQueryPromise<any> {
@@ -22,9 +17,13 @@ module mapp {
                 $('body').append(data);
             }
             
+            console.info('fetching templates');
+
             $.when(
                 $.get("app/templates/editor.html", function(data) { append(data); }),
-                $.get("app/templates/toolbar.html", function(data) { append(data); }),
+                $.get("app/templates/canvas.html", function(data) { append(data); }),
+                $.get("app/templates/menu.html", function(data) { append(data); }),
+                $.get("app/templates/element.html", function(data) { append(data); }),
                 $.get("app/templates/frame.html", function(data) { append(data); })
             ).then(
                () => deferred.resolve()
@@ -36,6 +35,7 @@ module mapp {
 
     $(() => {
         app.loadTemplates().then(() => {
+            console.info('done');
             ko.applyBindings(new app());
         });
     });

@@ -10,5 +10,11 @@
     "include": [
         "app/*.ts",
         "app/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "typings/**/*.d.ts",
+        "typings/**"
     ]
 }

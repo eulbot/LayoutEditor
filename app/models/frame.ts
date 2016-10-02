@@ -1,12 +1,17 @@
-module mapp {
+module mapp.ple {
 
-    export class Frame extends EditorObject implements IEditorObject {
+    export class Frame extends Element {
 
-        template: string;
+        private template: string;
         
         constructor() {
-            super();
+            super();    
             this.template = 'frame-template';
         }
+
+        public createInstance(): Element {
+            return new Frame();
+        };
+
     }
 }
