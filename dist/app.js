@@ -102,7 +102,7 @@ var mapp;
                 this._id = ko.observable('mapp-ple-element-'.concat(Element.counter.toString()));
                 this.wrapper = 'element-template';
                 this.x = ko.observable(0);
-                this.y = ko.observable(0);
+                this.y = ko.observable(1);
                 this.x.subscribe(function () {
                     console.log('x changed');
                 });

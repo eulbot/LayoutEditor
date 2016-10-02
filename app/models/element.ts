@@ -27,7 +27,7 @@ module mapp.ple {
             this.wrapper = 'element-template';
         
             this.x = ko.observable<number>(0);
-            this.y = ko.observable<number>(0);
+            this.y = ko.observable<number>(1);
 
             this.x.subscribe(() => {
                 console.log('x changed');
