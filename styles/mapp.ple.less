@@ -1,0 +1,65 @@
+// Color variables (appears count calculates by raw css)
+@color0: #ddd; // Appears 3 times
+
+// Width variables (appears count calculates by raw css)
+@width0: 900px; // Appears 1 time
+@width1: 300px; // Appears 1 time
+@width2: 200px; // Appears 1 time
+@width3: 100%; // Appears 1 time
+
+// Height variables (appears count calculates by raw css)
+@height0: 200px; // Appears 1 time
+@height1: 600px; // Appears 1 time
+
+html, body, div.editor, section.menu, section.canvas  {
+	height: 100%;
+}
+
+div.editor, section.menu, section.canvas {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+}
+section.menu {
+	background-color: white;
+	border-right: 4px solid @color0;
+	position: fixed;
+	width: @width1;
+	.menu-element {
+		margin: 20px;
+		position: relative;
+	}
+	.menu-element>* {
+		&:first-child {
+			position: absolute;
+		}
+	}
+}
+section.canvas {
+	background-color: @color0;
+	padding-left: 300px;
+	width: @width3;
+	div.page {
+		background-color: white;
+		border: 2px solid white;
+		height: @height1;
+		width: @width0;
+	}
+	div.page>* {
+		position: absolute;
+	}
+	div.page.drop-active {
+		border: 2px solid darkseagreen;
+	}
+}
+div.editor {
+	.frame {
+		border: 3px solid @color0;
+		height: @height0;
+		transform: translate(0px, 0px);
+		width: @width2;
+	}
+}
