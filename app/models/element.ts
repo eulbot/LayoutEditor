@@ -26,12 +26,8 @@ module mapp.ple {
             this._id = ko.observable('mapp-ple-element-'.concat(Element.counter.toString()));
             this.wrapper = 'element-template';
         
-            this.x = ko.observable<number>(0);
-            this.y = ko.observable<number>(1);
-
-            this.x.subscribe(() => {
-                console.log('x changed');
-            });
+            this.x = ko.observable<number>();
+            this.y = ko.observable<number>();
 
             this.position = () => ko.computed(() => {
 
