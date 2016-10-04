@@ -1,4 +1,4 @@
-module mapp.ple {
+module mapp.le {
     export class Menu {
         
         private menuElements: KnockoutObservableArray<Element>;
@@ -12,23 +12,6 @@ module mapp.ple {
             this.menuElements = ko.observableArray<Element>();
             this.menuElements.push(new Frame());
             this.menuElements.push(new Frame());
-
-            this.GetMenuElement = (id: string) => {
-                
-                let result: Element = null;
-
-                $.each(this.menuElements(), (i: number, v: Element) => {
-                    if(v.Id == id)
-                        result = v;
-                })
-
-                return result;
-            };
-
-            this.IsMenuElement = (id: string) => {
-                
-                return this.GetMenuElement(id) !== null;
-            };
 
             this.Init = () => {
             };

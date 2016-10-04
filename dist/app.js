@@ -10,7 +10,7 @@ var mapp;
     (function (ple) {
         var app = (function () {
             function app() {
-                this.Editor = ko.observable(new mapp.ple.Editor());
+                this.Editor = ko.observable(new mapp.le.Editor());
             }
             app.loadTemplates = function () {
                 var deferred = $.Deferred();
@@ -30,7 +30,7 @@ var mapp;
                 ko.applyBindings(new app());
             });
         });
-    })(ple = mapp.ple || (mapp.ple = {}));
+    })(ple = mapp.le || (mapp.le = {}));
 })(mapp || (mapp = {}));
 var mapp;
 (function (mapp) {
@@ -43,7 +43,7 @@ var mapp;
             Direction[Direction["BOTTOM"] = 3] = "BOTTOM";
         })(ple.Direction || (ple.Direction = {}));
         var Direction = ple.Direction;
-    })(ple = mapp.ple || (mapp.ple = {}));
+    })(ple = mapp.le || (mapp.le = {}));
 })(mapp || (mapp = {}));
 var mapp;
 (function (mapp) {
@@ -54,7 +54,7 @@ var mapp;
             Offset[Offset["TOP"] = 1] = "TOP";
         })(ple.Offset || (ple.Offset = {}));
         var Offset = ple.Offset;
-    })(ple = mapp.ple || (mapp.ple = {}));
+    })(ple = mapp.le || (mapp.le = {}));
 })(mapp || (mapp = {}));
 var mapp;
 (function (mapp) {
@@ -115,7 +115,7 @@ var mapp;
             return Canvas;
         }());
         ple.Canvas = Canvas;
-    })(ple = mapp.ple || (mapp.ple = {}));
+    })(ple = mapp.le || (mapp.le = {}));
 })(mapp || (mapp = {}));
 var mapp;
 (function (mapp) {
@@ -129,7 +129,7 @@ var mapp;
             return Editor;
         }());
         ple.Editor = Editor;
-    })(ple = mapp.ple || (mapp.ple = {}));
+    })(ple = mapp.le || (mapp.le = {}));
 })(mapp || (mapp = {}));
 var mapp;
 (function (mapp) {
@@ -139,7 +139,7 @@ var mapp;
             function Element(isMenuItem) {
                 var _this = this;
                 Element.counter++;
-                this._id = ko.observable('mapp-ple-element-'.concat(Element.counter.toString()));
+                this._id = ko.observable('mapp.le-element-'.concat(Element.counter.toString()));
                 this.x = ko.observable();
                 this.y = ko.observable();
                 this.template = 'element-template';
@@ -170,7 +170,7 @@ var mapp;
             return Element;
         }());
         ple.Element = Element;
-    })(ple = mapp.ple || (mapp.ple = {}));
+    })(ple = mapp.le || (mapp.le = {}));
 })(mapp || (mapp = {}));
 var mapp;
 (function (mapp) {
@@ -189,7 +189,7 @@ var mapp;
             return Frame;
         }(ple.Element));
         ple.Frame = Frame;
-    })(ple = mapp.ple || (mapp.ple = {}));
+    })(ple = mapp.le || (mapp.le = {}));
 })(mapp || (mapp = {}));
 var mapp;
 (function (mapp) {
@@ -224,7 +224,7 @@ var mapp;
             return Menu;
         }());
         ple.Menu = Menu;
-    })(ple = mapp.ple || (mapp.ple = {}));
+    })(ple = mapp.le || (mapp.le = {}));
 })(mapp || (mapp = {}));
 var mapp;
 (function (mapp) {
@@ -274,6 +274,6 @@ var mapp;
             return Util;
         }());
         ple.Util = Util;
-    })(ple = mapp.ple || (mapp.ple = {}));
+    })(ple = mapp.le || (mapp.le = {}));
 })(mapp || (mapp = {}));
 //# sourceMappingURL=app.js.map

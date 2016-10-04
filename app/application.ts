@@ -1,13 +1,13 @@
 /// <reference path="../typings/index.d.ts" />
 
-module mapp.ple {
+module mapp.le {
     export class app {
 
-        private Editor: KnockoutObservable<mapp.ple.Editor>;
+        private Editor: KnockoutObservable<mapp.le.Editor>;
         
         constructor() {
             
-            this.Editor = ko.observable(new mapp.ple.Editor());
+            this.Editor = ko.observable(new mapp.le.Editor());
         }
 
         public static loadTemplates(): JQueryPromise<any> {

@@ -12,7 +12,7 @@ gulp.task('compile-typescript', function () {
         .pipe(sourcemaps.init())
         .pipe(ts({
             target: 'ES5',
-            out: 'mapp.ple.js'
+            out: 'mapp.le.js'
         }))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('dist'));

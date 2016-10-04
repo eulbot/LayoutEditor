@@ -1,4 +1,4 @@
-module mapp.ple {
+module mapp.le {
 
     export abstract class Element {
         
@@ -23,7 +23,7 @@ module mapp.ple {
         constructor(isMenuItem?: boolean) {
             Element.counter++;
         
-            this._id = ko.observable('mapp-ple-element-'.concat(Element.counter.toString()));
+            this._id = ko.observable('mapp.le-element-'.concat(Element.counter.toString()));
         
             this.x = ko.observable<number>();
             this.y = ko.observable<number>();

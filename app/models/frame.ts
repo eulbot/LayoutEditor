@@ -1,4 +1,4 @@
-module mapp.ple {
+module mapp.le {
 
     export class Frame extends Element implements IElement {
 
