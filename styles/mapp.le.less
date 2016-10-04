@@ -1,5 +1,5 @@
 // Color variables (appears count calculates by raw css)
-@color0: #ddd; // Appears 3 times
+@bgColor: #ddd; // Appears 3 times
 
 // Width variables (appears count calculates by raw css)
 @width0: 900px; // Appears 1 time
@@ -25,7 +25,7 @@ body {
 }
 section.menu {
 	background-color: white;
-	border-right: 4px solid @color0;
+	border-right: 4px solid @bgColor;
 	position: fixed;
 	width: @width1;
 	.menu-element {
@@ -39,7 +39,7 @@ section.menu {
 	}
 }
 section.canvas {
-	background-color: @color0;
+	background-color: @bgColor;
 	padding-left: 300px;
 	width: @width3;
 	div.page {
@@ -48,16 +48,10 @@ section.canvas {
 		height: @height1;
 		width: @width0;
 	}
-	div.page>* {
-		position: absolute;
-	}
-	div.page.drop-active {
-		border: 2px solid darkseagreen;
-	}
 }
 div.editor {
 	.frame {
-		border: 3px solid @color0;
+		border: 3px solid @bgColor;
 		height: @height0;
 		transform: translate(0px, 0px);
 		width: @width2;

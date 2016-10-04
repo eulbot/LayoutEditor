@@ -1,10 +1,13 @@
 var gulp = require('gulp');
 var ts = require('gulp-typescript');
 var less = require('gulp-less');
+var gutil = require('gulp-util');
 var sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('default', function () {
-  gulp.start('watch');
+    gulp.start('compile-typescript');
+    gulp.start('compile-less');
+    gulp.start('watch');
 });
 
 gulp.task('compile-typescript', function () {
@@ -21,9 +24,12 @@ gulp.task('compile-typescript', function () {
 gulp.task('compile-less', function () {
     return gulp.src('styles/**/*.less')
         .pipe(sourcemaps.init())
-        .pipe(less())
+        .pipe(less().on('error', function(err){
+            gutil.log(err);
+            this.emit('end');
+        }))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest('./styles'));
+        .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('watch', function () {
