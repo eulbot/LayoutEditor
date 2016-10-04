@@ -22,8 +22,7 @@ module mapp.le {
             $.when(
                 $.get("app/templates/editor.html", function(data) { append(data); }),
                 $.get("app/templates/canvas.html", function(data) { append(data); }),
-                $.get("app/templates/menu.html", function(data) { append(data); }),
-                $.get("app/templates/element.html", function(data) { append(data); })
+                $.get("app/templates/menu.html", function(data) { append(data); })
             ).then(
                () => deferred.resolve()
             );

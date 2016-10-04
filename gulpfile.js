@@ -11,7 +11,7 @@ gulp.task('default', function () {
 });
 
 gulp.task('compile-typescript', function () {
-    return gulp.src(['typings/index.d.ts', 'app/**/*.ts'])
+    return gulp.src(['typings/index.d.ts', 'const/*.ts', 'app/**/*.ts', 'extensions/*.ts'])
         .pipe(sourcemaps.init())
         .pipe(ts({
             target: 'ES5',

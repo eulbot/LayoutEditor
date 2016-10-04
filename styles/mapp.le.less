@@ -1,18 +1,9 @@
-// Color variables (appears count calculates by raw css)
-@bgColor: #ddd; // Appears 3 times
 
-// Width variables (appears count calculates by raw css)
-@width0: 900px; // Appears 1 time
-@width1: 300px; // Appears 1 time
-@width2: 200px; // Appears 1 time
-@width3: 100%; // Appears 1 time
-
-// Height variables (appears count calculates by raw css)
-@height0: 200px; // Appears 1 time
-@height1: 600px; // Appears 1 time
+@import 'mapp.colors.less';
 
 html, body, div.editor, section.menu, section.canvas  {
 	height: 100%;
+	font-family: 'Open Sans', Arial
 }
 
 div.editor, section.menu, section.canvas {
@@ -25,35 +16,29 @@ body {
 }
 section.menu {
 	background-color: white;
-	border-right: 4px solid @bgColor;
 	position: fixed;
-	width: @width1;
-	.menu-element {
-		margin: 20px;
-		position: relative;
-	}
-	.menu-element>* {
-		&:first-child {
-			position: absolute;
+	width: 300px;
+
+	ul {
+		list-style: none;
+		
+		li:hover {
+			color: @hxg-blue;
+			cursor: pointer;
 		}
 	}
 }
+
 section.canvas {
-	background-color: @bgColor;
+	background-color: @hxg-lightergrey;
 	padding-left: 300px;
-	width: @width3;
-	div.page {
-		background-color: white;
-		border: 2px solid white;
-		height: @height1;
-		width: @width0;
-	}
-}
-div.editor {
-	.frame {
-		border: 3px solid @bgColor;
-		height: @height0;
-		transform: translate(0px, 0px);
-		width: @width2;
+	width: 100%;
+
+	div.le-canvas-container {
+		padding: 20px;
+
+		> div {
+			background-color: white;
+		}
 	}
 }

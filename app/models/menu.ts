@@ -1,22 +1,19 @@
 module mapp.le {
     export class Menu {
         
-        private menuElements: KnockoutObservableArray<Element>;
-        public GetMenuElement: (id: string) => Element;
-        public IsMenuElement: (id: string) => boolean;  
-
-        private Init: () => void;
+        private addElement: (type: ElementType) => void;
+        private init: () => void;
         
         constructor() {
             
-            this.menuElements = ko.observableArray<Element>();
-            this.menuElements.push(new Frame());
-            this.menuElements.push(new Frame());
+            this.addElement = (type: ElementType) => {
+                
+            }
 
-            this.Init = () => {
+            this.init = () => {
             };
             
-            setTimeout(this.Init, 0);
+            this.init();
         }
     }
 }
