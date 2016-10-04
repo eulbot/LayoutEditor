@@ -31,12 +31,6 @@ module mapp.ple {
             };
 
             this.Init = () => {
-
-                interact('.menu-element > *:last-child').draggable({
-                    inertia: false,
-                    onmove: Util.moveObject,
-                    onend: Util.resetObject
-                })
             };
             
             setTimeout(this.Init, 0);

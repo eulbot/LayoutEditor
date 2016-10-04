@@ -17,7 +17,7 @@ module mapp.ple {
                 $('body').append(data);
             }
             
-            console.info('fetching templates2');
+            console.info('fetching templates..');
 
             $.when(
                 $.get("app/templates/editor.html", function(data) { append(data); }),

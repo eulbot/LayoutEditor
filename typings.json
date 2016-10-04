@@ -1,5 +1,6 @@
 {
   "globalDependencies": {
+    "fabricjs": "registry:dt/fabricjs#1.5.0+20160908062918",
     "interact": "registry:dt/interact#1.0.25+20160613160313",
     "jquery": "registry:dt/jquery#1.10.0+20160908203239",
     "knockout": "registry:dt/knockout#0.0.0+20160914182733"
