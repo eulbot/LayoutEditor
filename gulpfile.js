@@ -17,7 +17,7 @@ gulp.task('compile-typescript', function () {
             target: 'ES5',
             out: 'mapp.le.js'
         }))
-        .pipe(sourcemaps.write('./'))
+        .pipe(sourcemaps.write({includeContent: false, sourceRoot: '/MApp.LayoutEditor/'}))
         .pipe(gulp.dest('dist'));
 });
 
@@ -28,7 +28,7 @@ gulp.task('compile-less', function () {
             gutil.log(err);
             this.emit('end');
         }))
-        .pipe(sourcemaps.write())
+        .pipe(sourcemaps.write({includeContent: false, sourceRoot: '/MApp.LayoutEditor/styles/'}))
         .pipe(gulp.dest('./dist'));
 });
 

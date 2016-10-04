@@ -3,6 +3,7 @@ module mapp.le {
         LEFT,
         TOP,
         RIGHT,
-        BOTTOM
+        BOTTOM,
+        KEY
     }
 }
