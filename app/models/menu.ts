@@ -1,13 +1,23 @@
 module mapp.le {
     export class Menu {
         
-        private addElement: (type: ElementType) => void;
+        private canvas: KnockoutObservable<Canvas>;
+        private addFrame: (type: ElementType) => void;
+        private selectObject: (data, event) => void;
         private init: () => void;
         
-        constructor() {
+
+        constructor(canvas: Canvas) {
             
-            this.addElement = (type: ElementType) => {
+            this.canvas = ko.observable<Canvas>(canvas);
+
+            this.addFrame = () => {
+                this.canvas().addFrame(mapp.le.DefaultFrameOptions);
+            }
+
+            this.selectObject = (data, event) => {
                 
+                this.canvas().selectObject(data['data']['id']);
             }
 
             this.init = () => {

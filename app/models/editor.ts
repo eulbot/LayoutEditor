@@ -7,8 +7,8 @@ module mapp.le {
 
         constructor() {
 
-            this.menu = ko.observable(new Menu());
             this.canvas = ko.observable(new Canvas());
+            this.menu = ko.observable(new Menu(this.canvas()));
         }
     }
 }

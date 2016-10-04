@@ -1,5 +1,7 @@
 module mapp.le {
     export const DefaultFrameOptions: fabric.IRectOptions = <fabric.IRectOptions>{
+        left: 200,
+        top: 200,
         originX: 'left',
         originY: 'top',
         width: 150,
