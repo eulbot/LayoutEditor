@@ -17,7 +17,7 @@ module mapp.ple {
                 
                 let result: Element = null;
 
-                $.each(this.menuElements(), (i, v: Element) => {
+                $.each(this.menuElements(), (i: number, v: Element) => {
                     if(v.Id == id)
                         result = v;
                 })

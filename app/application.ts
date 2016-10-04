@@ -13,11 +13,11 @@ module mapp.ple {
         public static loadTemplates(): JQueryPromise<any> {
             
             var deferred = $.Deferred<any>();
-            var append = (data) => {
+            var append = (data: string) => {
                 $('body').append(data);
             }
             
-            console.info('fetching templates');
+            console.info('fetching templates2');
 
             $.when(
                 $.get("app/templates/editor.html", function(data) { append(data); }),

@@ -17,7 +17,7 @@ var mapp;
                 var append = function (data) {
                     $('body').append(data);
                 };
-                console.info('fetching templates');
+                console.info('fetching templates2');
                 $.when($.get("app/templates/editor.html", function (data) { append(data); }), $.get("app/templates/canvas.html", function (data) { append(data); }), $.get("app/templates/menu.html", function (data) { append(data); }), $.get("app/templates/element.html", function (data) { append(data); })).then(function () { return deferred.resolve(); });
                 return deferred.promise();
             };
