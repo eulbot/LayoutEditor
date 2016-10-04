@@ -1,12 +1,12 @@
 module mapp.ple {
 
-    export class Frame extends Element {
+    export class Frame extends Element implements IElement {
 
-        private template: string;
+        css: KnockoutComputed<string>;
         
         constructor() {
             super();    
-            this.template = 'frame-template';
+            this.css = ko.computed(() => 'frame');
         }
 
         public createInstance(): Element {

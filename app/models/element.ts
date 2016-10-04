@@ -5,12 +5,12 @@ module mapp.ple {
         private static counter: number = 0;
 
         private _id: KnockoutObservable<string>;
-        private wrapper: string;
 
         private x: KnockoutObservable<number>;
         private y: KnockoutObservable<number>;
 
         public abstract createInstance(): Element;
+        private template: string;
 
         public position: () => KnockoutComputed<String>;
         public setPosition: (x: number, y: number) => void;
@@ -24,10 +24,10 @@ module mapp.ple {
             Element.counter++;
         
             this._id = ko.observable('mapp-ple-element-'.concat(Element.counter.toString()));
-            this.wrapper = 'element-template';
         
             this.x = ko.observable<number>();
             this.y = ko.observable<number>();
+            this.template = 'element-template';
 
             this.position = () => ko.computed(() => {
 
@@ -35,10 +35,7 @@ module mapp.ple {
 
                 if(this.x() && this.y())
                     pos = this.x().toString().concat('px, ', this.y().toString(), 'px');
-                else
-                    pos = '0, 0';
-
-                console.info('pos for +' + this.Id + ': ' + 'translate(' + pos + ')');
+                else pos = '0, 0';
 
                 return 'translate(' + pos + ')';
             });
