@@ -1,5 +1,7 @@
 /// <reference path="../typings/index.d.ts" />
 
+(() => {
+
 fabric.Canvas.prototype.getObject = function(id) {
     var object = null,
     objects = this.getObjects();
@@ -12,7 +14,6 @@ fabric.Canvas.prototype.getObject = function(id) {
     return object;
 };
 
-
 fabric.Canvas.prototype.getItemByAttr = function(attr, name) {
     var object = null,
     objects = this.getObjects();
@@ -24,3 +25,22 @@ fabric.Canvas.prototype.getItemByAttr = function(attr, name) {
     }
     return object;
 };
+
+fabric.Object.prototype.getId = function() {
+    var id = null;
+    if(this.data) {
+        id = this.data['id'] ? this.data['id'] :
+            this.data['Id'] ? this.data['Id'] :
+            this.data['ID'] ? this.data['ID'] : null;
+    } 
+    return id;
+}
+
+fabric.Object.prototype.getName = function() {
+    var name = null;
+    if(this.data) {
+        name = this.data['name'] ? this.data['name'] :
+            this.data['Name'] ? this.data['Name'] : null;
+    } 
+    return name;
+}})();

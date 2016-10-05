@@ -1,19 +1,44 @@
 <script type="text/html" id="menu-template">
 
-    <label for="ul-templates">Templates</label>
-    <ul id="ul-templates">
+    <label>Templates</label>
+    <ul>
         <li data-bind="click: addFrame">
             Frame
         </li>
     </ul>
 
-    <label for="ul-object">Elements</label>
+    <label>Elements</label>
     <div data-bind="with: canvas">
-        <ul data-bind="foreach: elements">
-            <li data-bind="click: $parents[1].selectObject">
-                <span data-bind="text: data.name"></span>
-                (Id: <span data-bind="text: data.id"></span>)
+        <ul data-bind="foreach: {data: elements, as: 'element'}">
+            <li data-bind="click: menu.selectObject">
+                <span data-bind="text: element.getName()"></span>
+                (Id: <span data-bind="text: element.getId()"></span>)
             </li>
         </ul>
+    </div>
+
+    <div class="properties" data-bind="with: canvas">
+    <label>Properties</label>
+        <table>
+            <tr>
+                <td>Width</td>
+                <td><input type="number" data-bind="value: selectedObject.width" /></td>
+            </tr>
+            
+            <tr>
+                <td>Height</td>
+                <td><input type="text" data-bind="value: selectedObject.height" /></td>
+            </tr>
+            
+            <tr>
+                <td>Left</td>
+                <td><input type="text" data-bind="value: selectedObject.left" /></td>
+            </tr>
+            
+            <tr>
+                <td>Top</td>
+                <td><input type="text" data-bind=" value: selectedObject.top" /></td>
+            </tr>
+        </table>
     </div>
 </script>

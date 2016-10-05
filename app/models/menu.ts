@@ -3,7 +3,7 @@ module mapp.le {
         
         private canvas: KnockoutObservable<Canvas>;
         private addFrame: (type: ElementType) => void;
-        private selectObject: (data, event) => void;
+        private selectObject: (element: fabric.IObject, event) => void;
         private init: () => void;
         
 
@@ -12,12 +12,15 @@ module mapp.le {
             this.canvas = ko.observable<Canvas>(canvas);
 
             this.addFrame = () => {
-                this.canvas().addFrame(mapp.le.DefaultFrameOptions);
+                
+                let options = $.extend({}, mapp.le.DefaultFrameOptions, {fill: Util.getRandomColor()});
+                this.canvas().addFrame(options);
             }
 
-            this.selectObject = (data, event) => {
+            this.selectObject = (element: fabric.IObject, event) => {
                 
-                this.canvas().selectObject(data['data']['id']);
+                if(element)
+                    this.canvas().selectObject(element.getId());
             }
 
             this.init = () => {

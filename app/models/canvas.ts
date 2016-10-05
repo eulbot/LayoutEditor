@@ -3,53 +3,71 @@ declare namespace fabric {
         getObject: (id: any) => IObject;
         getItemByAttr: (attr: string, value: any) => IObject;
     }
+
+    export interface IObject {
+        getId: () => string;
+        getName: () => string;
+    }
 }
 
 module mapp.le {
     export class Canvas {
 
-        private element: KnockoutObservable<HTMLCanvasElement>;
+        private domElement: KnockoutObservable<HTMLCanvasElement>;
         private elements: KnockoutObservableArray<fabric.IObject>;
         private canvas: fabric.ICanvas;
+        private init: () => void;
 
+        public selectedObject: SelectedObject;
         public addFrame: (options?: fabric.IRectOptions) => void;
         public selectObject: (id: string) => void;
-        private init: () => void;
         
         constructor() {
             let count = 1;
             let elementSubstription: KnockoutSubscription;
-            this.element = ko.observable<HTMLCanvasElement>();
+            this.domElement = ko.observable<HTMLCanvasElement>();
             this.elements = ko.observableArray<fabric.IObject>();
+            this.selectedObject = new SelectedObject();
 
             this.addFrame = (options?: fabric.IRectOptions) => {
 
-                let newFrame = new fabric.Rect(mapp.le.DefaultFrameOptions);
+                options = $.extend(mapp.le.DefaultFrameOptions, options);
+                let newFrame = new fabric.Rect(options);
                 newFrame.data = {id: count, name: 'Frame'};
+                
                 count++;
 
                 this.canvas.add(newFrame);
             }
 
             this.selectObject = (id: string) => {
-                this.canvas.setActiveObject(this.canvas.getObject(id));
+
+                let element = this.canvas.getObject(id);
+                this.canvas.setActiveObject(element);
+                //this.selectedObject.apply(element);
             };
 
             // Init canvas when DOM element is rendered 
-            elementSubstription = this.element.subscribe(() => {
+            elementSubstription = this.domElement.subscribe(() => {
                 
-                if(this.element() && !this.canvas) {
+                if(this.domElement() && !this.canvas) {
                     elementSubstription.dispose();
                     this.init();
                 }
             });
 
             this.init = () => {
-                this.canvas = new fabric.Canvas(this.element());
+                this.canvas = new fabric.Canvas(this.domElement());
                 this.elements(this.canvas.getObjects());
+
+                // Event handler
                 this.canvas.on({
                     "object:added": () => this.elements.notifySubscribers(),
-                    "object:removed": () => this.elements.notifySubscribers()
+                    "object:removed": () => this.elements.notifySubscribers(),
+                    "object:selected": (e: fabric.IEvent) => this.selectedObject.apply(e.target),
+                    "object:moving": (e: fabric.IEvent) => this.selectedObject.update(),
+                    "object:scaling": (e: fabric.IEvent) => this.selectedObject.update(),
+                    "selection:cleared": () => this.selectedObject.clear()
                 });
             };
         }
