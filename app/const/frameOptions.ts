@@ -7,10 +7,14 @@ module mapp.le {
         width: 150,
         height: 100,
         fill: 'rgba(255,0,0,0.5)',
-        transparentCorners: true,
         lockRotation: true,
 		hasRotatingPoint: false,
 		perPixelTargetFind: true,
-		minScaleLimit: 1
+        hasBorders: false,
+        lockUniScaling: false,
+        strokeWidth: 0,
+        cornerColor: '#333',
+        cornerSize: 6,
+        transparentCorners: false
     };
 }

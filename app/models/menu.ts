@@ -24,6 +24,8 @@ module mapp.le {
             }
 
             this.init = () => {
+                
+
             };
             
             this.init();

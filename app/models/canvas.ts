@@ -10,7 +10,10 @@ declare namespace fabric {
     }
 }
 
+declare var Ruler: any;
+
 module mapp.le {
+
     export class Canvas {
 
         private domElement: KnockoutObservable<HTMLCanvasElement>;
@@ -44,7 +47,6 @@ module mapp.le {
 
                 let element = this.canvas.getObject(id);
                 this.canvas.setActiveObject(element);
-                //this.selectedObject.apply(element);
             };
 
             // Init canvas when DOM element is rendered 
@@ -57,18 +59,39 @@ module mapp.le {
             });
 
             this.init = () => {
-                this.canvas = new fabric.Canvas(this.domElement());
+                this.canvas = new fabric.Canvas(this.domElement(), <fabric.ICanvasOptions>{
+                    uniScaleTransform: true
+                });
                 this.elements(this.canvas.getObjects());
+
+                Util.canvas = this.canvas;
 
                 // Event handler
                 this.canvas.on({
                     "object:added": () => this.elements.notifySubscribers(),
                     "object:removed": () => this.elements.notifySubscribers(),
                     "object:selected": (e: fabric.IEvent) => this.selectedObject.apply(e.target),
-                    "object:moving": (e: fabric.IEvent) => this.selectedObject.update(),
+                    "object:moving": (e: fabric.IEvent) => {
+                        Util.stayInCanvas(e), 
+                        Util.snapToObjects(e),
+                        this.selectedObject.update() 
+                    },
                     "object:scaling": (e: fabric.IEvent) => this.selectedObject.update(),
                     "selection:cleared": () => this.selectedObject.clear()
                 });
+
+                
+                // $('body').bind('keydown', (e: JQueryKeyEventObject) => {
+                    
+                //     if(e.keyCode == 38) 
+                //         this.selectedObject.moveStep(Direction.TOP);
+                //     if(e.keyCode == 39) 
+                //         this.selectedObject.moveStep(Direction.RIGHT);
+                //     if(e.keyCode == 40) 
+                //         this.selectedObject.moveStep(Direction.BOTTOM);
+                //     if(e.keyCode == 37) 
+                //         this.selectedObject.moveStep(Direction.LEFT);
+                // });
             };
         }
     }
