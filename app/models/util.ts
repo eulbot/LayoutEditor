@@ -5,6 +5,14 @@ module mapp.le {
         public static snapThreshold: number = 20;
         public static snap: boolean = true;
 
+        static getCanvasWidth(): number {
+            return Util.canvas.getWidth();
+        }
+
+        static getCanvasHeight(): number {
+            return Util.canvas.getHeight();
+        }
+
         static getRandomColor() {
             return 'rgba(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ', 0.75)';
         }
@@ -35,11 +43,11 @@ module mapp.le {
                 object.setTop(0);
             }
 
-            if((object.getWidth() + object.getLeft()) > (Util.canvas.getWidth() - Util.snapThreshold)) {
+            if(object.getRight() > (Util.canvas.getWidth() - Util.snapThreshold)) {
                 object.setLeft(Util.canvas.getWidth() - object.getWidth());
             }
 
-            if((object.getHeight() + object.getTop()) > (Util.canvas.getHeight() - Util.snapThreshold)) {
+            if(object.getBottom() > (Util.canvas.getHeight() - Util.snapThreshold)) {
                 object.setTop(Util.canvas.getHeight() - object.getHeight());
             }
         }
@@ -93,6 +101,14 @@ module mapp.le {
                 }
 
             });
+        }
+
+        static respositionObjects() {
+
+            // this.canvas.forEachObject((object: fabric.IObject) => {
+
+            //     if(object.width)
+            // });
         }
     }
 }

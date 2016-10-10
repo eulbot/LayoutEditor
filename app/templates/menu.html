@@ -22,30 +22,30 @@
         <table>
             <tr>
                 <td>Width</td>
-                <td><input type="number" data-bind="value: selectedObject.width" /></td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.widthDisplayRel" />%</td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.widthAbs, disable: selectedObject.widthDisplayRel()" />Abs</td>
+                <td><input type="text" data-bind="value: selectedObject.width.displayValue" /></td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.width.showRelative" />%</td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.width.isAbsolute, disable: selectedObject.width.showRelative()" />Abs</td>
             </tr>
             
             <tr>
                 <td>Height</td>
-                <td><input type="number" data-bind="value: selectedObject.height" /></td>
-                <td><input type="checkbox" />%</td>
-                <td><input type="checkbox" data-bind="value: selectedObject.heightAbs" />Abs</td>
+                <td><input type="text" data-bind="value: selectedObject.height.displayValue" /></td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.height.showRelative" />%</td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.height.isAbsolute, disable: selectedObject.height.showRelative()" />Abs</td>
             </tr>
             
             <tr>
                 <td>Left</td>
-                <td><input type="number" data-bind="value: selectedObject.left" /></td>
-                <td><input type="checkbox" />%</td>
-                <td><input type="checkbox" data-bind="value: selectedObject.leftAbs" />Abs</td>
+                <td><input type="text" data-bind="value: selectedObject.left.displayValue" /></td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.left.showRelative" />%</td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.left.isAbsolute, disable: selectedObject.left.showRelative()" />Abs</td>
             </tr>
             
             <tr>
                 <td>Top</td>
-                <td><input type="number" data-bind=" value: selectedObject.top" /></td>
-                <td><input type="checkbox" />%</td>
-                <td><input type="checkbox" data-bind="value: selectedObject.topAbs" />Abs</td>
+                <td><input type="text" data-bind=" value: selectedObject.top.displayValue" /></td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.top.showRelative" />%</td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.top.isAbsolute, disable: selectedObject.top.showRelative()" />Abs</td>
             </tr>
         </table>
     </div>

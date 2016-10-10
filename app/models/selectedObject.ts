@@ -6,21 +6,11 @@ module mapp.le {
         private id: KnockoutObservable<string>;
         private name: KnockoutObservable<string>;
 
-        private width: KnockoutObservable<number>;
-        private height: KnockoutObservable<number>;
-        private left: KnockoutObservable<number>;
-        private top: KnockoutObservable<number>; 
+        private width: Dimension;
+        private height: Dimension;
+        private left: Dimension;
+        private top: Dimension; 
         
-        private widthDisplayRel: KnockoutObservable<boolean>;
-
-        private widthAbs: KnockoutObservable<boolean>;
-        private heightAbs: KnockoutObservable<boolean>;
-        private leftAbs: KnockoutObservable<boolean>;
-        private topAbs: KnockoutObservable<boolean>; 
-
-        // private scaleX: KnockoutObservable<number>;
-        // private scaleY: KnockoutObservable<number>; 
-
         public apply: (object: fabric.IObject) => void;
         public moveStep: (direction: mapp.le.Direction) => void;
         public update: () => void;
@@ -32,54 +22,47 @@ module mapp.le {
         private ls: KnockoutSubscription;
         private ts: KnockoutSubscription;
 
-        constructor(object?: fabric.IObject) {
+        constructor() {
             
             this.id = ko.observable<string>();
             this.name = ko.observable<string>();
-            this.width = ko.observable<number>();
-            this.height = ko.observable<number>();
-            this.left = ko.observable<number>();
-            this.top = ko.observable<number>();
-
-            this.widthDisplayRel = ko.observable<boolean>(false);
-
-            this.widthAbs = ko.observable<boolean>(false);
-            this.heightAbs = ko.observable<boolean>(false);
-            this.leftAbs = ko.observable<boolean>(false);
-            this.topAbs = ko.observable<boolean>(false);
-
-            // this.scaleX = ko.observable<number>();
-            // this.scaleY = ko.observable<number>();
+            this.width = new Dimension(Util.getCanvasWidth);
+            this.height = new Dimension(Util.getCanvasHeight);
+            this.left = new Dimension(Util.getCanvasWidth);
+            this.top = new Dimension(Util.getCanvasHeight);
 
             this.apply = (object: fabric.IObject) => {
 
                 this.object = object;
                 this.update();
 
-                if(this.ws) this.ws.dispose();
-                if(this.hs) this.hs.dispose();
-                if(this.ls) this.ls.dispose();
-                if(this.ts) this.ts.dispose();
+                try {
+                    this.ws.dispose();
+                    this.hs.dispose();
+                    this.ls.dispose();
+                    this.ts.dispose();
+                }
+                catch(e){;}
 
-                this.ws = this.width.subscribe((v: number) => {
+                this.ws = this.width.value.subscribe((v: number) => {
                     this.applyProperty(v, 'width');
                 })
 
-                this.hs = this.height.subscribe((v: number) => {
+                this.hs = this.height.value.subscribe((v: number) => {
                     this.applyProperty(v, 'height');
                 })
                 
-                this.ls = this.left.subscribe((v: number) => {
+                this.ls = this.left.value.subscribe((v: number) => {
                     this.applyProperty(v, 'left');
                 })
                 
-                this.ts = this.top.subscribe((v: number) => {
+                this.ts = this.top.value.subscribe((v: number) => {
                     this.applyProperty(v, 'top');
                 })
                 
                 this.applyProperty = (value: any, property: string) => {
 
-                    let parsed = parseInt(value);
+                    let parsed = parseFloat(value);
 
                     if(this.object && !isNaN(parsed) && value !== this.object.get(property)) {
                         this.object.set(property, parsed);
@@ -99,49 +82,44 @@ module mapp.le {
 
             this.update = () => {
                 
-                if(this.width() !== this.object.getWidth()) {
-                    this.width(Math.round(this.object.getWidth()));
+                if(this.width.value() !== this.object.getWidth()) {
+                    this.width.value(this.object.getWidth());
                 }
-                if(this.height() !== this.object.getHeight()) {
-                    this.height(Math.round(this.object.getHeight()));
+                
+                if(this.height.value() !== this.object.getHeight()) {
+                    this.height.value(this.object.getHeight());
                 }
-                if(this.left() !== this.object.getLeft()) {
-                    this.left(Math.round(this.object.getLeft()));
+                if(this.left.value() !== this.object.getLeft()) {
+                    this.left.value(this.object.getLeft());
                 }
-                if(this.top() !== this.object.getTop()) {
-                    this.top(Math.round(this.object.getTop()));
+                if(this.top.value() !== this.object.getTop()) {
+                    this.top.value(this.object.getTop());
                 }
-                // if(this.scaleX() !== this.object.scaleX) {
-                //     this.scaleX(this.object.scaleX);
-                // }
-                // if(this.scaleY() !== this.object.scaleY) {
-                //     this.scaleY(this.object.scaleY);
-                // }
             }
 
             this.moveStep = (direction: Direction) => {
                 switch(direction) {
                     case Direction.TOP:
-                        this.top(this.top() - 1);
+                        this.top.value(this.top.value() - 1);
                         break;
                     case Direction.RIGHT:
-                        this.left(this.left() + 1);
+                        this.left.value(this.left.value() + 1);
                         break;
                     case Direction.BOTTOM:
-                        this.top(this.top() + 1);
+                        this.top.value(this.top.value() + 1);
                         break;
                     case Direction.LEFT:
-                        this.left(this.left() -1);
+                        this.left.value(this.left.value() -1);
                         break;
                 }
             }
 
             this.clear = () => {
 
-                Util.setValue(null, this.id, this.name, this.width, this.height, this.left, this.top);
+                Util.setValue(undefined, this.id, this.name, this.width.value, this.height.value, this.left.value, this.top.value);
             }
 
-            if(object)
+            if(this.object)
                 this.update();
         }
     }

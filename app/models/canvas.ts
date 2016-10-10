@@ -44,13 +44,17 @@ module mapp.le {
 
             this.addFrame = (options?: fabric.IRectOptions) => {
 
+                count++;
                 options = $.extend(mapp.le.DefaultFrameOptions, options);
                 let newFrame = new fabric.Rect(options);
                 newFrame.data = {id: count, name: 'Frame'};
                 
-                count++;
-
                 this.canvas.add(newFrame);
+                this.canvas.setActiveObject(newFrame);
+
+                setTimeout(() => {
+                    this.canvas.setWidth(900);
+                }, 3000);
             }
 
             this.selectObject = (id: string) => {

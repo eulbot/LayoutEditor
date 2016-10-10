@@ -6,7 +6,6 @@ module mapp.le {
         private selectObject: (element: fabric.IObject, event) => void;
         private init: () => void;
         
-
         constructor(canvas: Canvas) {
             
             this.canvas = ko.observable<Canvas>(canvas);
