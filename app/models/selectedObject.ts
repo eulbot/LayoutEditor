@@ -10,8 +10,16 @@ module mapp.le {
         private height: KnockoutObservable<number>;
         private left: KnockoutObservable<number>;
         private top: KnockoutObservable<number>; 
-        private scaleX: KnockoutObservable<number>;
-        private scaleY: KnockoutObservable<number>; 
+        
+        private widthDisplayRel: KnockoutObservable<boolean>;
+
+        private widthAbs: KnockoutObservable<boolean>;
+        private heightAbs: KnockoutObservable<boolean>;
+        private leftAbs: KnockoutObservable<boolean>;
+        private topAbs: KnockoutObservable<boolean>; 
+
+        // private scaleX: KnockoutObservable<number>;
+        // private scaleY: KnockoutObservable<number>; 
 
         public apply: (object: fabric.IObject) => void;
         public moveStep: (direction: mapp.le.Direction) => void;
@@ -32,8 +40,16 @@ module mapp.le {
             this.height = ko.observable<number>();
             this.left = ko.observable<number>();
             this.top = ko.observable<number>();
-            this.scaleX = ko.observable<number>();
-            this.scaleY = ko.observable<number>();
+
+            this.widthDisplayRel = ko.observable<boolean>(false);
+
+            this.widthAbs = ko.observable<boolean>(false);
+            this.heightAbs = ko.observable<boolean>(false);
+            this.leftAbs = ko.observable<boolean>(false);
+            this.topAbs = ko.observable<boolean>(false);
+
+            // this.scaleX = ko.observable<number>();
+            // this.scaleY = ko.observable<number>();
 
             this.apply = (object: fabric.IObject) => {
 
@@ -95,12 +111,12 @@ module mapp.le {
                 if(this.top() !== this.object.getTop()) {
                     this.top(Math.round(this.object.getTop()));
                 }
-                if(this.scaleX() !== this.object.scaleX) {
-                    this.scaleX(this.object.scaleX);
-                }
-                if(this.scaleY() !== this.object.scaleY) {
-                    this.scaleY(this.object.scaleY);
-                }
+                // if(this.scaleX() !== this.object.scaleX) {
+                //     this.scaleX(this.object.scaleX);
+                // }
+                // if(this.scaleY() !== this.object.scaleY) {
+                //     this.scaleY(this.object.scaleY);
+                // }
             }
 
             this.moveStep = (direction: Direction) => {
@@ -122,7 +138,7 @@ module mapp.le {
 
             this.clear = () => {
 
-                Util.setValue(null, this.id, this.name, this.width, this.height, this.left, this.top, this.scaleX, this.scaleY);
+                Util.setValue(null, this.id, this.name, this.width, this.height, this.left, this.top);
             }
 
             if(object)

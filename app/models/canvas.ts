@@ -7,10 +7,20 @@ declare namespace fabric {
     export interface IObject {
         getId: () => string;
         getName: () => string;
+        getRight:() => number;
+        setRight:(value: number) => void;
+        getBottom:() => number;
+        setBottom:(value: number) => void;
+
+        snapTop: (ref: fabric.IObject, threshold: number, inside?: boolean) => boolean;
+        snapRight: (ref: fabric.IObject, threshold: number, inside?: boolean) => boolean;
+        snapBottom: (ref: fabric.IObject, threshold: number, inside?: boolean) => boolean;
+        snapLeft: (ref: fabric.IObject, threshold: number, inside?: boolean) => boolean;
+        
+        withinX: (ref: fabric.IObject, threshold: number) => boolean;
+        withinY: (ref: fabric.IObject, threshold: number) => boolean;
     }
 }
-
-declare var Ruler: any;
 
 module mapp.le {
 

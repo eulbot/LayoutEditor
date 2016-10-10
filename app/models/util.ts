@@ -2,7 +2,8 @@ module mapp.le {
     export class Util {
        
         public static canvas: fabric.ICanvas;
-        public static snap: number = 20;
+        public static snapThreshold: number = 20;
+        public static snap: boolean = true;
 
         static getRandomColor() {
             return 'rgba(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ', 0.75)';
@@ -26,95 +27,71 @@ module mapp.le {
             
             object.setCoords();
             
-            if (object.getLeft() < Util.snap) {
+            if (object.getLeft() < Util.snapThreshold) {
                 object.setLeft(0);
             }
 
-            if (object.getTop() < Util.snap) {
+            if (object.getTop() < Util.snapThreshold) {
                 object.setTop(0);
             }
 
-            if((object.getWidth() + object.getLeft()) > (Util.canvas.getWidth() - Util.snap)) {
+            if((object.getWidth() + object.getLeft()) > (Util.canvas.getWidth() - Util.snapThreshold)) {
                 object.setLeft(Util.canvas.getWidth() - object.getWidth());
             }
 
-            if((object.getHeight() + object.getTop()) > (Util.canvas.getHeight() - Util.snap)) {
+            if((object.getHeight() + object.getTop()) > (Util.canvas.getHeight() - Util.snapThreshold)) {
                 object.setTop(Util.canvas.getHeight() - object.getHeight());
             }
         }
 
         static snapToObjects(eventObject: fabric.IEvent) {
             
-            let object = eventObject.target;
+            if(!Util.snap)
+                return;
+
+            let object: fabric.IObject = eventObject.target;
             
             this.canvas.forEachObject((ref: fabric.IObject) => {
 
                 if(ref == object)
                     return;
 
-                // Difference bottom edge smaller < snap
-                if(Math.abs((object.getTop() + object.getHeight()) - (ref.getTop() + ref.getHeight())) < Util.snap) {
-
-                    // Difference right of ref and left of object < snap
-                    if(Math.abs(object.getLeft() - (ref.getLeft() + ref.getWidth())) < Util.snap) {
-                        object.setLeft(ref.getLeft() + ref.getWidth());
-                        object.setTop(ref.getTop() + ref.getHeight() - object.getHeight());
-                    }
-
-                    // Difference right of object and left of ref < snap
-                    if(Math.abs((object.getLeft() + object.getWidth()) - ref.getLeft()) < Util.snap) {
-                        object.setLeft(ref.getLeft() - object.getWidth());
-                        object.setTop(ref.getTop() + ref.getHeight() - object.getHeight());
-                    }
+                if(object.withinX(ref, Util.snapThreshold)) {
+                    if(snapY(false))
+                        snapX(true); 
                 }
 
-                // Difference top edge smaller < snap
-                if(Math.abs(object.getTop() - ref.getTop()) < Util.snap) {
-
-                    // Difference right of ref and left of object < snap
-                    if(Math.abs(object.getLeft() - (ref.getLeft() + ref.getWidth())) < Util.snap) {
-                        object.setLeft(ref.getLeft() + ref.getWidth());
-                        object.setTop(ref.getTop());
-                    }
-
-                    // Difference right of object and left of ref < snap
-                    if(Math.abs((object.getLeft() + object.getWidth()) - ref.getLeft()) < Util.snap) {
-                        object.setLeft(ref.getLeft() - object.getWidth());
-                        object.setTop(ref.getTop());
-                    }
+                if(object.withinY(ref, Util.snapThreshold)) {
+                     if(snapX(false))
+                        snapY(true); 
                 }
 
-                // Difference right edge smaller < snap
-                if(Math.abs((object.getLeft() + object.getWidth()) - (ref.getLeft() + ref.getWidth())) < Util.snap) {
-                    
-                    // Difference bottom of ref and top of object < snap
-                    if(Math.abs(object.getTop() - (ref.getTop() + ref.getHeight())) < Util.snap) {
-                        object.setLeft(ref.getLeft() + ref.getWidth() - object.getWidth());
-                        object.setTop(ref.getTop() + ref.getHeight());
-                    }
-                    
-                    // Difference bottom of object and bottom of object < snap
-                    if(Math.abs((object.getTop() + object.getHeight()) - ref.getTop()) < Util.snap) {
-                        object.setLeft(ref.getLeft() + ref.getWidth() - object.getWidth());
-                        object.setTop(ref.getTop() - object.getHeight());
-                    }
-                }
+                function snapX(inside: boolean): boolean {
 
+                    if(object.snapLeft(ref, Util.snapThreshold, inside)) {
+                        object.setLeft(inside ? ref.getLeft() : ref.getRight());
+                        return true;    
+                    }
+                    else if(object.snapRight(ref, Util.snapThreshold, inside)) {
+                        object.setRight(inside ? ref.getRight() : ref.getTop());
+                        return true;    
+                    }
+
+                    return false;
+                }
                 
-                // Difference left edge smaller < snap
-                if(Math.abs(object.getLeft() - ref.getLeft()) < Util.snap) {
-                    // Util.snap target TL to object BL
-                    if(Math.abs(object.getTop() - (ref.getTop() + ref.getHeight())) < Util.snap) {
-                        object.setLeft(ref.getLeft());
-                        object.setTop(ref.getTop() + ref.getHeight());
+                function snapY(inside: boolean): boolean {
+                    if(object.snapTop(ref, Util.snapThreshold, inside)) {
+                        object.setTop(inside ? ref.getTop() : ref.getBottom());
+                        return true;    
                     }
-
-                    // Util.snap target BL to object TL
-                    if(Math.abs((object.getTop() + object.getHeight()) - ref.getTop()) < Util.snap) {
-                        object.setLeft(ref.getLeft());
-                        object.setTop(ref.getTop() - object.getHeight());
+                    else if(object.snapBottom(ref, Util.snapThreshold, inside)) {
+                        object.setBottom(inside ? ref.getBottom() : ref.getTop());
+                        return true;    
                     }
+                    return false;
                 }
+
             });
         }
     }
