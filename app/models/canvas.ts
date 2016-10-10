@@ -8,9 +8,12 @@ declare namespace fabric {
         getId: () => string;
         getName: () => string;
         getRight:() => number;
-        setRight:(value: number) => void;
-        getBottom:() => number;
-        setBottom:(value: number) => void;
+        setRight: (value: number) => void;
+        getBottom: () => number;
+        setBottom: (value: number) => void;
+        getDimensionData: (dimension: string, property: string) => any;
+        setDimensionData: (dimension: string, property: string, value: any) => void;
+        setData: (key: string, value: any) => void;
 
         snapTop: (ref: fabric.IObject, threshold: number, inside?: boolean) => boolean;
         snapRight: (ref: fabric.IObject, threshold: number, inside?: boolean) => boolean;
@@ -52,9 +55,9 @@ module mapp.le {
                 this.canvas.add(newFrame);
                 this.canvas.setActiveObject(newFrame);
 
-                setTimeout(() => {
-                    this.canvas.setWidth(900);
-                }, 3000);
+                // setTimeout(() => {
+                //     this.canvas.setWidth(900);
+                // }, 3000);
             }
 
             this.selectObject = (id: string) => {

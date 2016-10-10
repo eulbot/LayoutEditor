@@ -3,10 +3,14 @@ module mapp.le {
     export class Dimension {
         public value: KnockoutObservable<number>;
         public displayValue: KnockoutComputed<number>;
-        private showRelative: KnockoutObservable<boolean>;
-        private isAbsolute: KnockoutObservable<boolean>;
-        constructor(getAbsolute: () => number) {
+        public showRelative: KnockoutObservable<boolean>;
+        public isAbsolute: KnockoutObservable<boolean>;
+        public hasChanges: KnockoutComputed<boolean>;
+        public getData: KnockoutComputed<any>;
+        public setData: (data: any) => any;
 
+        constructor(getAbsolute: () => number) {
+            var initialized: boolean;
             this.value = ko.observable<number>();
             this.isAbsolute = ko.observable<boolean>(false);
             this.showRelative = ko.observable<boolean>(false);
@@ -14,7 +18,8 @@ module mapp.le {
             this.displayValue = ko.pureComputed({
                 read: () => {
                     
-                    let result: any = this.value() !== undefined ? this.showRelative() ? (this.value() / getAbsolute() * 100).toFixed(2) + '%' : this.value().toString() + 'px' : undefined;
+                    let result: any = this.value() !== undefined ? this.showRelative() ? Util.round((this.value() / getAbsolute() * 100)) + '%' 
+                        : Math.round(this.value()) + 'px' : undefined;
                     
                     if(this.showRelative())
                         this.isAbsolute(false);
@@ -30,6 +35,20 @@ module mapp.le {
                     }
                 }
             });
+
+            this.setData = (data: any) => {
+                if(data) {
+                    this.showRelative(data['showRelative']);
+                    this.isAbsolute(data['isAbsolute']);
+                }
+            };
+
+            this.getData = ko.computed(() => {
+                return {
+                    'showRelative': this.showRelative(),
+                    'isAbsolute': this.isAbsolute()
+                }
+            }); 
         }
     }
 }

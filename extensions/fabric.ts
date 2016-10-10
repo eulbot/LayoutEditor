@@ -44,6 +44,11 @@
         } 
         return name;
     }
+    
+    fabric.Object.prototype.setData = function(key, value) {
+        this.data[key] || (this.data[key] = {});
+        this.data[key] = value;
+    }
 
     fabric.Object.prototype.getRight = function() {
         return this.getLeft() + this.getWidth();

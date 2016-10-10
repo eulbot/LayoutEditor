@@ -27,6 +27,10 @@ module mapp.le {
             property(observable());
         }
 
+        static round(value: number) {
+            return Math.round((value + 0.00001) * 100) / 100;
+        }
+
         // Positioning functions
         static stayInCanvas(eventObject: fabric.IEvent) {
             
