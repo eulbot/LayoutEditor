@@ -31,6 +31,52 @@ module mapp.le {
             return Math.round((value + 0.00001) * 100) / 100;
         }
 
+        static resizeCanvas(width: number, heigth: number) {
+            
+            let fx = width / Util.canvas.getWidth();
+            let fy = heigth / Util.canvas.getHeight();
+
+            Util.canvas.setWidth(width);
+            Util.canvas.setHeight(heigth);
+
+            this.canvas.forEachObject((object: fabric.IObject) => {
+
+                if(!(object.isDimensionAbsolute(Dimension.Width))) 
+                    object.setWidth(object.getWidth() * fx);
+                if(!(object.isDimensionAbsolute(Dimension.Height))) 
+                    object.setHeight(object.getHeight() * fy);
+                if(!(object.isDimensionAbsolute(Dimension.Top))) 
+                    object.setTop(object.getTop() * fy);
+                if(!(object.isDimensionAbsolute(Dimension.Left))) 
+                    object.setLeft(object.getLeft() * fx);
+
+                var cw = Util.canvas.getWidth();
+                var ch = Util.canvas.getHeight();
+                var l = object.getLeft();
+                var t = object.getTop();
+                var w = object.getWidth();
+                var h = object.getHeight();
+
+                let ia = object.isDimensionAbsolute(Dimension.Right);
+
+                if(object.isDimensionAbsolute(Dimension.Left) && object.isDimensionAbsolute(Dimension.Right)) {
+                    object.setWidth(cw - l - object.data['Right']['value']);
+                }
+                else if(object.isDimensionAbsolute(Dimension.Right)) { 
+                    object.setLeft(cw - w - object.data['Right']['value']);
+                } 
+                if(object.isDimensionAbsolute(Dimension.Bottom)) { 
+                    object.setTop(ch - h - object.data['Bottom']['value']);
+                } 
+                
+                object.setScaleX(1);
+                object.setScaleY(1);
+                object.setCoords();
+            });
+
+            Util.canvas.renderAll();
+        }
+
         // Positioning functions
         static stayInCanvas(eventObject: fabric.IEvent) {
             
@@ -105,14 +151,6 @@ module mapp.le {
                 }
 
             });
-        }
-
-        static respositionObjects() {
-
-            // this.canvas.forEachObject((object: fabric.IObject) => {
-
-            //     if(object.width)
-            // });
         }
     }
 }

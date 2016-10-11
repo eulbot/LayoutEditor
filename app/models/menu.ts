@@ -4,11 +4,15 @@ module mapp.le {
         private canvas: KnockoutObservable<Canvas>;
         private addFrame: (type: ElementType) => void;
         private selectObject: (element: fabric.IObject, event) => void;
+        private pageSizes: PageSize[];
+        private selectedPageSize: KnockoutObservable<PageSize>;
+        private setPageSize: (pageSize: PageSize) => void;
         private init: () => void;
         
         constructor(canvas: Canvas) {
             
             this.canvas = ko.observable<Canvas>(canvas);
+            this.selectedPageSize = ko.observable<PageSize>();
 
             this.addFrame = () => {
                 
@@ -22,9 +26,26 @@ module mapp.le {
                     this.canvas().selectObject(element.getId());
             }
 
-            this.init = () => {
-                
+            this.setPageSize = () => {
+                let dpi = 72;
+                let inch = 25.4;
 
+                let x = Math.round(this.selectedPageSize().width / inch * dpi);
+                let y = Math.round(this.selectedPageSize().height / inch * dpi);
+
+                Util.resizeCanvas(x, y);
+            }
+
+            this.init = () => {
+
+                let p1 = new PageSize('A4', 210, 297);
+                let p2 = new PageSize('A4 Landscape', 297, 210);
+
+                this.pageSizes = [];
+                this.pageSizes.push(p1);
+                this.pageSizes.push(p2);
+
+                this.selectedPageSize(p1);
             };
             
             this.init();

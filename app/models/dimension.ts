@@ -1,14 +1,6 @@
 module mapp.le {
 
-    interface IDimensionData {
-        value: number,
-        data: {
-            showRelative: boolean,
-            isAbsolute: boolean
-        }
-    }
-
-    export class Dimension {
+    export class DimensionData {
         public value: KnockoutObservable<number>;
         public displayValue: KnockoutComputed<number>;
         public showRelative: KnockoutObservable<boolean>;

@@ -11,8 +11,7 @@ declare namespace fabric {
         setRight: (value: number) => void;
         getBottom: () => number;
         setBottom: (value: number) => void;
-        getDimensionData: (dimension: string, property: string) => any;
-        setDimensionData: (dimension: string, property: string, value: any) => void;
+        isDimensionAbsolute: (dimension: number) => boolean;
         setData: (key: string, value: any) => void;
 
         snapTop: (ref: fabric.IObject, threshold: number, inside?: boolean) => boolean;
@@ -50,14 +49,10 @@ module mapp.le {
                 count++;
                 options = $.extend(mapp.le.DefaultFrameOptions, options);
                 let newFrame = new fabric.Rect(options);
-                newFrame.data = {id: count, name: 'Frame'};
+                newFrame.data = {id: count, name: 'Frame', data: {}};
                 
                 this.canvas.add(newFrame);
                 this.canvas.setActiveObject(newFrame);
-
-                // setTimeout(() => {
-                //     this.canvas.setWidth(900);
-                // }, 3000);
             }
 
             this.selectObject = (id: string) => {
@@ -96,7 +91,6 @@ module mapp.le {
                     "object:scaling": (e: fabric.IEvent) => this.selectedObject.update(),
                     "selection:cleared": () => this.selectedObject.clear()
                 });
-
                 
                 // $('body').bind('keydown', (e: JQueryKeyEventObject) => {
                     

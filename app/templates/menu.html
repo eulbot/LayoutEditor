@@ -1,5 +1,10 @@
 <script type="text/html" id="menu-template">
 
+    <label>Page setup</label>
+    <div class="page-setup">
+        <select data-bind="options: pageSizes, optionsText: 'name', value: selectedPageSize, event:{ change: setPageSize}"></select>
+    </div>
+
     <label>Templates</label>
     <ul>
         <li data-bind="click: addFrame">
@@ -34,18 +39,33 @@
                 <td><input type="checkbox" data-bind="checked: selectedObject.height.isAbsolute, disable: selectedObject.height.showRelative()" />Abs</td>
             </tr>
             
-            <tr>
-                <td>Left</td>
-                <td><input type="text" data-bind="value: selectedObject.left.displayValue" /></td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.left.showRelative" />%</td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.left.isAbsolute, disable: selectedObject.left.showRelative()" />Abs</td>
-            </tr>
             
             <tr>
                 <td>Top</td>
                 <td><input type="text" data-bind=" value: selectedObject.top.displayValue" /></td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.top.showRelative" />%</td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.top.isAbsolute, disable: selectedObject.top.showRelative()" />Abs</td>
+            </tr>
+
+            <tr>
+                <td>Right</td>
+                <td><input type="text" data-bind=" value: selectedObject.right.displayValue" /></td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.right.showRelative" />%</td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.right.isAbsolute, disable: selectedObject.right.showRelative()" />Abs</td>
+            </tr>
+
+            <tr>
+                <td>Bottom</td>
+                <td><input type="text" data-bind=" value: selectedObject.bottom.displayValue" /></td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.bottom.showRelative" />%</td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.bottom.isAbsolute, disable: selectedObject.bottom.showRelative()" />Abs</td>
+            </tr>
+
+            <tr>
+                <td>Left</td>
+                <td><input type="text" data-bind="value: selectedObject.left.displayValue" /></td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.left.showRelative" />%</td>
+                <td><input type="checkbox" data-bind="checked: selectedObject.left.isAbsolute, disable: selectedObject.left.showRelative()" />Abs</td>
             </tr>
         </table>
     </div>

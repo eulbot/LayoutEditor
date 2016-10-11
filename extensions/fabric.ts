@@ -91,5 +91,22 @@
         return Math.abs(this.getBottom() - (inside ? ref.getBottom() : ref.getTop())) < threshold;
     }
 
+    fabric.Object.prototype.isDimensionAbsolute = function(dimension: number) {
+
+        switch(dimension) {
+            case(0):
+                return this.data ? this.data['Width'] ? this.data['Width']['isAbsolute'] : false : false;
+            case(1):
+                return this.data ? this.data['Height'] ? this.data['Height']['isAbsolute'] : false : false;
+            case(2):
+                return this.data ? this.data['Top'] ? this.data['Top']['isAbsolute'] : false : false;
+            case(3):
+                return this.data ? this.data['Right'] ? this.data['Right']['isAbsolute'] : false : false;
+            case(4):
+                return this.data ? this.data['Bottom'] ? this.data['Bottom']['isAbsolute'] : false : false;
+            case(5):
+                return this.data ? this.data['Left'] ? this.data['Left']['isAbsolute'] : false : false;
+        }
+    }
 
 })();
