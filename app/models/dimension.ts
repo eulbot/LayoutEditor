@@ -1,12 +1,20 @@
 module mapp.le {
 
+    interface IDimensionData {
+        value: number,
+        data: {
+            showRelative: boolean,
+            isAbsolute: boolean
+        }
+    }
+
     export class Dimension {
         public value: KnockoutObservable<number>;
         public displayValue: KnockoutComputed<number>;
         public showRelative: KnockoutObservable<boolean>;
         public isAbsolute: KnockoutObservable<boolean>;
         public hasChanges: KnockoutComputed<boolean>;
-        public getData: KnockoutComputed<any>;
+        public getData: KnockoutComputed<IDimensionData>;
         public setData: (data: any) => any;
 
         constructor(getAbsolute: () => number) {
@@ -44,9 +52,12 @@ module mapp.le {
             };
 
             this.getData = ko.computed(() => {
-                return {
-                    'showRelative': this.showRelative(),
-                    'isAbsolute': this.isAbsolute()
+                return <IDimensionData>{
+                    value: this.value(),
+                    data: {
+                        showRelative: this.showRelative(),
+                        isAbsolute: this.isAbsolute()
+                    }
                 }
             }); 
         }
