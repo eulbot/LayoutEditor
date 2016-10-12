@@ -6,14 +6,17 @@ module mapp.le {
         public showRelative: KnockoutObservable<boolean>;
         public isAbsolute: KnockoutObservable<boolean>;
         public hasChanges: KnockoutComputed<boolean>;
+        public isComputed: KnockoutComputed<boolean>;
+        public lastSet: KnockoutObservable<boolean>;
         public getData: KnockoutComputed<IDimensionData>;
         public setData: (data: any) => any;
 
         constructor(getAbsolute: () => number) {
-            var initialized: boolean;
+            
             this.value = ko.observable<number>();
             this.isAbsolute = ko.observable<boolean>(false);
             this.showRelative = ko.observable<boolean>(false);
+            this.lastSet = ko.observable<boolean>(false);
 
             this.displayValue = ko.pureComputed({
                 read: () => {
@@ -38,18 +41,17 @@ module mapp.le {
 
             this.setData = (data: any) => {
                 if(data) {
-                    this.showRelative(data['showRelative']);
-                    this.isAbsolute(data['isAbsolute']);
+                    data = <IDimensionData>data;
+                    this.showRelative(data.showRelative);
+                    this.isAbsolute(data.isAbsolute);
                 }
             };
 
             this.getData = ko.computed(() => {
                 return <IDimensionData>{
                     value: this.value(),
-                    data: {
-                        showRelative: this.showRelative(),
-                        isAbsolute: this.isAbsolute()
-                    }
+                    showRelative: this.showRelative(),
+                    isAbsolute: this.isAbsolute()
                 }
             }); 
         }

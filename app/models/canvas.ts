@@ -38,7 +38,7 @@ module mapp.le {
         public selectObject: (id: string) => void;
         
         constructor() {
-            let count = 1;
+            let count = 0;
             let elementSubstription: KnockoutSubscription;
             this.domElement = ko.observable<HTMLCanvasElement>();
             this.elements = ko.observableArray<fabric.IObject>();
