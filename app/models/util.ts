@@ -64,8 +64,11 @@ module mapp.le {
                 }
                 else if(object.isDimensionAbsolute(Dimension.Right)) { 
                     object.setLeft(cw - w - object.data['Right']['value']);
-                } 
-                if(object.isDimensionAbsolute(Dimension.Bottom)) { 
+                }
+                if(object.isDimensionAbsolute(Dimension.Top) && object.isDimensionAbsolute(Dimension.Bottom)) {
+                    object.setHeight(ch - t - object.data['Bottom']['value']);
+                }
+                else if(object.isDimensionAbsolute(Dimension.Bottom)) { 
                     object.setTop(ch - h - object.data['Bottom']['value']);
                 } 
                 
@@ -78,27 +81,32 @@ module mapp.le {
         }
 
         // Positioning functions
-        static stayInCanvas(eventObject: fabric.IEvent) {
+        static stayInCanvas(eventObject: fabric.IEvent, resized?: boolean) {
             
             let object = eventObject.target;
             let event: MouseEvent = <MouseEvent>(eventObject.e);
-            
+                     
             object.setCoords();
-            
+
+            //printObject(object);
+
             if (object.getLeft() < Util.snapThreshold) {
                 object.setLeft(0);
             }
-
             if (object.getTop() < Util.snapThreshold) {
                 object.setTop(0);
             }
-
             if(object.getRight() > (Util.canvas.getWidth() - Util.snapThreshold)) {
                 object.setLeft(Util.canvas.getWidth() - object.getWidth());
             }
-
             if(object.getBottom() > (Util.canvas.getHeight() - Util.snapThreshold)) {
                 object.setTop(Util.canvas.getHeight() - object.getHeight());
+            }
+
+            function printObject(o: fabric.IObject) {
+                console.info('getLeft(): '.concat(o.getLeft().toString().concat(', left: '. concat(o.left.toString()) + '\n')) + 
+                'getWidth(): '.concat(o.getWidth().toString().concat(', width: '. concat(o.width.toString()) + '\n')) +
+                'scaleX: '.concat(o.scaleX.toString()));
             }
         }
 

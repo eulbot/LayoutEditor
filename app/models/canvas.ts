@@ -28,6 +28,7 @@ module mapp.le {
 
     export class Canvas {
 
+        private canvasWrapperClass = 'canvas-wrapper';
         private domElement: KnockoutObservable<HTMLCanvasElement>;
         private elements: KnockoutObservableArray<fabric.IObject>;
         private canvas: fabric.ICanvas;
@@ -35,7 +36,8 @@ module mapp.le {
 
         public selectedObject: SelectedObject;
         public addFrame: (options?: fabric.IRectOptions) => void;
-        public selectObject: (id: string) => void;
+        public selectObject: (arg: string | fabric.IObject) => void;
+        public removeObject: (id: string) => void;
         
         constructor() {
             let count = 0;
@@ -49,7 +51,13 @@ module mapp.le {
                 count++;
                 options = $.extend(mapp.le.DefaultFrameOptions, options);
                 let newFrame = new fabric.Rect(options);
-                newFrame.data = {id: count, name: 'Frame', data: {}};
+                // newFrame.setControlsVisibility({
+                //     bl: false,
+                //     br: false,
+                //     tl: false,
+                //     tr: false
+                // });
+                newFrame.data = {id: count.toString(), name: 'Frame', data: {}};
                 
                 this.canvas.add(newFrame);
                 this.canvas.setActiveObject(newFrame);
@@ -59,6 +67,14 @@ module mapp.le {
 
                 let element = this.canvas.getObject(id);
                 this.canvas.setActiveObject(element);
+            };
+
+            this.removeObject = (arg: string | fabric.IObject) => {
+
+                if(typeof arg == 'string')
+                    this.canvas.remove(this.canvas.getObject(arg));
+                else
+                    this.canvas.remove(arg)
             };
 
             // Init canvas when DOM element is rendered 
@@ -71,8 +87,12 @@ module mapp.le {
             });
 
             this.init = () => {
+
+                let resizing = false;
+
                 this.canvas = new fabric.Canvas(this.domElement(), <fabric.ICanvasOptions>{
-                    uniScaleTransform: true
+                    uniScaleTransform: true,
+                    containerClass: this.canvasWrapperClass
                 });
                 this.elements(this.canvas.getObjects());
 
@@ -88,21 +108,59 @@ module mapp.le {
                         Util.snapToObjects(e),
                         this.selectedObject.update() 
                     },
-                    "object:scaling": (e: fabric.IEvent) => this.selectedObject.update(),
+                    "object:scaling": (e: fabric.IEvent) => {
+                        
+                        let corner: string = e.target['__corner'] || '';
+
+                        if(corner.indexOf('t') >= 0)
+                            this.selectedObject.setPrio(4);
+                        else
+                            this.selectedObject.setPrio(2);
+
+                        if(corner.indexOf('l') >= 0)
+                            this.selectedObject.setPrio(3);
+                        else
+                            this.selectedObject.setPrio(5);
+                        
+                        this.selectedObject.update()
+                    },
+                    "mouse:up": () => {
+                        //this.selectedObject.resizing = false;
+                    },
                     "selection:cleared": () => this.selectedObject.clear()
                 });
                 
-                // $('body').bind('keydown', (e: JQueryKeyEventObject) => {
+                let wrapper = <HTMLElement>this.domElement().parentElement;
+                wrapper.tabIndex = 1000;
+                $(wrapper).keydown((e: JQueryKeyEventObject) => {
                     
-                //     if(e.keyCode == 38) 
-                //         this.selectedObject.moveStep(Direction.TOP);
-                //     if(e.keyCode == 39) 
-                //         this.selectedObject.moveStep(Direction.RIGHT);
-                //     if(e.keyCode == 40) 
-                //         this.selectedObject.moveStep(Direction.BOTTOM);
-                //     if(e.keyCode == 37) 
-                //         this.selectedObject.moveStep(Direction.LEFT);
-                // });
+                    if(e.ctrlKey) {
+
+                        console.info('ctrl');
+
+                        if(e.which == 38)
+                            this.selectedObject.moveStep(Direction.TOP, 20);
+                        if(e.which == 39) 
+                            this.selectedObject.moveStep(Direction.RIGHT, 20);
+                        if(e.which == 40) 
+                            this.selectedObject.moveStep(Direction.BOTTOM, 20);
+                        if(e.which == 37) 
+                            this.selectedObject.moveStep(Direction.LEFT, 20);
+                    }
+                    else {
+
+                        if(e.keyCode == 38) 
+                            this.selectedObject.moveStep(Direction.TOP);
+                        if(e.keyCode == 39) 
+                            this.selectedObject.moveStep(Direction.RIGHT);
+                        if(e.keyCode == 40) 
+                            this.selectedObject.moveStep(Direction.BOTTOM);
+                        if(e.keyCode == 37) 
+                            this.selectedObject.moveStep(Direction.LEFT);
+                        if(e.keyCode == 46)
+                            this.removeObject(this.selectedObject.id());
+                    }
+                });
             };
         }
     }

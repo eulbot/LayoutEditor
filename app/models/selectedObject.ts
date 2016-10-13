@@ -3,28 +3,29 @@ module mapp.le {
     export class SelectedObject {
 
         private object: fabric.IObject;
-        private id: KnockoutObservable<string>;
+        public id: KnockoutObservable<string>;
         private name: KnockoutObservable<string>;
 
-        private width: DimensionData;
-        private height: DimensionData;
-        private top: DimensionData; 
-        private right: DimensionData; 
-        private bottom: DimensionData; 
-        private left: DimensionData;
+        public width: DimensionData;
+        public height: DimensionData;
+        public top: DimensionData; 
+        public right: DimensionData; 
+        public bottom: DimensionData; 
+        public left: DimensionData;
         
         private prioX: KnockoutObservableArray<Dimension>;
         private prioY: KnockoutObservableArray<Dimension>;
-        private setPrio: (dimension: Dimension) => void;
-        private getPrio: (dimension: Dimension) => Dimension;
+        public setPrio: (dimension: Dimension) => void;
+        public getPrio: (dimension: Dimension) => Dimension;
         private isHorizontal: (dimension: Dimension) => boolean;
 
         public apply: (object: fabric.IObject) => void;
         private applyChanges: (dimension: Dimension, dimensionData: IDimensionData) => void;
         public isComuted: (dimension: Dimension) => boolean; 
-        public moveStep: (direction: mapp.le.Direction) => void;
+        public moveStep: (direction: mapp.le.Direction, distance?: number) => void;
 
         public update: () => void;
+        public resize: () => void;
         public clear: () => void;
         private init: () => void;
         private initSelectdProperties: () => void;
@@ -56,35 +57,62 @@ module mapp.le {
                 this.update();
             }
 
+            let reapply;
+
             this.applyChanges = (dimension: Dimension, dimensionData: IDimensionData) => {
                 
-                if(this.object && !this.updating) { 
+
+                if(this.object && !reapply){//} && !this.updating) { 
                     
-                    console.info('appliying data to ' + Dimension[dimension])
                     this.object.setData(Dimension[dimension], dimensionData);
 
-                    if(!isNaN(dimensionData.value) && dimensionData.value !== this.object.get(Dimension[dimension].toLowerCase())) {
+                    this.object.set('scaleX', 1);
+                    this.object.set('scaleY', 1);
+                    var oldValue;
+
+                    if(!isNaN(dimensionData.value) && dimensionData.value !== oldValue) {
 
                         let value = dimensionData.value;
 
                         if(dimension == Dimension.Width) {
                             
+                            oldValue = this.object.getWidth();
+                            console.log("Width applied: ", oldValue + ' -- > ' + value);
                             this.object.set(Dimension[dimension].toLowerCase(), dimensionData.value);
+
                             if(this.getPrio(dimension) == Dimension.Right) {
-                                this.object.setLeft(Util.canvas.getWidth() - this.width.value() - this.right.value());
+                                oldValue = this.object.getLeft();
+                                value = Util.canvas.getWidth() - this.width.value() - this.right.value();
+                                console.log("Left applied: ", oldValue + ' -- > ' + value);
+                                this.object.setLeft(value);
                             }
                         }
                         else if(dimension == Dimension.Height) {
 
+                            oldValue = this.object.getHeight();
+                            console.log("Height applied: ", oldValue + ' -- > ' + value);
                             this.object.set(Dimension[dimension].toLowerCase(), dimensionData.value);
+
                             if(this.getPrio(dimension) == Dimension.Bottom) {
-                                this.object.setTop(Util.canvas.getHeight() - this.height.value() - this.bottom.value());
+                                oldValue = this.object.getWidth();
+                                value = (Util.canvas.getHeight() - this.height.value() - this.bottom.value());
+
+                                if(isNaN(value))
+                                    var x = 'gotcha';
+
+                                console.log("cTop applied: ", oldValue + ' -- > ' + value);
+                                this.object.setTop(value);
                             }
                         }
                         else if(dimension == Dimension.Top) {
+                            oldValue = this.object.getTop();
                             this.object.set(Dimension[dimension].toLowerCase(), dimensionData.value);
+                            console.log("Top applied: ", oldValue + ' -- > ' + value);
                             if(this.getPrio(dimension) == Dimension.Bottom) {
-                                this.object.setHeight(Util.canvas.getHeight() - this.top.value() - this.bottom.value());
+                                oldValue = this.object.getHeight();
+                                value = Util.canvas.getHeight() - this.top.value() - this.bottom.value();
+                                console.log("Height applied: ", oldValue + ' -- > ' + value);
+                                this.object.setHeight(value);
                             }
                         }
                         else if(dimension == Dimension.Right) {
@@ -93,49 +121,66 @@ module mapp.le {
                             this.object.data['Right']['value'] = dimensionData.value;
                             
                             if(this.getPrio(dimension) == Dimension.Left) {
-                                this.object.setWidth(Util.canvas.getWidth() - dimensionData.value - this.left.value());
+                                oldValue = this.object.getWidth();
+                                value = Util.canvas.getWidth() - dimensionData.value - this.left.value();
+                                console.log("Width applied: ", oldValue + ' -- > ' + value);
+                                this.object.setWidth(value);
                             }
                             else {
+                                oldValue = this.object.getLeft();
                                 value = Util.getCanvasWidth() - dimensionData.value - this.object.getWidth();
                                 this.left.value(value);
+                                console.log("Left applied: ", oldValue + ' -- > ' + value);
                                 this.object.set(Dimension[Dimension.Left].toLowerCase(), value);
                             }
                         }
                         else if(dimension == Dimension.Bottom) {
+                            oldValue = this.object.getBottom();
                             this.object.data['Bottom'] || (this.object.data['Bottom'] = {});
                             this.object.data['Bottom']['value'] = dimensionData.value;
                             
                             if(this.getPrio(dimension) == Dimension.Top) {
-                                this.object.setHeight(Util.canvas.getHeight() - dimensionData.value - this.top.value());
+                                oldValue = this.object.getHeight();
+                                value = Util.canvas.getHeight() - dimensionData.value - this.top.value();
+                                console.log("Height applied: ", oldValue + ' -- > ' + value);
+                                this.object.setHeight(value);
                             }
                             else {
+                                oldValue = this.object.getTop();
                                 value = Util.getCanvasHeight() - dimensionData.value - this.object.getHeight();
                                 this.top.value(value);
+                                console.log("Top applied: ", oldValue + ' -- > ' + value);
                                 this.object.set(Dimension[Dimension.Top].toLowerCase(), value);
                             }
                         }
                         else if(dimension == Dimension.Left) {
+
+                            oldValue = this.object.getLeft();
+                            value = dimensionData.value;
+                            console.log("Left applied: ", oldValue + ' -- > ' + value);
                             this.object.set(Dimension[dimension].toLowerCase(), dimensionData.value);
+
                             if(this.getPrio(dimension) == Dimension.Right) {
-                                this.object.setWidth(Util.canvas.getWidth() - this.left.value() - this.right.value());
+
+                                value = Util.canvas.getWidth() - this.left.value() - this.right.value();
+                                console.log("Left applied: ", oldValue + ' -- > ' + value);
+                                this.object.setWidth(value);
                             }
                         }
+                    this.object.set('scaleX', 1);
+                    this.object.set('scaleY', 1);
 
-                        this.object.set('scaleX', 1);
-                        this.object.set('scaleY', 1);
-                        
-                        this.setPrio(dimension);
                         this.object.setCoords();
                         Util.canvas.renderAll();
-                        this.update();
                     }
                 }
             }
 
             this.update = () => {
                 
-                this.updating = true;
                 let difRight, difBottom;
+                
+                this.updating = true;
 
                 if(this.width.value() !== this.object.getWidth()) {
                     this.width.value(this.object.getWidth());
@@ -161,23 +206,28 @@ module mapp.le {
                     this.bottom.value(difBottom);
                     this.object.setData(Dimension[Dimension.Bottom], this.bottom.getData());
                 }
-
                 this.updating = false;
             }
 
-            this.moveStep = (direction: Direction) => {
+            this.moveStep = (direction: Direction, distance?: number) => {
+
+                distance = (distance || 1);
+                
+                this.prioX().unshift(Dimension.Width);
+                this.prioY().unshift(Dimension.Height);
+
                 switch(direction) {
                     case Direction.TOP:
-                        this.top.value(this.top.value() - 1);
+                        this.top.value(this.top.value() - distance);
                         break;
                     case Direction.RIGHT:
-                        this.left.value(this.left.value() + 1);
+                        this.left.value(this.left.value() + distance);
                         break;
                     case Direction.BOTTOM:
-                        this.top.value(this.top.value() + 1);
+                        this.top.value(this.top.value() + distance);
                         break;
                     case Direction.LEFT:
-                        this.left.value(this.left.value() -1);
+                        this.left.value(this.left.value() - distance);
                         break;
                 }
             }
@@ -221,6 +271,7 @@ module mapp.le {
 
             this.initSelectdProperties = () => {
                 
+                this.id(this.object.getId());
                 this.width.setData(this.object.data[Dimension[Dimension.Width]]);
                 this.height.setData(this.object.data[Dimension[Dimension.Height]]);
                 this.top.setData(this.object.data[Dimension[Dimension.Top]]);
