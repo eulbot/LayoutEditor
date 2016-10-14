@@ -110,22 +110,35 @@ module mapp.le {
                     },
                     "object:scaling": (e: fabric.IEvent) => {
                         
-                        let corner: string = e.target['__corner'] || '';
+                        // let corner: string = e.target['__corner'] || '';
 
-                        if(corner.indexOf('t') >= 0)
-                            this.selectedObject.setPrio(4);
-                        else
-                            this.selectedObject.setPrio(2);
+                        // if(corner.indexOf('t') >= 0)
+                        //     this.selectedObject.setPrio(4);
+                        // else
+                        //     this.selectedObject.setPrio(2);
 
-                        if(corner.indexOf('l') >= 0)
-                            this.selectedObject.setPrio(3);
-                        else
-                            this.selectedObject.setPrio(5);
+                        // if(corner.indexOf('l') >= 0)
+                        //     this.selectedObject.setPrio(3);
+                        // else
+                        //     this.selectedObject.setPrio(5);
                         
-                        this.selectedObject.update()
+
+                        // if(e.target.getLeft() < 30) {
+                        //     //this.selectedObject.reapply();
+                        // }
+                        // else if(e.target.getLeft() + e.target.getWidth() + 30 > Util.getCanvasWidth()) {
+                        //     this.selectedObject.reapply();
+                        // }
+
+                        resizing = true;
+                        this.selectedObject.update();
                     },
                     "mouse:up": () => {
-                        //this.selectedObject.resizing = false;
+
+                        if(resizing) {
+                            resizing = false;
+                            this.selectedObject.reapply();
+                        }
                     },
                     "selection:cleared": () => this.selectedObject.clear()
                 });

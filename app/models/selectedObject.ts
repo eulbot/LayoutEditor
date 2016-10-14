@@ -13,6 +13,9 @@ module mapp.le {
         public bottom: DimensionData; 
         public left: DimensionData;
         
+        private scaleX: KnockoutObservable<number>;
+        private scaleY: KnockoutObservable<number>;
+
         private prioX: KnockoutObservableArray<Dimension>;
         private prioY: KnockoutObservableArray<Dimension>;
         public setPrio: (dimension: Dimension) => void;
@@ -21,10 +24,12 @@ module mapp.le {
 
         public apply: (object: fabric.IObject) => void;
         private applyChanges: (dimension: Dimension, dimensionData: IDimensionData) => void;
+        public reapply: () => void;
+        private stayInCanvas: () => void;
         public isComuted: (dimension: Dimension) => boolean; 
         public moveStep: (direction: mapp.le.Direction, distance?: number) => void;
 
-        public update: () => void;
+        public update: (reapply?: boolean) => void;
         public resize: () => void;
         public clear: () => void;
         private init: () => void;
@@ -43,6 +48,9 @@ module mapp.le {
             this.bottom = new DimensionData(Util.getCanvasHeight);
             this.left = new DimensionData(Util.getCanvasWidth);
 
+            this.scaleX = ko.observable<number>();
+            this.scaleY = ko.observable<number>();
+
             this.prioX = ko.observableArray<Dimension>();
             this.prioY = ko.observableArray<Dimension>();
 
@@ -57,118 +65,43 @@ module mapp.le {
                 this.update();
             }
 
-            let reapply;
+
 
             this.applyChanges = (dimension: Dimension, dimensionData: IDimensionData) => {
                 
 
-                if(this.object && !reapply){//} && !this.updating) { 
+                if(this.object && !this.updating) {
                     
                     this.object.setData(Dimension[dimension], dimensionData);
 
                     this.object.set('scaleX', 1);
                     this.object.set('scaleY', 1);
-                    var oldValue;
+                    var oldValue = this.getOldValue(this.object, dimension);
 
                     if(!isNaN(dimensionData.value) && dimensionData.value !== oldValue) {
 
                         let value = dimensionData.value;
 
                         if(dimension == Dimension.Width) {
-                            
-                            oldValue = this.object.getWidth();
-                            console.log("Width applied: ", oldValue + ' -- > ' + value);
-                            this.object.set(Dimension[dimension].toLowerCase(), dimensionData.value);
-
-                            if(this.getPrio(dimension) == Dimension.Right) {
-                                oldValue = this.object.getLeft();
-                                value = Util.canvas.getWidth() - this.width.value() - this.right.value();
-                                console.log("Left applied: ", oldValue + ' -- > ' + value);
-                                this.object.setLeft(value);
-                            }
+                            this.applyWidth(dimensionData);
                         }
                         else if(dimension == Dimension.Height) {
 
-                            oldValue = this.object.getHeight();
-                            console.log("Height applied: ", oldValue + ' -- > ' + value);
-                            this.object.set(Dimension[dimension].toLowerCase(), dimensionData.value);
-
-                            if(this.getPrio(dimension) == Dimension.Bottom) {
-                                oldValue = this.object.getWidth();
-                                value = (Util.canvas.getHeight() - this.height.value() - this.bottom.value());
-
-                                if(isNaN(value))
-                                    var x = 'gotcha';
-
-                                console.log("cTop applied: ", oldValue + ' -- > ' + value);
-                                this.object.setTop(value);
-                            }
+                            this.applyHeight(dimensionData);
                         }
                         else if(dimension == Dimension.Top) {
-                            oldValue = this.object.getTop();
-                            this.object.set(Dimension[dimension].toLowerCase(), dimensionData.value);
-                            console.log("Top applied: ", oldValue + ' -- > ' + value);
-                            if(this.getPrio(dimension) == Dimension.Bottom) {
-                                oldValue = this.object.getHeight();
-                                value = Util.canvas.getHeight() - this.top.value() - this.bottom.value();
-                                console.log("Height applied: ", oldValue + ' -- > ' + value);
-                                this.object.setHeight(value);
-                            }
+                            this.applyTop(dimensionData);
                         }
                         else if(dimension == Dimension.Right) {
-                            
-                            this.object.data['Right'] || (this.object.data['Right'] = {});
-                            this.object.data['Right']['value'] = dimensionData.value;
-                            
-                            if(this.getPrio(dimension) == Dimension.Left) {
-                                oldValue = this.object.getWidth();
-                                value = Util.canvas.getWidth() - dimensionData.value - this.left.value();
-                                console.log("Width applied: ", oldValue + ' -- > ' + value);
-                                this.object.setWidth(value);
-                            }
-                            else {
-                                oldValue = this.object.getLeft();
-                                value = Util.getCanvasWidth() - dimensionData.value - this.object.getWidth();
-                                this.left.value(value);
-                                console.log("Left applied: ", oldValue + ' -- > ' + value);
-                                this.object.set(Dimension[Dimension.Left].toLowerCase(), value);
-                            }
+                            this.applyRight(dimensionData);
                         }
                         else if(dimension == Dimension.Bottom) {
-                            oldValue = this.object.getBottom();
-                            this.object.data['Bottom'] || (this.object.data['Bottom'] = {});
-                            this.object.data['Bottom']['value'] = dimensionData.value;
-                            
-                            if(this.getPrio(dimension) == Dimension.Top) {
-                                oldValue = this.object.getHeight();
-                                value = Util.canvas.getHeight() - dimensionData.value - this.top.value();
-                                console.log("Height applied: ", oldValue + ' -- > ' + value);
-                                this.object.setHeight(value);
-                            }
-                            else {
-                                oldValue = this.object.getTop();
-                                value = Util.getCanvasHeight() - dimensionData.value - this.object.getHeight();
-                                this.top.value(value);
-                                console.log("Top applied: ", oldValue + ' -- > ' + value);
-                                this.object.set(Dimension[Dimension.Top].toLowerCase(), value);
-                            }
+                            this.applyBottom(dimensionData);
                         }
                         else if(dimension == Dimension.Left) {
 
-                            oldValue = this.object.getLeft();
-                            value = dimensionData.value;
-                            console.log("Left applied: ", oldValue + ' -- > ' + value);
-                            this.object.set(Dimension[dimension].toLowerCase(), dimensionData.value);
-
-                            if(this.getPrio(dimension) == Dimension.Right) {
-
-                                value = Util.canvas.getWidth() - this.left.value() - this.right.value();
-                                console.log("Left applied: ", oldValue + ' -- > ' + value);
-                                this.object.setWidth(value);
-                            }
+                            this.applyLeft(dimensionData);
                         }
-                    this.object.set('scaleX', 1);
-                    this.object.set('scaleY', 1);
 
                         this.object.setCoords();
                         Util.canvas.renderAll();
@@ -176,11 +109,30 @@ module mapp.le {
                 }
             }
 
-            this.update = () => {
+            this.reapply = () => {
+
+                let l = this.object.getLeft();
+                let r = this.object.getLeft() + this.object.getWidth();
+
+                this.updating = true;
+                this.object.set('scaleX', 1);
+                this.object.set('scaleY', 1);
+                this.object.setLeft(this.left.value());
+                this.object.setTop(this.top.value());
+                this.object.setWidth(this.width.value());
+                this.object.setHeight(this.height.value());
+
+
+                this.object.setCoords();
+                Util.canvas.renderAll();
+                this.updating = false;
+            }
+
+            this.update = (reapply?: boolean) => {
                 
                 let difRight, difBottom;
                 
-                this.updating = true;
+                this.updating = !reapply;
 
                 if(this.width.value() !== this.object.getWidth()) {
                     this.width.value(this.object.getWidth());
@@ -206,7 +158,37 @@ module mapp.le {
                     this.bottom.value(difBottom);
                     this.object.setData(Dimension[Dimension.Bottom], this.bottom.getData());
                 }
+
                 this.updating = false;
+                this.stayInCanvas();
+            }
+
+            this.stayInCanvas = () => {
+
+                if(this.object.getLeft() < Util.snapThreshold) {
+                    this.reapply();
+                    this.setPrio(Dimension.Right);
+                    this.left.value(0);
+                    this.object.setLeft(this.left.value());
+                }
+                else if(this.object.getLeft() + this.object.getWidth() + Util.snapThreshold > Util.getCanvasWidth()) {
+                    this.reapply();
+                    this.setPrio(Dimension.Left);
+                    this.right.value(0);
+                    this.object.setRight(Util.getCanvasWidth());
+                }
+                else if(this.object.getTop() < Util.snapThreshold) {
+                    this.reapply();
+                    this.setPrio(Dimension.Bottom);
+                    this.top.value(0);
+                    this.object.setTop(this.top.value());
+                }
+                else if(this.object.getTop() + this.object.getHeight() + Util.snapThreshold > Util.getCanvasHeight()) {
+                    this.reapply();
+                    this.setPrio(Dimension.Top);
+                    this.bottom.value(0);
+                    this.object.setBottom(Util.getCanvasHeight());
+                }
             }
 
             this.moveStep = (direction: Direction, distance?: number) => {
@@ -298,6 +280,122 @@ module mapp.le {
             }
             
             this.init();
+        }
+
+        private getOldValue(object: fabric.IObject, dimension: Dimension) {
+
+            switch(dimension) {
+                case Dimension.Width:
+                    return Math.round(object.getWidth());
+                case Dimension.Height:
+                    return Math.round(object.getHeight());
+                case Dimension.Top:
+                    return Math.round(object.getTop());
+                case Dimension.Right:
+                    return Math.round(object.getRight());
+                case Dimension.Bottom:
+                    return Math.round(object.getBottom());
+                case Dimension.Left:
+                    return Math.round(object.getLeft());
+            }
+        }
+
+        private applyWidth(dimensionData: IDimensionData) {
+            console.info('-- WIDTH --');
+            let oldValue = this.object.getWidth();
+
+            console.log("Width applied: ", oldValue + ' -- > ' + dimensionData.value);
+            this.object.setWidth(dimensionData.value);
+
+            if(this.getPrio(Dimension.Width) == Dimension.Right) {
+                oldValue = this.object.getLeft();
+                let value = Util.canvas.getWidth() - this.width.value() - this.right.value();
+                console.log("Object docked right, left applied: ", oldValue + ' -- > ' + value);
+                this.object.setLeft(value);
+            }
+        }
+
+        private applyHeight(dimensionData: IDimensionData) {
+            console.info('-- HEIGHT --');
+            let oldValue = this.object.getHeight();
+            console.log("Height applied: ", oldValue + ' -- > ' + dimensionData.value);
+            this.object.setHeight(dimensionData.value);
+
+            if(this.getPrio(Dimension.Height) == Dimension.Bottom) {
+                oldValue = this.object.getTop();
+                let value = (Util.canvas.getHeight() - this.height.value() - this.bottom.value());
+                console.log("Object docked bottom, top applied: ", oldValue + ' -- > ' + value);
+                this.object.setTop(value);
+            }
+        }
+
+        private applyTop(dimensionData: IDimensionData) {
+            console.info('-- TOP --');
+            let oldValue = this.object.getTop();
+            console.log("Top applied: ", oldValue + ' -- > ' + dimensionData.value);
+            this.object.setTop(dimensionData.value);
+
+            if(this.getPrio(Dimension.Top) == Dimension.Bottom) {
+                oldValue = this.object.getHeight();
+                let value = Util.canvas.getHeight() - this.top.value() - this.bottom.value();
+                console.log("Object docked bottom, height applied: ", oldValue + ' -- > ' + value);
+                this.object.setHeight(value);
+            }
+        }
+
+        private applyRight(dimensionData: IDimensionData) {
+            console.info('-- RIGHT --');
+            this.object.data['Right'] || (this.object.data['Right'] = {});
+            this.object.data['Right']['value'] = dimensionData.value;
+            
+            if(this.getPrio(Dimension.Right) == Dimension.Left) {
+                let oldValue = this.object.getWidth();
+                let value = Util.canvas.getWidth() - dimensionData.value - this.left.value();
+                console.log("Object docked left, width applied: ", oldValue + ' -- > ' + value);
+                this.object.setWidth(value);
+            }
+            else {
+                let oldValue = this.object.getLeft();
+                let value = Util.getCanvasWidth() - dimensionData.value - this.object.getWidth();
+                this.left.value(value);
+                console.log("Object width set, left applied: ", oldValue + ' -- > ' + value);
+                this.object.setLeft(value);
+            }
+        }
+
+        private applyBottom(dimensionData: IDimensionData){
+            console.info('-- BOTTOM --');
+            this.object.data['Bottom'] || (this.object.data['Bottom'] = {});
+            this.object.data['Bottom']['value'] = dimensionData.value;
+            
+            if(this.getPrio(Dimension.Bottom) == Dimension.Top) {
+                let oldValue = this.object.getHeight();
+                let value = Util.canvas.getHeight() - dimensionData.value - this.top.value();
+                console.log("Object docked top, height applied: ", oldValue + ' -- > ' + value);
+                this.object.setHeight(value);
+            }
+            else {
+                let oldValue = this.object.getTop();
+                let value = Util.getCanvasHeight() - dimensionData.value - this.object.getHeight();
+                this.top.value(value);
+                console.log("Object top set, top applied: ", oldValue + ' -- > ' + value);
+                this.object.setTop(value);
+            }
+        }
+
+        private applyLeft(dimensionData: IDimensionData) {
+            console.info('-- LEFT --');
+            let oldValue = this.object.getLeft();
+            
+            console.log("Left applied: ", oldValue + ' -- > ' + dimensionData.value);
+            this.object.setLeft(dimensionData.value);
+
+            if(this.getPrio(Dimension.Left) == Dimension.Right) {
+                oldValue = this.object.getWidth();
+                let value = Util.canvas.getWidth() - this.left.value() - this.right.value();
+                console.log("Object docked right, width applied: ", oldValue + ' -- > ' + value);
+                this.object.setWidth(value);
+            }
         }
     }
 }
