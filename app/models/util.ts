@@ -2,7 +2,7 @@ module mapp.le {
     export class Util {
        
         public static canvas: fabric.ICanvas;
-        public static snapThreshold: number = 20;
+        public static snapThreshold: number = 8;
         public static snap: boolean = true;
 
         static getCanvasWidth(): number {
@@ -80,36 +80,6 @@ module mapp.le {
             Util.canvas.renderAll();
         }
 
-        // Positioning functions
-        static stayInCanvas(eventObject: fabric.IEvent, resized?: boolean) {
-            
-            let object = eventObject.target;
-            let event: MouseEvent = <MouseEvent>(eventObject.e);
-                     
-            object.setCoords();
-
-            //printObject(object);
-
-            if (object.getLeft() < Util.snapThreshold) {
-                object.setLeft(0);
-            }
-            if (object.getTop() < Util.snapThreshold) {
-                object.setTop(0);
-            }
-            if(object.getRight() > (Util.canvas.getWidth() - Util.snapThreshold)) {
-                object.setLeft(Util.canvas.getWidth() - object.getWidth());
-            }
-            if(object.getBottom() > (Util.canvas.getHeight() - Util.snapThreshold)) {
-                object.setTop(Util.canvas.getHeight() - object.getHeight());
-            }
-
-            function printObject(o: fabric.IObject) {
-                console.info('getLeft(): '.concat(o.getLeft().toString().concat(', left: '. concat(o.left.toString()) + '\n')) + 
-                'getWidth(): '.concat(o.getWidth().toString().concat(', width: '. concat(o.width.toString()) + '\n')) +
-                'scaleX: '.concat(o.scaleX.toString()));
-            }
-        }
-
         static snapToObjects(eventObject: fabric.IEvent) {
             
             if(!Util.snap)
@@ -139,10 +109,9 @@ module mapp.le {
                         return true;    
                     }
                     else if(object.snapRight(ref, Util.snapThreshold, inside)) {
-                        object.setRight(inside ? ref.getRight() : ref.getTop());
+                        object.setRight(inside ? ref.getRight() : ref.getLeft());
                         return true;    
                     }
-
                     return false;
                 }
                 

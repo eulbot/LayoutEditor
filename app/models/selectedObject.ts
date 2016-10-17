@@ -20,12 +20,16 @@ module mapp.le {
         private prioY: KnockoutObservableArray<Dimension>;
         public setPrio: (dimension: Dimension) => void;
         public getPrio: (dimension: Dimension) => Dimension;
+        public isLatestPrio: (dimension: Dimension) => boolean;
+        public clearPrio: () => void;
         private isHorizontal: (dimension: Dimension) => boolean;
 
         public apply: (object: fabric.IObject) => void;
         private applyChanges: (dimension: Dimension, dimensionData: IDimensionData) => void;
-        public reapply: () => void;
-        private stayInCanvas: () => void;
+        public reapply: (x?: boolean) => void;
+        public stayInCanvasWhileMoving: () => void;
+        public stayInCanvasWhileResize: (corner: string) => void;
+        public snapToObjectsWhileResize: (corner: string) => void;
         public isComuted: (dimension: Dimension) => boolean; 
         public moveStep: (direction: mapp.le.Direction, distance?: number) => void;
 
@@ -57,19 +61,16 @@ module mapp.le {
             this.updating = false;
             this.apply = (object: fabric.IObject) => {
 
-                if(this.object)
-                    this.clear();
+            if(this.object)
+                this.clear();
 
-                this.object = object;
-                this.initSelectdProperties();
-                this.update();
+            this.object = object;
+            this.initSelectdProperties();
+            this.update();
             }
-
-
 
             this.applyChanges = (dimension: Dimension, dimensionData: IDimensionData) => {
                 
-
                 if(this.object && !this.updating) {
                     
                     this.object.setData(Dimension[dimension], dimensionData);
@@ -109,30 +110,130 @@ module mapp.le {
                 }
             }
 
-            this.reapply = () => {
 
-                let l = this.object.getLeft();
-                let r = this.object.getLeft() + this.object.getWidth();
+            this.reapply = (x?: boolean) => {
 
                 this.updating = true;
-                this.object.set('scaleX', 1);
-                this.object.set('scaleY', 1);
-                this.object.setLeft(this.left.value());
-                this.object.setTop(this.top.value());
-                this.object.setWidth(this.width.value());
-                this.object.setHeight(this.height.value());
 
+                if (x == undefined || x === true) {
+                    this.object.set('scaleX', 1);
+                    this.object.setLeft(this.left.value());
+                    this.object.setWidth(this.width.value());
+                }
+
+                if (x == undefined || x === false) {
+                    this.object.set('scaleY', 1);
+                    this.object.setTop(this.top.value());
+                    this.object.setHeight(this.height.value());
+                }
 
                 this.object.setCoords();
-                Util.canvas.renderAll();
                 this.updating = false;
             }
 
+            this.stayInCanvasWhileMoving = () => {
+                this.object.setCoords();
+
+                if (this.object.getLeft() < Util.snapThreshold) {
+                    this.object.setLeft(0);
+                    this.setPrio(Dimension.Left);
+                }
+                if (this.object.getTop() < Util.snapThreshold) {
+                    this.object.setTop(0);
+                    this.setPrio(Dimension.Top);
+                }
+                if (this.object.getRight() > (Util.canvas.getWidth() - Util.snapThreshold)) {
+                    this.object.setLeft(Util.canvas.getWidth() - this.object.getWidth());
+                    this.setPrio(Dimension.Right);
+                }
+                if (this.object.getBottom() > (Util.canvas.getHeight() - Util.snapThreshold)) {
+                    this.object.setTop(Util.canvas.getHeight() - this.object.getHeight());
+                    this.setPrio(Dimension.Bottom);
+                }
+            }
+
+            this.snapToObjectsWhileResize = (corner: string) => {
+
+                Util.canvas.forEachObject((ref: fabric.IObject) => {
+
+                    if (ref.getId() == this.id())
+                        return;
+
+                    if (corner.indexOf('t') > 0) {
+                        if (this.object.snapTop(ref, Util.snapThreshold, false)) {
+                            this.reapply();
+                            this.setPrio(Dimension.Bottom);
+                            this.top.value(ref.getBottom());
+                            this.setPrio(Dimension.Top);
+                        }
+                    }
+
+                    if (corner.indexOf('r') > 0) {
+                        if (this.object.snapRight(ref, Util.snapThreshold, false)) {
+                            this.reapply(true);
+                            this.setPrio(Dimension.Left);
+                            this.right.value(Util.getCanvasWidth() - ref.getLeft());
+                            this.setPrio(Dimension.Right);
+                        }
+                    }
+
+                    if(corner.indexOf('b') > 0) {
+                        if(this.object.snapBottom(ref, Util.snapThreshold, false)) {
+                            this.reapply();
+                            this.setPrio(Dimension.Top);
+                            this.bottom.value(Util.getCanvasHeight() - ref.getTop());
+                            this.setPrio(Dimension.Bottom);
+                        }
+                    }
+
+                    if(corner.indexOf('l') > 0) {
+                        if(this.object.snapLeft(ref, Util.snapThreshold, false)) {
+                            this.reapply(true);
+                            this.setPrio(Dimension.Right);
+                            this.left.value(ref.getRight());
+                            this.setPrio(Dimension.Left);
+                        }
+                    }
+
+                });
+
+            }
+
+            this.stayInCanvasWhileResize = (corner: string) => {
+                
+                if(corner.indexOf('t') > 0 && this.object.getTop() < Util.snapThreshold) {
+                    this.reapply();
+                    this.setPrio(Dimension.Bottom);
+                    this.top.value(0);
+                    this.setPrio(Dimension.Top);
+                }
+                
+                if(corner.indexOf('r') > 0 && this.object.getLeft() + this.object.getWidth() + Util.snapThreshold > Util.getCanvasWidth()) {
+                    this.reapply(true);
+                    this.setPrio(Dimension.Left);
+                    this.right.value(0);
+                    this.setPrio(Dimension.Right);
+                }
+                
+                if(corner.indexOf('b') > 0 && this.object.getTop() + this.object.getHeight() + Util.snapThreshold > Util.getCanvasHeight()) {
+                    this.reapply();
+                    this.setPrio(Dimension.Top);
+                    this.bottom.value(0);
+                    this.setPrio(Dimension.Bottom);
+                }
+
+                if(corner.indexOf('l') > 0 && this.object.getLeft() < Util.snapThreshold) {
+                    this.reapply(true);
+                    this.setPrio(Dimension.Right);
+                    this.left.value(0);
+                    this.setPrio(Dimension.Left);
+                }
+            }
+
+
             this.update = (reapply?: boolean) => {
-                
-                let difRight, difBottom;
-                
-                this.updating = !reapply;
+
+                this.updating = true;
 
                 if(this.width.value() !== this.object.getWidth()) {
                     this.width.value(this.object.getWidth());
@@ -147,56 +248,27 @@ module mapp.le {
                     this.left.value(this.object.getLeft());
                 }
 
-                difRight = Util.canvas.getWidth() - this.object.getLeft() - this.object.getWidth();
+                let difRight = Util.canvas.getWidth() - this.object.getLeft() - this.object.getWidth();
                 if(this.right.value() !== difRight) {
                     this.right.value(difRight);
                     this.object.setData(Dimension[Dimension.Right], this.right.getData());
                 }
                 
-                difBottom = Util.canvas.getHeight() - this.object.getTop() - this.object.getHeight()
+                let difBottom = Util.canvas.getHeight() - this.object.getTop() - this.object.getHeight()
                 if(this.bottom.value() !== difBottom) {
                     this.bottom.value(difBottom);
                     this.object.setData(Dimension[Dimension.Bottom], this.bottom.getData());
                 }
 
                 this.updating = false;
-                this.stayInCanvas();
-            }
-
-            this.stayInCanvas = () => {
-
-                if(this.object.getLeft() < Util.snapThreshold) {
-                    this.reapply();
-                    this.setPrio(Dimension.Right);
-                    this.left.value(0);
-                    this.object.setLeft(this.left.value());
-                }
-                else if(this.object.getLeft() + this.object.getWidth() + Util.snapThreshold > Util.getCanvasWidth()) {
-                    this.reapply();
-                    this.setPrio(Dimension.Left);
-                    this.right.value(0);
-                    this.object.setRight(Util.getCanvasWidth());
-                }
-                else if(this.object.getTop() < Util.snapThreshold) {
-                    this.reapply();
-                    this.setPrio(Dimension.Bottom);
-                    this.top.value(0);
-                    this.object.setTop(this.top.value());
-                }
-                else if(this.object.getTop() + this.object.getHeight() + Util.snapThreshold > Util.getCanvasHeight()) {
-                    this.reapply();
-                    this.setPrio(Dimension.Top);
-                    this.bottom.value(0);
-                    this.object.setBottom(Util.getCanvasHeight());
-                }
             }
 
             this.moveStep = (direction: Direction, distance?: number) => {
 
                 distance = (distance || 1);
                 
-                this.prioX().unshift(Dimension.Width);
-                this.prioY().unshift(Dimension.Height);
+                this.prioX.unshift(Dimension.Width);
+                this.prioY.unshift(Dimension.Height);
 
                 switch(direction) {
                     case Direction.TOP:
@@ -215,11 +287,19 @@ module mapp.le {
             }
 
             this.setPrio = (dimension: Dimension) => {
-
                 if(this.isHorizontal(dimension) && this.prioX()[0] != dimension)
-                    this.prioX().unshift(dimension);
+                    this.prioX.unshift(dimension);
                 else if(!(this.isHorizontal(dimension)) && this.prioY()[0] != dimension)
-                    this.prioY().unshift(dimension);
+                    this.prioY.unshift(dimension);
+
+                if(this.prioX().length > 2) 
+                    this.prioX(this.prioX().slice(0, 2));
+
+                if(this.prioY().length > 2) 
+                    this.prioY(this.prioY().slice(0, 2));
+
+                console.info(this.prioX());
+                console.info(this.prioY());
             }
 
             this.getPrio = (dimension: Dimension) => {
@@ -234,7 +314,20 @@ module mapp.le {
                 }
                 
                 return 0;
+            }
 
+            this.isLatestPrio = (dimension: Dimension) => {
+                
+                if(this.isHorizontal(dimension))
+                    return this.prioX()[0] == dimension;
+                else
+                    return this.prioY()[0] == dimension;
+
+            }
+
+            this.clearPrio = () => {
+                this.prioX = ko.observableArray<Dimension>();
+                this.prioY = ko.observableArray<Dimension>();
             }
 
             this.isHorizontal = (dimension: number) => {
@@ -249,6 +342,7 @@ module mapp.le {
                     this.top.showRelative, this.top.isAbsolute, this.right.showRelative, this.right.isAbsolute, 
                     this.bottom.showRelative, this.bottom.isAbsolute, this.left.showRelative, this.left.isAbsolute);
                 this.updating = false;
+                this.clearPrio();
             }
 
             this.initSelectdProperties = () => {

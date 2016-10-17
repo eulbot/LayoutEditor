@@ -42,34 +42,34 @@
             
             <tr>
                 <td>Top</td>
-                <td><input type="text" data-bind="value: selectedObject.top.displayValue, style: { fontWeight: selectedObject.top.lastSet() ? 'bold' : '' }" /></td>
+                <td><input type="text" data-bind="value: selectedObject.top.displayValue, style: { fontWeight: selectedObject.isLatestPrio(2) ? 'bold' : '' }" /></td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.top.showRelative" />%</td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.top.isAbsolute, disable: selectedObject.top.showRelative()" />Abs</td>
             </tr>
 
             <tr>
                 <td>Right</td>
-                <td><input type="text" data-bind=" value: selectedObject.right.displayValue, style: { fontWeight: selectedObject.right.lastSet() ? 'bold' : '' }" /></td>
+                <td><input type="text" data-bind=" value: selectedObject.right.displayValue, style: { fontWeight: selectedObject.isLatestPrio(3) ? 'bold' : '' }" /></td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.right.showRelative" />%</td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.right.isAbsolute, disable: selectedObject.right.showRelative()" />Abs</td>
             </tr>
 
             <tr>
                 <td>Bottom</td>
-                <td><input type="text" data-bind=" value: selectedObject.bottom.displayValue, style: { fontWeight: selectedObject.bottom.lastSet() ? 'bold' : '' }" /></td>
+                <td><input type="text" data-bind=" value: selectedObject.bottom.displayValue, style: { fontWeight: selectedObject.isLatestPrio(4) ? 'bold' : '' }" /></td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.bottom.showRelative" />%</td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.bottom.isAbsolute, disable: selectedObject.bottom.showRelative()" />Abs</td>
             </tr>
 
             <tr>
                 <td>Left</td>
-                <td><input type="text" data-bind="value: selectedObject.left.displayValue, style: { fontWeight: selectedObject.left.lastSet() ? 'bold' : '' }" /></td>
+                <td><input type="text" data-bind="value: selectedObject.left.displayValue, style: { fontWeight: selectedObject.isLatestPrio(5) ? 'bold' : '' }" /></td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.left.showRelative" />%</td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.left.isAbsolute, disable: selectedObject.left.showRelative()" />Abs</td>
             </tr>
         </table>
 
-        scaleX <span data-bind="text: selectedObject.scaleX"></span><br />
-        scaleY <span data-bind="text: selectedObject.scaleY"></span>
+        scaleX <span data-bind="text: selectedObject.prioX"></span><br />
+        scaleY <span data-bind="text: selectedObject.prioY"></span>
     </div>
 </script>
