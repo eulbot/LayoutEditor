@@ -39,7 +39,7 @@ module mapp.le {
             Util.canvas.setWidth(width);
             Util.canvas.setHeight(heigth);
 
-            this.canvas.forEachObject((object: fabric.IObject) => {
+            Util.canvas.forEachObject((object: fabric.IObject) => {
 
                 if(!(object.isDimensionAbsolute(Dimension.Width))) 
                     object.setWidth(object.getWidth() * fx);
@@ -80,54 +80,179 @@ module mapp.le {
             Util.canvas.renderAll();
         }
 
-        static snapToObjects(eventObject: fabric.IEvent) {
+        static stayInCanvasWhileMoving = (so: SelectedObject) => {
+            
+            if (so.object.getLeft() < Util.snapThreshold) {
+                so.object.setLeft(0);
+                so.setPrio(Dimension.Left);
+            }
+            if (so.object.getTop() < Util.snapThreshold) {
+                so.object.setTop(0);
+                so.setPrio(Dimension.Top);
+            }
+            if (so.object.getRight() > (Util.canvas.getWidth() - Util.snapThreshold)) {
+                so.object.setLeft(Util.canvas.getWidth() - so.object.getWidth());
+                so.setPrio(Dimension.Right);
+            }
+            if (so.object.getBottom() > (Util.canvas.getHeight() - Util.snapThreshold)) {
+                so.object.setTop(Util.canvas.getHeight() - so.object.getHeight());
+                so.setPrio(Dimension.Bottom);
+            }
+        }
+
+        static snapToObjectsWhenMoving = (so: SelectedObject) => {
             
             if(!Util.snap)
                 return;
-
-            let object: fabric.IObject = eventObject.target;
             
-            this.canvas.forEachObject((ref: fabric.IObject) => {
+            Util.canvas.forEachObject((ref: fabric.IObject) => {
 
-                if(ref == object)
+                if(ref.getId() == so.id())
                     return;
 
-                if(object.withinX(ref, Util.snapThreshold)) {
+                if(so.object.withinX(ref, Util.snapThreshold, false)) {
                     if(snapY(false))
-                        snapX(true); 
+                        snapX(true, true); 
                 }
 
-                if(object.withinY(ref, Util.snapThreshold)) {
+                if(so.object.withinY(ref, Util.snapThreshold, false)) {
                      if(snapX(false))
-                        snapY(true); 
+                        snapY(true, true); 
                 }
 
-                function snapX(inside: boolean): boolean {
+                function snapX(inside: boolean, setPrio?: boolean): boolean {
 
-                    if(object.snapLeft(ref, Util.snapThreshold, inside)) {
-                        object.setLeft(inside ? ref.getLeft() : ref.getRight());
+                    if(so.object.snapLeft(ref, Util.snapThreshold, inside)) {
+                        so.object.setLeft(inside ? ref.getLeft() : ref.getRight());
+                        if(setPrio) (so.setPrio(Dimension.Left));
                         return true;    
                     }
-                    else if(object.snapRight(ref, Util.snapThreshold, inside)) {
-                        object.setRight(inside ? ref.getRight() : ref.getLeft());
+                    else if(so.object.snapRight(ref, Util.snapThreshold, inside)) {
+                        so.object.setRight(inside ? ref.getRight() : ref.getLeft());
+                        if(setPrio) (so.setPrio(Dimension.Right));
                         return true;    
                     }
                     return false;
                 }
                 
-                function snapY(inside: boolean): boolean {
-                    if(object.snapTop(ref, Util.snapThreshold, inside)) {
-                        object.setTop(inside ? ref.getTop() : ref.getBottom());
+                function snapY(inside: boolean, setPrio?: boolean): boolean {
+                    if(so.object.snapTop(ref, Util.snapThreshold, inside)) {
+                        so.object.setTop(inside ? ref.getTop() : ref.getBottom());
+                        if(setPrio) (so.setPrio(Dimension.Top));
                         return true;    
                     }
-                    else if(object.snapBottom(ref, Util.snapThreshold, inside)) {
-                        object.setBottom(inside ? ref.getBottom() : ref.getTop());
+                    else if(so.object.snapBottom(ref, Util.snapThreshold, inside)) {
+                        so.object.setBottom(inside ? ref.getBottom() : ref.getTop());
+                        if(setPrio) (so.setPrio(Dimension.Bottom));
                         return true;    
                     }
                     return false;
                 }
-
             });
+        }
+
+        static stayInCanvasWhileResizing = (so: SelectedObject, corner: string) => {
+            if(corner.indexOf('t') >= 0 && so.object.getTop() < Util.snapThreshold) {
+                so.reapply(false);
+                so.setPrio(Dimension.Bottom);
+                so.top.value(0);
+                so.setPrio(Dimension.Top);
+            }
+            
+            if(corner.indexOf('r') >= 0 && so.object.getLeft() + so.object.getWidth() + Util.snapThreshold > Util.getCanvasWidth()) {
+                so.reapply(true);
+                so.setPrio(Dimension.Left);
+                so.right.value(0);
+                so.setPrio(Dimension.Right);
+            }
+            
+            if(corner.indexOf('b') >= 0 && so.object.getTop() + so.object.getHeight() + Util.snapThreshold > Util.getCanvasHeight()) {
+                so.reapply(false);
+                so.setPrio(Dimension.Top);
+                so.bottom.value(0);
+                so.setPrio(Dimension.Bottom);
+            }
+
+            if(corner.indexOf('l') >= 0 && so.object.getLeft() < Util.snapThreshold) {
+                so.reapply(true);
+                so.setPrio(Dimension.Right);
+                so.left.value(0);
+                so.setPrio(Dimension.Left);
+            }
+        }
+
+        static snapToObjectsWhenResizing = (so: SelectedObject, corner: string) => {
+            
+            Util.canvas.forEachObject((ref: fabric.IObject) => {
+
+                if (ref.getId() == so.id())
+                    return;
+
+                if (corner.indexOf('t') >= 0) {
+                    if (so.object.withinX(ref, Util.snapThreshold) && so.object.snapTop(ref, Util.snapThreshold, false)) {
+                        so.reapply(false);
+                        so.setPrio(Dimension.Bottom);
+                        so.top.value(ref.getBottom());
+                        so.setPrio(Dimension.Top);
+                    }
+                }
+
+                if (corner.indexOf('r') >= 0) {
+                    if (so.object.withinY(ref, Util.snapThreshold) && so.object.snapRight(ref, Util.snapThreshold, false)) {
+                        so.reapply(true);
+                        so.setPrio(Dimension.Left);
+                        so.right.value(Util.getCanvasWidth() - ref.getLeft());
+                        so.setPrio(Dimension.Right);
+                    }
+                }
+
+                if(corner.indexOf('b') >= 0) {
+                    if(so.object.withinX(ref, Util.snapThreshold) && so.object.snapBottom(ref, Util.snapThreshold, false)) {
+                        so.reapply(false);
+                        so.setPrio(Dimension.Top);
+                        so.bottom.value(Util.getCanvasHeight() - ref.getTop());
+                        so.setPrio(Dimension.Bottom);
+                    }
+                }
+
+                if(corner.indexOf('l') >= 0) {
+                    if(so.object.withinY(ref, Util.snapThreshold) && so.object.snapLeft(ref, Util.snapThreshold, false)) {
+                        so.reapply(true);
+                        so.setPrio(Dimension.Right);
+                        so.left.value(ref.getRight());
+                        so.setPrio(Dimension.Left);
+                    }
+                }
+            });
+        }
+
+        static moveStep = (so: SelectedObject, direction: Direction, distance?: number) => {
+
+            distance = (distance || 1);
+                
+                if(Util.isHorizontal(direction))
+                    so.setPrio(Dimension.Width);
+                else
+                    so.setPrio(Dimension.Height);
+
+                switch(direction) {
+                    case Direction.TOP:
+                        so.top.value(so.top.value() - distance);
+                        break;
+                    case Direction.RIGHT:
+                        so.left.value(so.left.value() + distance);
+                        break;
+                    case Direction.BOTTOM:
+                        so.top.value(so.top.value() + distance);
+                        break;
+                    case Direction.LEFT:
+                        so.left.value(so.left.value() - distance);
+                        break;
+                }
+        }
+
+        static isHorizontal = (dimension: number) => {
+            return dimension == 0 || dimension == 3 || dimension == 5;
         }
     }
 }

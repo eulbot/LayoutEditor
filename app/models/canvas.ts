@@ -19,8 +19,8 @@ declare namespace fabric {
         snapBottom: (ref: fabric.IObject, threshold: number, inside?: boolean) => boolean;
         snapLeft: (ref: fabric.IObject, threshold: number, inside?: boolean) => boolean;
         
-        withinX: (ref: fabric.IObject, threshold: number) => boolean;
-        withinY: (ref: fabric.IObject, threshold: number) => boolean;
+        withinX: (ref: fabric.IObject, threshold: number, inside?: boolean) => boolean;
+        withinY: (ref: fabric.IObject, threshold: number, inside?: boolean) => boolean;
     }
 }
 
@@ -51,12 +51,6 @@ module mapp.le {
                 count++;
                 options = $.extend(mapp.le.DefaultFrameOptions, options);
                 let newFrame = new fabric.Rect(options);
-                // newFrame.setControlsVisibility({
-                //     bl: false,
-                //     br: false,
-                //     tl: false,
-                //     tr: false
-                // });
                 newFrame.data = {id: count.toString(), name: 'Frame', data: {}};
                 
                 this.canvas.add(newFrame);
@@ -104,23 +98,17 @@ module mapp.le {
                     "object:removed": () => this.elements.notifySubscribers(),
                     "object:selected": (e: fabric.IEvent) => this.selectedObject.apply(e.target),
                     "object:moving": (e: fabric.IEvent) => {
-                        this.selectedObject.stayInCanvasWhileMoving();
-                        Util.snapToObjects(e);
+
+                        Util.stayInCanvasWhileMoving(this.selectedObject);
+                        Util.snapToObjectsWhenMoving(this.selectedObject);
                         this.selectedObject.update(); 
                     },
                     "object:scaling": (e: fabric.IEvent) => {
-                        let movement: string = e.target['__corner'] || '';
-                        this.selectedObject.stayInCanvasWhileResize(movement);
-                        this.selectedObject.snapToObjectsWhileResize(movement);
-                        this.selectedObject.update(true);
-                        resizing = true;
-                    },
-                    "mouse:up": () => {
 
-                        if(resizing) {
-                            resizing = false;
-                            this.selectedObject.reapply();
-                        }
+                        let corner: string = e.target['__corner'] || '';
+                        Util.stayInCanvasWhileResizing(this.selectedObject, corner);
+                        Util.snapToObjectsWhenResizing(this.selectedObject, corner);
+                        this.selectedObject.update(true);
                     },
                     "selection:cleared": () => this.selectedObject.clear()
                 });
@@ -134,24 +122,24 @@ module mapp.le {
                         console.info('ctrl');
 
                         if(e.which == 38)
-                            this.selectedObject.moveStep(Direction.TOP, 20);
+                            Util.moveStep(this.selectedObject, Direction.TOP, 20);
                         if(e.which == 39) 
-                            this.selectedObject.moveStep(Direction.RIGHT, 20);
+                            Util.moveStep(this.selectedObject, Direction.RIGHT, 20);
                         if(e.which == 40) 
-                            this.selectedObject.moveStep(Direction.BOTTOM, 20);
+                            Util.moveStep(this.selectedObject, Direction.BOTTOM, 20);
                         if(e.which == 37) 
-                            this.selectedObject.moveStep(Direction.LEFT, 20);
+                            Util.moveStep(this.selectedObject, Direction.LEFT, 20);
                     }
                     else {
 
                         if(e.keyCode == 38) 
-                            this.selectedObject.moveStep(Direction.TOP);
+                            Util.moveStep(this.selectedObject, Direction.TOP);
                         if(e.keyCode == 39) 
-                            this.selectedObject.moveStep(Direction.RIGHT);
+                            Util.moveStep(this.selectedObject, Direction.RIGHT);
                         if(e.keyCode == 40) 
-                            this.selectedObject.moveStep(Direction.BOTTOM);
+                            Util.moveStep(this.selectedObject, Direction.BOTTOM);
                         if(e.keyCode == 37) 
-                            this.selectedObject.moveStep(Direction.LEFT);
+                            Util.moveStep(this.selectedObject, Direction.LEFT);
                         if(e.keyCode == 46)
                             this.removeObject(this.selectedObject.id());
                     }

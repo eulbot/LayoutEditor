@@ -27,14 +27,14 @@
         <table>
             <tr>
                 <td>Width</td>
-                <td><input type="text" data-bind="value: selectedObject.width.displayValue" /></td>
+                <td><input type="text" data-bind="value: selectedObject.width.displayValue, css: { prio: selectedObject.hasPrio(0), slave: selectedObject.isSlave(0) }" /></td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.width.showRelative" />%</td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.width.isAbsolute, disable: selectedObject.width.showRelative()" />Abs</td>
             </tr>
             
             <tr>
                 <td>Height</td>
-                <td><input type="text" data-bind="value: selectedObject.height.displayValue" /></td>
+                <td><input type="text" data-bind="value: selectedObject.height.displayValue, css: { prio: selectedObject.hasPrio(1), slave: selectedObject.isSlave(1) }" /></td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.height.showRelative" />%</td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.height.isAbsolute, disable: selectedObject.height.showRelative()" />Abs</td>
             </tr>
@@ -42,28 +42,28 @@
             
             <tr>
                 <td>Top</td>
-                <td><input type="text" data-bind="value: selectedObject.top.displayValue, style: { fontWeight: selectedObject.isLatestPrio(2) ? 'bold' : '' }" /></td>
+                <td><input type="text" data-bind="value: selectedObject.top.displayValue, css: { prio: selectedObject.hasPrio(2), slave: selectedObject.isSlave(2) }" /></td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.top.showRelative" />%</td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.top.isAbsolute, disable: selectedObject.top.showRelative()" />Abs</td>
             </tr>
 
             <tr>
                 <td>Right</td>
-                <td><input type="text" data-bind=" value: selectedObject.right.displayValue, style: { fontWeight: selectedObject.isLatestPrio(3) ? 'bold' : '' }" /></td>
+                <td><input type="text" data-bind="value: selectedObject.right.displayValue, css: { prio: selectedObject.hasPrio(3), slave: selectedObject.isSlave(3) }" /></td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.right.showRelative" />%</td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.right.isAbsolute, disable: selectedObject.right.showRelative()" />Abs</td>
             </tr>
 
             <tr>
                 <td>Bottom</td>
-                <td><input type="text" data-bind=" value: selectedObject.bottom.displayValue, style: { fontWeight: selectedObject.isLatestPrio(4) ? 'bold' : '' }" /></td>
+                <td><input type="text" data-bind="value: selectedObject.bottom.displayValue, css: { prio: selectedObject.hasPrio(4), slave: selectedObject.isSlave(4) }" /></td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.bottom.showRelative" />%</td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.bottom.isAbsolute, disable: selectedObject.bottom.showRelative()" />Abs</td>
             </tr>
 
             <tr>
                 <td>Left</td>
-                <td><input type="text" data-bind="value: selectedObject.left.displayValue, style: { fontWeight: selectedObject.isLatestPrio(5) ? 'bold' : '' }" /></td>
+                <td><input type="text" data-bind="value: selectedObject.left.displayValue, css: { prio: selectedObject.hasPrio(5), slave: selectedObject.isSlave(5) }" /></td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.left.showRelative" />%</td>
                 <td><input type="checkbox" data-bind="checked: selectedObject.left.isAbsolute, disable: selectedObject.left.showRelative()" />Abs</td>
             </tr>
