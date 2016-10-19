@@ -102,12 +102,11 @@ module mapp.le {
 
         static snapToObjectsWhenMoving = (so: SelectedObject) => {
             
-            if(!Util.snap)
-                return;
+            let snapped = false;
             
             Util.canvas.forEachObject((ref: fabric.IObject) => {
 
-                if(ref.getId() == so.id())
+                if(ref.getId() == so.id() || snapped)
                     return;
 
                 if(so.object.withinX(ref, Util.snapThreshold, false)) {
@@ -122,15 +121,17 @@ module mapp.le {
 
                 function snapX(inside: boolean, setPrio?: boolean): boolean {
 
-                    if(so.object.snapLeft(ref, Util.snapThreshold, inside)) {
-                        so.object.setLeft(inside ? ref.getLeft() : ref.getRight());
-                        if(setPrio) (so.setPrio(Dimension.Left));
-                        return true;    
-                    }
-                    else if(so.object.snapRight(ref, Util.snapThreshold, inside)) {
-                        so.object.setRight(inside ? ref.getRight() : ref.getLeft());
-                        if(setPrio) (so.setPrio(Dimension.Right));
-                        return true;    
+                    if(so.object.withinY(ref, Util.snapThreshold, false)) {
+                        if(so.object.snapLeft(ref, Util.snapThreshold, inside)) {
+                            so.object.setLeft(inside ? ref.getLeft() : ref.getRight());
+                            if(setPrio) (so.setPrio(Dimension.Left));
+                            return true;   
+                        }
+                        else if(so.object.snapRight(ref, Util.snapThreshold, inside)) {
+                            so.object.setRight(inside ? ref.getRight() : ref.getLeft());
+                            if(setPrio) (so.setPrio(Dimension.Right));
+                            return true;   
+                        }
                     }
                     return false;
                 }
@@ -183,47 +184,103 @@ module mapp.le {
 
         static snapToObjectsWhenResizing = (so: SelectedObject, corner: string) => {
             
+            let snapped = false;
+            let fullySnapped = false;
+
             Util.canvas.forEachObject((ref: fabric.IObject) => {
 
-                if (ref.getId() == so.id())
+                if (ref.getId() == so.id() || snapped)
                     return;
+                
+                if(!fullySnapped && (snapped = snapX(false) || corner.indexOf('m') >= 0))
+                    snapped = snapY(true);
+            
+                if(!fullySnapped && (snapped = snapY(false) || corner.indexOf('m') >= 0))
+                    snapped = snapX(true);
 
-                if (corner.indexOf('t') >= 0) {
-                    if (so.object.withinX(ref, Util.snapThreshold) && so.object.snapTop(ref, Util.snapThreshold, false)) {
-                        so.reapply(false);
-                        so.setPrio(Dimension.Bottom);
-                        so.top.value(ref.getBottom());
-                        so.setPrio(Dimension.Top);
+                function snapX(inside: boolean) {
+
+                    let snapped = false;
+
+                    if (so.object.withinY(ref, Util.snapThreshold)) { 
+                        if (corner.indexOf('l') >= 0 && so.object.snapLeft(ref, Util.snapThreshold, inside)) {
+                            snapped = apply(Dimension.Left, inside ? ref.getLeft() : ref.getRight());
+                            corner = corner.replace('l', '');
+                        }
+                        if (corner.indexOf('r') >= 0 && so.object.snapRight(ref, Util.snapThreshold, inside)) {
+                            snapped = apply(Dimension.Right, inside ? Util.getCanvasWidth() - ref.getLeft() - ref.getWidth() : Util.getCanvasWidth() - ref.getLeft());
+                        }
+                        fullySnapped = inside && snapped;
                     }
+
+                    return snapped;
                 }
 
-                if (corner.indexOf('r') >= 0) {
-                    if (so.object.withinY(ref, Util.snapThreshold) && so.object.snapRight(ref, Util.snapThreshold, false)) {
-                        so.reapply(true);
-                        so.setPrio(Dimension.Left);
-                        so.right.value(Util.getCanvasWidth() - ref.getLeft());
-                        so.setPrio(Dimension.Right);
+                function snapY(inside: boolean) {
+
+                    let snapped = false;
+
+                    if(so.object.withinX(ref, Util.snapThreshold)) {
+                        if (corner.indexOf('t') >= 0 && so.object.snapTop(ref, Util.snapThreshold, inside)) {
+                            snapped = apply(Dimension.Top, inside ? ref.getTop() : ref.getBottom());
+                        }
+                        if (corner.indexOf('b') >= 0 && so.object.snapBottom(ref, Util.snapThreshold, inside)) {
+                            snapped = apply(Dimension.Bottom, inside ? Util.getCanvasHeight() - ref.getTop() - ref.getHeight() : Util.getCanvasHeight() - ref.getTop());
+                        }
+                        fullySnapped = inside && snapped;
                     }
+                    return snapped;
                 }
 
-                if(corner.indexOf('b') >= 0) {
-                    if(so.object.withinX(ref, Util.snapThreshold) && so.object.snapBottom(ref, Util.snapThreshold, false)) {
-                        so.reapply(false);
-                        so.setPrio(Dimension.Top);
-                        so.bottom.value(Util.getCanvasHeight() - ref.getTop());
-                        so.setPrio(Dimension.Bottom);
-                    }
-                }
-
-                if(corner.indexOf('l') >= 0) {
-                    if(so.object.withinY(ref, Util.snapThreshold) && so.object.snapLeft(ref, Util.snapThreshold, false)) {
-                        so.reapply(true);
-                        so.setPrio(Dimension.Right);
-                        so.left.value(ref.getRight());
-                        so.setPrio(Dimension.Left);
-                    }
+                function apply(dimension: Dimension, value) {
+                    so.reapply(Util.isHorizontal(dimension));
+                    so.setPrio(Util.getOppositeDimension(dimension));
+                    Util.setDimension(so, dimension, value);
+                    so.setPrio(dimension);
+                    return true;
                 }
             });
+            
+            return fullySnapped;
+        }
+
+        static setDimension (so: SelectedObject, dimension: Dimension, value: number) {
+            switch(dimension) {
+                case Dimension.Width:
+                    so.width.value(value);
+                    break;
+                case Dimension.Height:
+                    so.height.value(value);
+                    break;
+                case Dimension.Top:
+                    so.top.value(value);
+                    break;
+                case Dimension.Right:
+                    so.right.value(value);
+                    break;
+                case Dimension.Bottom:
+                    so.bottom.value(value);
+                    break;
+                case Dimension.Left:
+                    so.left.value(value);
+                    break;
+            }
+        }
+
+        static getOppositeDimension(dimension: Dimension) {
+
+            switch(dimension) {
+                case Dimension.Top:
+                    return Dimension.Bottom;
+                case Dimension.Right:
+                    return Dimension.Left;
+                case Dimension.Bottom:
+                    return Dimension.Top;
+                case Dimension.Left:
+                    return Dimension.Right;
+            }
+
+            return dimension;
         }
 
         static moveStep = (so: SelectedObject, direction: Direction, distance?: number) => {

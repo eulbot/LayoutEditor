@@ -70,14 +70,16 @@
         if(inside) 
             return this.getLeft() + threshold > ref.getLeft() && this.getRight() - threshold < ref.getRight();
         else
-            return this.getLeft() < ref.getRight() + threshold || this.getRight() > ref.getLeft() - threshold;
+            return (this.getLeft() < ref.getRight() + threshold && this.getLeft() > ref.getLeft() - threshold) 
+                || (this.getRight() > ref.getLeft() - threshold && this.getRight() < ref.getRight() + threshold);
     }
 
     fabric.Object.prototype.withinY = function(ref, threshold, inside) {
         if(inside) 
             return this.getTop() + threshold > ref.getTop() && this.getBottom() - threshold < ref.getBottom();
         else {
-            return this.getTop() < ref.getBottom() + threshold || this.getBottom() > ref.getTop() - threshold;
+            return (this.getTop() < ref.getBottom() + threshold && this.getTop() > ref.getTop() - threshold)  
+                || (this.getBottom() > ref.getTop() - threshold && this.getBottom() < ref.getBottom() + threshold);
         }
     }
 

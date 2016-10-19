@@ -86,7 +86,8 @@ module mapp.le {
 
                 this.canvas = new fabric.Canvas(this.domElement(), <fabric.ICanvasOptions>{
                     uniScaleTransform: true,
-                    containerClass: this.canvasWrapperClass
+                    containerClass: this.canvasWrapperClass,
+                    selection: false
                 });
                 this.elements(this.canvas.getObjects());
 
@@ -99,18 +100,26 @@ module mapp.le {
                     "object:selected": (e: fabric.IEvent) => this.selectedObject.apply(e.target),
                     "object:moving": (e: fabric.IEvent) => {
 
+                        Util.snapToObjectsWhenMoving(this.selectedObject); 
                         Util.stayInCanvasWhileMoving(this.selectedObject);
-                        Util.snapToObjectsWhenMoving(this.selectedObject);
                         this.selectedObject.update(); 
                     },
                     "object:scaling": (e: fabric.IEvent) => {
 
                         let corner: string = e.target['__corner'] || '';
-                        Util.stayInCanvasWhileResizing(this.selectedObject, corner);
-                        Util.snapToObjectsWhenResizing(this.selectedObject, corner);
+                        let fullySnapped = Util.snapToObjectsWhenResizing(this.selectedObject, corner);
+                        resizing = true;
+
+                        if(!fullySnapped) Util.stayInCanvasWhileResizing(this.selectedObject, corner);
                         this.selectedObject.update(true);
                     },
-                    "selection:cleared": () => this.selectedObject.clear()
+                    "selection:cleared": () => this.selectedObject.clear(),
+                    "mouse:up": () => {
+                        if(resizing) {
+                            this.selectedObject.reapply();
+                            resizing = false;
+                        }
+                    }
                 });
                 
                 let wrapper = <HTMLElement>this.domElement().parentElement;
@@ -118,9 +127,6 @@ module mapp.le {
                 $(wrapper).keydown((e: JQueryKeyEventObject) => {
                     
                     if(e.ctrlKey) {
-
-                        console.info('ctrl');
-
                         if(e.which == 38)
                             Util.moveStep(this.selectedObject, Direction.TOP, 20);
                         if(e.which == 39) 

@@ -16,8 +16,6 @@ module mapp.le {
             var append = (data: string) => {
                 $('body').append(data);
             }
-            
-            console.info('fetching templates..');
 
             $.when(
                 $.get("app/templates/editor.html", function(data) { append(data); }),
@@ -33,7 +31,6 @@ module mapp.le {
 
     $(() => {
         app.loadTemplates().then(() => {
-            console.info('done');
             ko.applyBindings(new app());
         });
     });
