@@ -1,0 +1,80 @@
+
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="dist/mapp.le.css">
+
+    <title>Menu Demo</title>
+</head>
+
+<body>
+
+<div class="dimensions">
+
+    <div class="width">
+        <div class="icon width mapp-layout-editor-i-measure"></div>
+        <input type="text" />
+        <span>px</span>
+    </div>
+
+    <div class="height">
+        <div class="icon height mapp-layout-editor-i-measure"></div>
+        <input type="text" />
+        <span>px</span>
+    </div>
+</div>
+
+<div class="positions">    
+
+    <div class="top">
+        <input type="text" data-bind="value: selectedObject.top.displayValue, css: { prio: selectedObject.hasPrio(2), slave: selectedObject.isSlave(2) }" />
+        <!--<input type="checkbox" data-bind="checked: selectedObject.top.showRelative" />%
+        <input type="checkbox" data-bind="checked: selectedObject.top.isAbsolute, disable: selectedObject.top.showRelative()" />Abs-->
+    </div>
+
+    <div class="horizons">
+
+        <div class="left">
+            <input type="text" data-bind="value: selectedObject.left.displayValue, css: { prio: selectedObject.hasPrio(5), slave: selectedObject.isSlave(5) }" />
+            <!--<input type="checkbox" data-bind="checked: selectedObject.left.showRelative" />%
+            <input type="checkbox" data-bind="checked: selectedObject.left.isAbsolute, disable: selectedObject.left.showRelative()" />Abs-->
+        </div>
+
+        <table class="arrows">
+            <tr>
+                <td></td>
+                <td><div class="icon top mapp-layout-editor-i-arrow-up"></div></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><div class="icon left mapp-layout-editor-i-arrow-up"></div></td>
+                <td><div class="object"></div></td>
+                <td><div class="icon right mapp-layout-editor-i-arrow-up"></div></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><div class="icon bottom mapp-layout-editor-i-arrow-up"><div></td>
+                <td></td>
+            </tr>
+        </table>
+
+        <div class="right">
+            <input type="text" data-bind="value: selectedObject.right.displayValue, css: { prio: selectedObject.hasPrio(3), slave: selectedObject.isSlave(3) }" />
+            <!--<input type="checkbox" data-bind="checked: selectedObject.right.showRelative" />%
+            <input type="checkbox" data-bind="checked: selectedObject.right.isAbsolute, disable: selectedObject.right.showRelative()" />Abs-->
+        </div>
+
+    </div>
+
+    <div class="bottom">
+        <input type="text" data-bind="value: selectedObject.bottom.displayValue, css: { prio: selectedObject.hasPrio(4), slave: selectedObject.isSlave(4) }" />
+        <!--<input type="checkbox" data-bind="checked: selectedObject.bottom.showRelative" />%
+        <input type="checkbox" data-bind="checked: selectedObject.bottom.isAbsolute, disable: selectedObject.bottom.showRelative()" />Abs-->
+    </div>
+
+
+<div>
+
+</body>

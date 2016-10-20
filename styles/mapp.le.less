@@ -1,5 +1,13 @@
-
 @import 'mapp.colors.less';
+@import 'mapp.le.icons.less';
+
+.rotate (@deg) {
+	-webkit-transform: rotate(@deg);
+	-moz-transform: 	 rotate(@deg);
+	-ms-transform: 		 rotate(@deg);
+	-o-transform: 		 rotate(@deg);
+	transform:  		 rotate(@deg);
+}
 
 html, body, div.editor, section.menu, section.canvas  {
 	height: 100%;
@@ -75,6 +83,10 @@ section.canvas {
 				outline: none;
 			}
 		}
+
+		canvas.le-canvas.copy {
+			cursor: copy !important;
+		}
 	}
 }
 
@@ -85,3 +97,74 @@ input[type=number]::-webkit-outer-spin-button {
     appearance: none;
     margin: 0; 
 }
+
+div.dimensions {
+
+
+		.icon {
+			display: inline-block;
+			&.width {
+				.rotate(270deg);
+			}
+	}
+}
+
+div.positions {
+
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	width: 300px;
+
+	div {
+		display: flex;
+	}
+
+	> div {
+		align-self: center
+	}
+
+	input[type=text] {
+		width: 50px;
+		// border: none;
+		// background-color: #fafafa;
+		// border-bottom: 1px solid #eaeaea;
+		// font-size: 18px;
+		// line-height: 22px;
+		// text-align: right;
+
+		&:focus {
+			outline: none;
+			border-bottom: 1px solid #ccc;
+		}
+	}
+
+	div.horizons {
+		flex-direction: row;
+		align-items: center;
+
+		table.arrows {
+			table-layout: fixed;
+
+			td {
+				padding: 4px;
+			}
+
+			.icon {
+
+				color: #999;
+				font-size: 22px;
+
+				&.right {
+					.rotate(90deg);
+				}
+				&.bottom {
+					.rotate(180deg);
+				}
+				&.left {
+					.rotate(270deg);
+				}
+			}
+		}
+	}
+} 

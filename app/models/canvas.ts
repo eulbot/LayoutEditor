@@ -35,7 +35,7 @@ module mapp.le {
         private init: () => void;
 
         public selectedObject: SelectedObject;
-        public addFrame: (options?: fabric.IRectOptions) => void;
+        public addFrame: (options?: fabric.IRectOptions, cloneFrom?: fabric.IObject) => fabric.IObject;
         public selectObject: (arg: string | fabric.IObject) => void;
         public removeObject: (id: string) => void;
         
@@ -46,15 +46,25 @@ module mapp.le {
             this.elements = ko.observableArray<fabric.IObject>();
             this.selectedObject = new SelectedObject();
 
-            this.addFrame = (options?: fabric.IRectOptions) => {
+            this.addFrame = (options: fabric.IRectOptions, cloneFrom?: fabric.IObject) => {
 
                 count++;
                 options = $.extend(mapp.le.DefaultFrameOptions, options);
                 let newFrame = new fabric.Rect(options);
                 newFrame.data = {id: count.toString(), name: 'Frame', data: {}};
                 
+                if(cloneFrom) {
+                    newFrame.setLeft(cloneFrom.getLeft());
+                    newFrame.setTop(cloneFrom.getTop());
+                    newFrame.setWidth(cloneFrom.getWidth());
+                    newFrame.setHeight(cloneFrom.getHeight());
+                    newFrame.setCoords();
+                }
+
                 this.canvas.add(newFrame);
                 this.canvas.setActiveObject(newFrame);
+
+                return newFrame;
             }
 
             this.selectObject = (id: string) => {
@@ -83,6 +93,8 @@ module mapp.le {
             this.init = () => {
 
                 let resizing = false;
+                let ctrlPressed = false;
+                let target: fabric.IObject;
 
                 this.canvas = new fabric.Canvas(this.domElement(), <fabric.ICanvasOptions>{
                     uniScaleTransform: true,
@@ -97,7 +109,11 @@ module mapp.le {
                 this.canvas.on({
                     "object:added": () => this.elements.notifySubscribers(),
                     "object:removed": () => this.elements.notifySubscribers(),
-                    "object:selected": (e: fabric.IEvent) => this.selectedObject.apply(e.target),
+                    "object:selected": (e: fabric.IEvent) => {
+
+                            console.info(e.target.getId());
+                            this.selectedObject.apply(e.target) 
+                    },
                     "object:moving": (e: fabric.IEvent) => {
 
                         Util.snapToObjectsWhenMoving(this.selectedObject); 
@@ -106,14 +122,37 @@ module mapp.le {
                     },
                     "object:scaling": (e: fabric.IEvent) => {
 
+                        resizing = true;
                         let corner: string = e.target['__corner'] || '';
                         let fullySnapped = Util.snapToObjectsWhenResizing(this.selectedObject, corner);
-                        resizing = true;
 
                         if(!fullySnapped) Util.stayInCanvasWhileResizing(this.selectedObject, corner);
                         this.selectedObject.update(true);
                     },
                     "selection:cleared": () => this.selectedObject.clear(),
+                    "mouse:move": (e: fabric.IEvent) => {
+                        
+                        target = e.target;
+
+                        if(target && ctrlPressed) {
+                            target.hoverCursor = 'copy';
+                        }
+                        else if (target && !ctrlPressed) {
+                            target.hoverCursor = 'move';
+                        }
+                    },
+                    "mouse:down": (e: fabric.IEvent) => {
+                        if(ctrlPressed && e.target) {
+                            ctrlPressed = false;
+                            
+                            let options = $.extend({}, mapp.le.DefaultFrameOptions, {fill: Util.getRandomColor()});
+                            let clone = this.addFrame(options, e.target);
+                            this.canvas.bringToFront(clone);
+                            
+                            // Not good but there is no public method to override the current tansform object
+                            (<any>(this.canvas))._setupCurrentTransform(e.e, clone);
+                        }
+                    },
                     "mouse:up": () => {
                         if(resizing) {
                             this.selectedObject.reapply();
@@ -127,6 +166,9 @@ module mapp.le {
                 $(wrapper).keydown((e: JQueryKeyEventObject) => {
                     
                     if(e.ctrlKey) {
+
+                        ctrlPressed = true;
+
                         if(e.which == 38)
                             Util.moveStep(this.selectedObject, Direction.TOP, 20);
                         if(e.which == 39) 
@@ -149,6 +191,13 @@ module mapp.le {
                         if(e.keyCode == 46)
                             this.removeObject(this.selectedObject.id());
                     }
+                });
+
+                
+                $(wrapper).keyup((e: JQueryKeyEventObject) => {
+
+                    if(!e.ctrlKey)
+                        ctrlPressed = false;
                 });
             };
         }

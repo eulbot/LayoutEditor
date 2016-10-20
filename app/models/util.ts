@@ -13,24 +13,6 @@ module mapp.le {
             return Util.canvas.getHeight();
         }
 
-        static getRandomColor() {
-            return 'rgba(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ', 0.75)';
-        }
-
-        static setValue(value: any, ...observables: KnockoutObservable<any>[]) {
-            observables.forEach(obs => {
-                obs(value);
-            });
-        }
-
-        static applyProperty(property: (value: any) => any, observable: KnockoutObservable<any>): any {
-            property(observable());
-        }
-
-        static round(value: number) {
-            return Math.round((value + 0.00001) * 100) / 100;
-        }
-
         static resizeCanvas(width: number, heigth: number) {
             
             let fx = width / Util.canvas.getWidth();
@@ -192,10 +174,10 @@ module mapp.le {
                 if (ref.getId() == so.id() || snapped)
                     return;
                 
-                if(!fullySnapped && (snapped = snapX(false) || corner.indexOf('m') >= 0))
+                if(!fullySnapped && (snapped = (snapX(false) || snapX(true)) || corner.indexOf('m') >= 0))
                     snapped = snapY(true);
             
-                if(!fullySnapped && (snapped = snapY(false) || corner.indexOf('m') >= 0))
+                if(!fullySnapped && (snapped = (snapY(false) || snapY(true)) || corner.indexOf('m') >= 0))
                     snapped = snapX(true);
 
                 function snapX(inside: boolean) {
@@ -209,6 +191,7 @@ module mapp.le {
                         }
                         if (corner.indexOf('r') >= 0 && so.object.snapRight(ref, Util.snapThreshold, inside)) {
                             snapped = apply(Dimension.Right, inside ? Util.getCanvasWidth() - ref.getLeft() - ref.getWidth() : Util.getCanvasWidth() - ref.getLeft());
+                            corner = corner.replace('r', '');
                         }
                         fullySnapped = inside && snapped;
                     }
@@ -223,9 +206,11 @@ module mapp.le {
                     if(so.object.withinX(ref, Util.snapThreshold)) {
                         if (corner.indexOf('t') >= 0 && so.object.snapTop(ref, Util.snapThreshold, inside)) {
                             snapped = apply(Dimension.Top, inside ? ref.getTop() : ref.getBottom());
+                            corner = corner.replace('t', '');
                         }
                         if (corner.indexOf('b') >= 0 && so.object.snapBottom(ref, Util.snapThreshold, inside)) {
                             snapped = apply(Dimension.Bottom, inside ? Util.getCanvasHeight() - ref.getTop() - ref.getHeight() : Util.getCanvasHeight() - ref.getTop());
+                            corner = corner.replace('b', '');
                         }
                         fullySnapped = inside && snapped;
                     }
@@ -310,6 +295,24 @@ module mapp.le {
 
         static isHorizontal = (dimension: number) => {
             return dimension == 0 || dimension == 3 || dimension == 5;
+        }
+
+        static getRandomColor() {
+            return 'rgba(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ', 0.75)';
+        }
+
+        static setValue(value: any, ...observables: KnockoutObservable<any>[]) {
+            observables.forEach(obs => {
+                obs(value);
+            });
+        }
+
+        static applyProperty(property: (value: any) => any, observable: KnockoutObservable<any>): any {
+            property(observable());
+        }
+
+        static round(value: number) {
+            return Math.round((value + 0.00001) * 100) / 100;
         }
     }
 }
