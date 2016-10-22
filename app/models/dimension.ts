@@ -1,23 +1,20 @@
 module mapp.le {
 
-    export class DimensionData {
+    export class Dimension {
         public value: KnockoutObservable<number>;
-        public displayValue: KnockoutComputed<number>;
         public showRelative: KnockoutObservable<boolean>;
-        public isAbsolute: KnockoutObservable<boolean>;
-        public hasChanges: KnockoutComputed<boolean>;
+        public isLocked: KnockoutObservable<boolean>;
+
+        public displayValue: KnockoutComputed<number>;
         public isComputed: KnockoutComputed<boolean>;
-        public lastSet: KnockoutObservable<boolean>;
-        public getData: KnockoutComputed<IDimensionData>;
-        public setData: (data: any) => any;
+        public getProperties: KnockoutComputed<IDimensionProperties>;
+        public setProperties: (data: any) => any;
 
         constructor(getAbsolute: () => number) {
             
             this.value = ko.observable<number>();
-            this.isAbsolute = ko.observable<boolean>(false);
+            this.isLocked = ko.observable<boolean>(false);
             this.showRelative = ko.observable<boolean>(false);
-            this.lastSet = ko.observable<boolean>(false);
-
             this.displayValue = ko.pureComputed({
                 read: () => {
                     
@@ -25,7 +22,7 @@ module mapp.le {
                         : Math.round(this.value()) + 'px' : undefined;
                     
                     if(this.showRelative())
-                        this.isAbsolute(false);
+                        this.isLocked(false);
 
                     return result;
                 },
@@ -39,19 +36,19 @@ module mapp.le {
                 }
             });
 
-            this.setData = (data: any) => {
+            this.setProperties = (data: any) => {
                 if(data) {
-                    data = <IDimensionData>data;
+                    data = <IDimensionProperties>data;
                     this.showRelative(data.showRelative);
-                    this.isAbsolute(data.isAbsolute);
+                    this.isLocked(data.isLocked);
                 }
             };
 
-            this.getData = ko.computed(() => {
-                return <IDimensionData>{
+            this.getProperties = ko.computed(() => {
+                return <IDimensionProperties>{
                     value: this.value(),
                     showRelative: this.showRelative(),
-                    isAbsolute: this.isAbsolute()
+                    isLocked: this.isLocked()
                 }
             }); 
         }

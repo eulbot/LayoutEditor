@@ -23,13 +23,13 @@ module mapp.le {
 
             Util.canvas.forEachObject((object: fabric.IObject) => {
 
-                if(!(object.isDimensionAbsolute(Dimension.Width))) 
+                if(!(object.isDimensionLocked(enums.Dimension.Width))) 
                     object.setWidth(object.getWidth() * fx);
-                if(!(object.isDimensionAbsolute(Dimension.Height))) 
+                if(!(object.isDimensionLocked(enums.Dimension.Height))) 
                     object.setHeight(object.getHeight() * fy);
-                if(!(object.isDimensionAbsolute(Dimension.Top))) 
+                if(!(object.isDimensionLocked(enums.Dimension.Top))) 
                     object.setTop(object.getTop() * fy);
-                if(!(object.isDimensionAbsolute(Dimension.Left))) 
+                if(!(object.isDimensionLocked(enums.Dimension.Left))) 
                     object.setLeft(object.getLeft() * fx);
 
                 var cw = Util.canvas.getWidth();
@@ -39,18 +39,18 @@ module mapp.le {
                 var w = object.getWidth();
                 var h = object.getHeight();
 
-                let ia = object.isDimensionAbsolute(Dimension.Right);
+                let ia = object.isDimensionLocked(enums.Dimension.Right);
 
-                if(object.isDimensionAbsolute(Dimension.Left) && object.isDimensionAbsolute(Dimension.Right)) {
+                if(object.isDimensionLocked(enums.Dimension.Left) && object.isDimensionLocked(enums.Dimension.Right)) {
                     object.setWidth(cw - l - object.data['Right']['value']);
                 }
-                else if(object.isDimensionAbsolute(Dimension.Right)) { 
+                else if(object.isDimensionLocked(enums.Dimension.Right)) { 
                     object.setLeft(cw - w - object.data['Right']['value']);
                 }
-                if(object.isDimensionAbsolute(Dimension.Top) && object.isDimensionAbsolute(Dimension.Bottom)) {
+                if(object.isDimensionLocked(enums.Dimension.Top) && object.isDimensionLocked(enums.Dimension.Bottom)) {
                     object.setHeight(ch - t - object.data['Bottom']['value']);
                 }
-                else if(object.isDimensionAbsolute(Dimension.Bottom)) { 
+                else if(object.isDimensionLocked(enums.Dimension.Bottom)) { 
                     object.setTop(ch - h - object.data['Bottom']['value']);
                 } 
                 
@@ -62,27 +62,42 @@ module mapp.le {
             Util.canvas.renderAll();
         }
 
+        static observeMoving = (so: SelectedObject) => {
+            let corner = Util.stayInCanvasWhileMoving(so);
+            Util.unlockPartially(so, corner);
+            Util.snapToObjectsWhenMoving(so, corner); 
+        }
+
         static stayInCanvasWhileMoving = (so: SelectedObject) => {
             
-            if (so.object.getLeft() < Util.snapThreshold) {
-                so.object.setLeft(0);
-                so.setPrio(Dimension.Left);
-            }
+            so.unlock();
+            let corner: string  = 'trbl';
+
             if (so.object.getTop() < Util.snapThreshold) {
                 so.object.setTop(0);
-                so.setPrio(Dimension.Top);
+                so.setPrio(enums.Dimension.Top);
+                corner = corner.replace('t', '');
             }
             if (so.object.getRight() > (Util.canvas.getWidth() - Util.snapThreshold)) {
                 so.object.setLeft(Util.canvas.getWidth() - so.object.getWidth());
-                so.setPrio(Dimension.Right);
+                so.setPrio(enums.Dimension.Right);
+                corner = corner.replace('r', '');
             }
             if (so.object.getBottom() > (Util.canvas.getHeight() - Util.snapThreshold)) {
                 so.object.setTop(Util.canvas.getHeight() - so.object.getHeight());
-                so.setPrio(Dimension.Bottom);
+                so.setPrio(enums.Dimension.Bottom);
+                corner = corner.replace('b', '');
             }
+            if (so.object.getLeft() < Util.snapThreshold) {
+                so.object.setLeft(0);
+                so.setPrio(enums.Dimension.Left);
+                corner = corner.replace('l', '');
+            }
+
+            return corner;
         }
 
-        static snapToObjectsWhenMoving = (so: SelectedObject) => {
+        static snapToObjectsWhenMoving = (so: SelectedObject, corner: string) => {
             
             let snapped = false;
             
@@ -91,11 +106,13 @@ module mapp.le {
                 if(ref.getId() == so.id() || snapped)
                     return;
 
+                // Only snap Y, X if not snapped left or right to canvas
                 if(so.object.withinX(ref, Util.snapThreshold, false)) {
                     if(snapY(false))
                         snapX(true, true); 
                 }
 
+                // Only snap X, Y if not snapped top or bottom to canvas
                 if(so.object.withinY(ref, Util.snapThreshold, false)) {
                      if(snapX(false))
                         snapY(true, true); 
@@ -104,63 +121,77 @@ module mapp.le {
                 function snapX(inside: boolean, setPrio?: boolean): boolean {
 
                     if(so.object.withinY(ref, Util.snapThreshold, false)) {
-                        if(so.object.snapLeft(ref, Util.snapThreshold, inside)) {
-                            so.object.setLeft(inside ? ref.getLeft() : ref.getRight());
-                            if(setPrio) (so.setPrio(Dimension.Left));
-                            return true;   
-                        }
-                        else if(so.object.snapRight(ref, Util.snapThreshold, inside)) {
-                            so.object.setRight(inside ? ref.getRight() : ref.getLeft());
-                            if(setPrio) (so.setPrio(Dimension.Right));
-                            return true;   
+                        if(corner.indexOf('l') >= 0 && corner.indexOf('r') >= 0) { 
+                            if(so.object.snapLeft(ref, Util.snapThreshold, inside)) {
+                                so.object.setLeft(inside ? ref.getLeft() : ref.getRight());
+                                so.setPrio(enums.Dimension.Left);
+                                return true;   
+                            }
+                            else if(so.object.snapRight(ref, Util.snapThreshold, inside)) {
+                                so.object.setRight(inside ? ref.getRight() : ref.getLeft());
+                                so.setPrio(enums.Dimension.Right);
+                                return true;   
+                            }
                         }
                     }
                     return false;
                 }
                 
                 function snapY(inside: boolean, setPrio?: boolean): boolean {
-                    if(so.object.snapTop(ref, Util.snapThreshold, inside)) {
-                        so.object.setTop(inside ? ref.getTop() : ref.getBottom());
-                        if(setPrio) (so.setPrio(Dimension.Top));
-                        return true;    
-                    }
-                    else if(so.object.snapBottom(ref, Util.snapThreshold, inside)) {
-                        so.object.setBottom(inside ? ref.getBottom() : ref.getTop());
-                        if(setPrio) (so.setPrio(Dimension.Bottom));
-                        return true;    
+                    if(corner.indexOf('t') >= 0 && corner.indexOf('b') >= 0) {
+                        if(so.object.snapTop(ref, Util.snapThreshold, inside)) {
+                            so.object.setTop(inside ? ref.getTop() : ref.getBottom());
+                            so.setPrio(enums.Dimension.Top);
+                            return true;    
+                        }
+                        else if(so.object.snapBottom(ref, Util.snapThreshold, inside)) {
+                            so.object.setBottom(inside ? ref.getBottom() : ref.getTop());
+                            so.setPrio(enums.Dimension.Bottom);
+                            return true;    
+                        }
                     }
                     return false;
                 }
             });
         }
 
+        static observeResizing = (so: SelectedObject, corner: string) => {
+
+            Util.unlockPartially(so, corner);
+            let fullySnapped = Util.snapToObjectsWhenResizing(so, corner);
+            if(!fullySnapped) Util.stayInCanvasWhileResizing(so, corner);
+        }
+
         static stayInCanvasWhileResizing = (so: SelectedObject, corner: string) => {
+            
+
             if(corner.indexOf('t') >= 0 && so.object.getTop() < Util.snapThreshold) {
+                
                 so.reapply(false);
-                so.setPrio(Dimension.Bottom);
+                so.setPrio(enums.Dimension.Bottom, true);
                 so.top.value(0);
-                so.setPrio(Dimension.Top);
+                so.setPrio(enums.Dimension.Top);
             }
             
             if(corner.indexOf('r') >= 0 && so.object.getLeft() + so.object.getWidth() + Util.snapThreshold > Util.getCanvasWidth()) {
                 so.reapply(true);
-                so.setPrio(Dimension.Left);
+                so.setPrio(enums.Dimension.Left, true);
                 so.right.value(0);
-                so.setPrio(Dimension.Right);
+                so.setPrio(enums.Dimension.Right);
             }
             
             if(corner.indexOf('b') >= 0 && so.object.getTop() + so.object.getHeight() + Util.snapThreshold > Util.getCanvasHeight()) {
                 so.reapply(false);
-                so.setPrio(Dimension.Top);
+                so.setPrio(enums.Dimension.Top, true);
                 so.bottom.value(0);
-                so.setPrio(Dimension.Bottom);
+                so.setPrio(enums.Dimension.Bottom);
             }
 
             if(corner.indexOf('l') >= 0 && so.object.getLeft() < Util.snapThreshold) {
                 so.reapply(true);
-                so.setPrio(Dimension.Right);
+                so.setPrio(enums.Dimension.Right, true);
                 so.left.value(0);
-                so.setPrio(Dimension.Left);
+                so.setPrio(enums.Dimension.Left);
             }
         }
 
@@ -173,53 +204,70 @@ module mapp.le {
 
                 if (ref.getId() == so.id() || snapped)
                     return;
+
+                if(!fullySnapped)
+                    snapX();
                 
-                if(!fullySnapped && (snapped = (snapX(false) || snapX(true)) || corner.indexOf('m') >= 0))
-                    snapped = snapY(true);
-            
-                if(!fullySnapped && (snapped = (snapY(false) || snapY(true)) || corner.indexOf('m') >= 0))
-                    snapped = snapX(true);
+                if(!fullySnapped)
+                    snapY();
 
-                function snapX(inside: boolean) {
-
-                    let snapped = false;
+                function snapX() {
 
                     if (so.object.withinY(ref, Util.snapThreshold)) { 
-                        if (corner.indexOf('l') >= 0 && so.object.snapLeft(ref, Util.snapThreshold, inside)) {
-                            snapped = apply(Dimension.Left, inside ? ref.getLeft() : ref.getRight());
-                            corner = corner.replace('l', '');
+                        if (corner.indexOf('l') >= 0) {
+                            if(so.object.snapLeft(ref, Util.snapThreshold, true)) {
+                                apply(enums.Dimension.Left, ref.getLeft());
+                                corner = corner.replace('l', '');
+                            }
+                            if(so.object.snapLeft(ref, Util.snapThreshold, false)) {
+                                apply(enums.Dimension.Left, ref.getRight());
+                                corner = corner.replace('l', '');
+                            }
                         }
-                        if (corner.indexOf('r') >= 0 && so.object.snapRight(ref, Util.snapThreshold, inside)) {
-                            snapped = apply(Dimension.Right, inside ? Util.getCanvasWidth() - ref.getLeft() - ref.getWidth() : Util.getCanvasWidth() - ref.getLeft());
-                            corner = corner.replace('r', '');
+                        if (corner.indexOf('r') >= 0) { 
+                            if(so.object.snapRight(ref, Util.snapThreshold, true)) {
+                                apply(enums.Dimension.Right, Util.getCanvasWidth() - ref.getLeft() - ref.getWidth());
+                                corner = corner.replace('r', '');
+                            }
+                            if(so.object.snapRight(ref, Util.snapThreshold, false)) {
+                                apply(enums.Dimension.Right, Util.getCanvasWidth() - ref.getLeft());
+                                corner = corner.replace('r', '');
+                            }
                         }
-                        fullySnapped = inside && snapped;
+                        fullySnapped = corner.length == 0;
                     }
-
-                    return snapped;
                 }
 
-                function snapY(inside: boolean) {
-
-                    let snapped = false;
+                function snapY() {
 
                     if(so.object.withinX(ref, Util.snapThreshold)) {
-                        if (corner.indexOf('t') >= 0 && so.object.snapTop(ref, Util.snapThreshold, inside)) {
-                            snapped = apply(Dimension.Top, inside ? ref.getTop() : ref.getBottom());
-                            corner = corner.replace('t', '');
+                        if (corner.indexOf('t') >= 0) {
+                            if (so.object.snapTop(ref, Util.snapThreshold, true)) {
+                                apply(enums.Dimension.Top, ref.getTop());
+                                corner = corner.replace('t', '');
+                            }
+                            if (so.object.snapTop(ref, Util.snapThreshold, false)) {
+                                apply(enums.Dimension.Top, ref.getBottom());
+                                corner = corner.replace('t', '');
+                            }
                         }
-                        if (corner.indexOf('b') >= 0 && so.object.snapBottom(ref, Util.snapThreshold, inside)) {
-                            snapped = apply(Dimension.Bottom, inside ? Util.getCanvasHeight() - ref.getTop() - ref.getHeight() : Util.getCanvasHeight() - ref.getTop());
-                            corner = corner.replace('b', '');
+                        if (corner.indexOf('b') >= 0) {
+                            if(so.object.snapBottom(ref, Util.snapThreshold, true)) {
+                                apply(enums.Dimension.Bottom, Util.getCanvasHeight() - ref.getTop() - ref.getHeight());
+                                corner = corner.replace('b', '');
+                            }
+                            if(so.object.snapBottom(ref, Util.snapThreshold, false)) {
+                                apply(enums.Dimension.Bottom, Util.getCanvasHeight() - ref.getTop());
+                                corner = corner.replace('b', '');
+                            }
                         }
-                        fullySnapped = inside && snapped;
+                        fullySnapped = corner.length == 0;
                     }
-                    return snapped;
                 }
-
-                function apply(dimension: Dimension, value) {
+                
+                function apply(dimension: enums.Dimension, value) {
                     so.reapply(Util.isHorizontal(dimension));
-                    so.setPrio(Util.getOppositeDimension(dimension));
+                    so.setPrio(Util.getOppositeDimension(dimension), true);
                     Util.setDimension(so, dimension, value);
                     so.setPrio(dimension);
                     return true;
@@ -229,68 +277,83 @@ module mapp.le {
             return fullySnapped;
         }
 
-        static setDimension (so: SelectedObject, dimension: Dimension, value: number) {
+        static unlockPartially (so: SelectedObject, corner: string) {
+
+            if(corner.indexOf('t') > 0) so.unlock(enums.Dimension.Top);
+            if(corner.indexOf('r') > 0) so.unlock(enums.Dimension.Right);
+            if(corner.indexOf('b') > 0) so.unlock(enums.Dimension.Bottom);
+            if(corner.indexOf('l') > 0) so.unlock(enums.Dimension.Left);
+        }
+
+        static setDimension (so: SelectedObject, dimension: enums.Dimension, value: number) {
             switch(dimension) {
-                case Dimension.Width:
+                case enums.Dimension.Width:
                     so.width.value(value);
                     break;
-                case Dimension.Height:
+                case enums.Dimension.Height:
                     so.height.value(value);
                     break;
-                case Dimension.Top:
+                case enums.Dimension.Top:
                     so.top.value(value);
                     break;
-                case Dimension.Right:
+                case enums.Dimension.Right:
                     so.right.value(value);
                     break;
-                case Dimension.Bottom:
+                case enums.Dimension.Bottom:
                     so.bottom.value(value);
                     break;
-                case Dimension.Left:
+                case enums.Dimension.Left:
                     so.left.value(value);
                     break;
             }
         }
 
-        static getOppositeDimension(dimension: Dimension) {
+        static getOppositeDimension(dimension: enums.Dimension) {
 
             switch(dimension) {
-                case Dimension.Top:
-                    return Dimension.Bottom;
-                case Dimension.Right:
-                    return Dimension.Left;
-                case Dimension.Bottom:
-                    return Dimension.Top;
-                case Dimension.Left:
-                    return Dimension.Right;
+                case enums.Dimension.Top:
+                    return enums.Dimension.Bottom;
+                case enums.Dimension.Right:
+                    return enums.Dimension.Left;
+                case enums.Dimension.Bottom:
+                    return enums.Dimension.Top;
+                case enums.Dimension.Left:
+                    return enums.Dimension.Right;
             }
 
             return dimension;
         }
 
-        static moveStep = (so: SelectedObject, direction: Direction, distance?: number) => {
+        static moveStep = (so: SelectedObject, direction: enums.Direction, distance?: number) => {
 
             distance = (distance || 1);
                 
                 if(Util.isHorizontal(direction))
-                    so.setPrio(Dimension.Width);
+                    so.setPrio(enums.Dimension.Width);
                 else
-                    so.setPrio(Dimension.Height);
+                    so.setPrio(enums.Dimension.Height);
 
                 switch(direction) {
-                    case Direction.TOP:
+                    case enums.Direction.TOP:
                         so.top.value(so.top.value() - distance);
                         break;
-                    case Direction.RIGHT:
+                    case enums.Direction.RIGHT:
                         so.left.value(so.left.value() + distance);
                         break;
-                    case Direction.BOTTOM:
+                    case enums.Direction.BOTTOM:
                         so.top.value(so.top.value() + distance);
                         break;
-                    case Direction.LEFT:
+                    case enums.Direction.LEFT:
                         so.left.value(so.left.value() - distance);
                         break;
                 }
+        }
+
+        static unlock = (so: SelectedObject) => {
+            so.top.isLocked(false);
+            so.right.isLocked(false);
+            so.bottom.isLocked(false);
+            so.left.isLocked(false);
         }
 
         static isHorizontal = (dimension: number) => {

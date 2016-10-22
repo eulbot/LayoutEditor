@@ -11,7 +11,7 @@ declare namespace fabric {
         setRight: (value: number) => void;
         getBottom: () => number;
         setBottom: (value: number) => void;
-        isDimensionAbsolute: (dimension: number) => boolean;
+        isDimensionLocked: (dimension: number) => boolean;
         setData: (key: string, value: any) => void;
 
         snapTop: (ref: fabric.IObject, threshold: number, inside?: boolean) => boolean;
@@ -51,7 +51,14 @@ module mapp.le {
                 count++;
                 options = $.extend(mapp.le.DefaultFrameOptions, options);
                 let newFrame = new fabric.Rect(options);
-                newFrame.data = {id: count.toString(), name: 'Frame', data: {}};
+                newFrame.data = {id: count.toString(), name: 'Frame', 
+                    Width: {
+                        isLocked: true
+                    },
+                    Height: {
+                        isLocked: true
+                    }
+                };
                 
                 if(cloneFrom) {
                     newFrame.setLeft(cloneFrom.getLeft());
@@ -110,23 +117,18 @@ module mapp.le {
                     "object:added": () => this.elements.notifySubscribers(),
                     "object:removed": () => this.elements.notifySubscribers(),
                     "object:selected": (e: fabric.IEvent) => {
-
-                            console.info(e.target.getId());
                             this.selectedObject.apply(e.target) 
                     },
                     "object:moving": (e: fabric.IEvent) => {
-
-                        Util.snapToObjectsWhenMoving(this.selectedObject); 
-                        Util.stayInCanvasWhileMoving(this.selectedObject);
+                        
+                        Util.observeMoving(this.selectedObject);
                         this.selectedObject.update(); 
                     },
                     "object:scaling": (e: fabric.IEvent) => {
 
                         resizing = true;
                         let corner: string = e.target['__corner'] || '';
-                        let fullySnapped = Util.snapToObjectsWhenResizing(this.selectedObject, corner);
-
-                        if(!fullySnapped) Util.stayInCanvasWhileResizing(this.selectedObject, corner);
+                        Util.observeResizing(this.selectedObject, corner);
                         this.selectedObject.update(true);
                     },
                     "selection:cleared": () => this.selectedObject.clear(),
@@ -154,10 +156,11 @@ module mapp.le {
                         }
                     },
                     "mouse:up": () => {
-                        if(resizing) {
+                        if(resizing) 
                             this.selectedObject.reapply();
-                            resizing = false;
-                        }
+                           
+                        resizing = false;
+                        
                     }
                 });
                 
@@ -170,24 +173,24 @@ module mapp.le {
                         ctrlPressed = true;
 
                         if(e.which == 38)
-                            Util.moveStep(this.selectedObject, Direction.TOP, 20);
+                            Util.moveStep(this.selectedObject, enums.Direction.TOP, 20);
                         if(e.which == 39) 
-                            Util.moveStep(this.selectedObject, Direction.RIGHT, 20);
+                            Util.moveStep(this.selectedObject, enums.Direction.RIGHT, 20);
                         if(e.which == 40) 
-                            Util.moveStep(this.selectedObject, Direction.BOTTOM, 20);
+                            Util.moveStep(this.selectedObject, enums.Direction.BOTTOM, 20);
                         if(e.which == 37) 
-                            Util.moveStep(this.selectedObject, Direction.LEFT, 20);
+                            Util.moveStep(this.selectedObject, enums.Direction.LEFT, 20);
                     }
                     else {
 
                         if(e.keyCode == 38) 
-                            Util.moveStep(this.selectedObject, Direction.TOP);
+                            Util.moveStep(this.selectedObject, enums.Direction.TOP);
                         if(e.keyCode == 39) 
-                            Util.moveStep(this.selectedObject, Direction.RIGHT);
+                            Util.moveStep(this.selectedObject, enums.Direction.RIGHT);
                         if(e.keyCode == 40) 
-                            Util.moveStep(this.selectedObject, Direction.BOTTOM);
+                            Util.moveStep(this.selectedObject, enums.Direction.BOTTOM);
                         if(e.keyCode == 37) 
-                            Util.moveStep(this.selectedObject, Direction.LEFT);
+                            Util.moveStep(this.selectedObject, enums.Direction.LEFT);
                         if(e.keyCode == 46)
                             this.removeObject(this.selectedObject.id());
                     }

@@ -2,7 +2,7 @@ module mapp.le {
     export class Menu {
         
         private canvas: KnockoutObservable<Canvas>;
-        private addFrame: (type: ElementType) => void;
+        private addFrame: (type: le.enums.ElementType) => void;
         private selectObject: (element: fabric.IObject, event) => void;
         private pageSizes: PageSize[];
         private selectedPageSize: KnockoutObservable<PageSize>;

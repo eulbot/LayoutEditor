@@ -6,28 +6,30 @@ module mapp.le {
         public id: KnockoutObservable<string>;
         private name: KnockoutObservable<string>;
 
-        public width: DimensionData;
-        public height: DimensionData;
-        public top: DimensionData; 
-        public right: DimensionData; 
-        public bottom: DimensionData; 
-        public left: DimensionData;
-        
-        private scaleX: KnockoutObservable<number>;
-        private scaleY: KnockoutObservable<number>;
+        public width: Dimension;
+        public height: Dimension;
+        public top: Dimension; 
+        public right: Dimension; 
+        public bottom: Dimension; 
+        public left: Dimension;
 
-        private prioX: KnockoutObservableArray<Dimension>;
-        private prioY: KnockoutObservableArray<Dimension>;
-        public setPrio: (dimension: Dimension) => void;
-        public getPrio: (dimension: Dimension) => Dimension;
-        public hasPrio: (dimension: Dimension) => boolean;
-        public isSlave: (dimension: Dimension) => boolean;
-        public isLatestPrio: (dimension: Dimension) => boolean;
+        // private scaleX: KnockoutObservable<number>;
+        // private scaleY: KnockoutObservable<number>;
+
+        private prioX: KnockoutObservableArray<enums.Dimension>;
+        private prioY: KnockoutObservableArray<enums.Dimension>;
+        public setPrio: (dimension: enums.Dimension, resize?: boolean) => void;
+        public getPrio: (dimension: enums.Dimension) => enums.Dimension;
+        public hasPrio: (dimension: enums.Dimension) => boolean;
+        public isSlave: (dimension: enums.Dimension) => boolean;
+        public isLatestPrio: (dimension: enums.Dimension) => boolean;
         public clearPrio: () => void;
+        public unlock: (dimension?: enums.Dimension) => void;
 
         public apply: (object: fabric.IObject) => void;
-        private applyChanges: (dimension: Dimension, dimensionData: IDimensionData) => void;
-        public reapply: (x?: boolean) => void;
+        public applyDimensionValue: (dimension: enums.Dimension, value: number) => void;
+        public applyDimensionProperties: (dimension: enums.Dimension, properties: IDimensionProperties) => void;
+        public reapply: (horizontal?: boolean) => void;
 
         public update: (reapply?: boolean) => void;
         public resize: () => void;
@@ -41,20 +43,21 @@ module mapp.le {
 
             this.id = ko.observable<string>();
             this.name = ko.observable<string>();
-            this.width = new DimensionData(Util.getCanvasWidth);
-            this.height = new DimensionData(Util.getCanvasHeight);
-            this.top = new DimensionData(Util.getCanvasHeight);
-            this.right = new DimensionData(Util.getCanvasWidth);
-            this.bottom = new DimensionData(Util.getCanvasHeight);
-            this.left = new DimensionData(Util.getCanvasWidth);
+            this.width = new Dimension(Util.getCanvasWidth);
+            this.height = new Dimension(Util.getCanvasHeight);
+            this.top = new Dimension(Util.getCanvasHeight);
+            this.right = new Dimension(Util.getCanvasWidth);
+            this.bottom = new Dimension(Util.getCanvasHeight);
+            this.left = new Dimension(Util.getCanvasWidth);
 
-            this.scaleX = ko.observable<number>();
-            this.scaleY = ko.observable<number>();
+            // this.scaleX = ko.observable<number>();
+            // this.scaleY = ko.observable<number>();
 
-            this.prioX = ko.observableArray<Dimension>();
-            this.prioY = ko.observableArray<Dimension>();
+            this.prioX = ko.observableArray<enums.Dimension>();
+            this.prioY = ko.observableArray<enums.Dimension>();
 
             this.updating = false;
+
             this.apply = (object: fabric.IObject) => {
 
                 this.object = object;
@@ -62,11 +65,9 @@ module mapp.le {
                 this.update();
             }
 
-            this.applyChanges = (dimension: Dimension, dimensionData: IDimensionData) => {
-                
+            this.applyDimensionValue = (dimension: enums.Dimension, value: number) => {
+
                 if(this.object && !this.updating) {
-                    
-                    this.object.setData(Dimension[dimension], dimensionData);
 
                     if (Util.isHorizontal(dimension)) 
                         this.object.set('scaleX', 1);
@@ -75,29 +76,26 @@ module mapp.le {
 
                     var oldValue = this.getOldValue(this.object, dimension);
 
-                    if(!isNaN(dimensionData.value) && dimensionData.value !== oldValue) {
+                    if(!isNaN(value) && value !== oldValue) {
 
-                        let value = dimensionData.value;
-
-                        if(dimension == Dimension.Width) {
-                            this.applyWidth(dimensionData);
+                        if(dimension == enums.Dimension.Width) {
+                            this.applyWidth(value);
                         }
-                        else if(dimension == Dimension.Height) {
-                            this.applyHeight(dimensionData);
+                        else if(dimension == enums.Dimension.Height) {
+                            this.applyHeight(value);
                         }
-                        else if(dimension == Dimension.Top) {
-                            this.applyTop(dimensionData);
+                        else if(dimension == enums.Dimension.Top) {
+                            this.applyTop(value);
                         }
-                        else if(dimension == Dimension.Right) {
-                            this.applyRight(dimensionData);
+                        else if(dimension == enums.Dimension.Right) {
+                            this.applyRight(value);
                         }
-                        else if(dimension == Dimension.Bottom) {
-                            this.applyBottom(dimensionData);
+                        else if(dimension == enums.Dimension.Bottom) {
+                            this.applyBottom(value);
                         }
-                        else if(dimension == Dimension.Left) {
-                            this.applyLeft(dimensionData);
+                        else if(dimension == enums.Dimension.Left) {
+                            this.applyLeft(value);
                         }
-
                         
                         this.object.setCoords();
                         Util.canvas.renderAll();
@@ -105,17 +103,24 @@ module mapp.le {
                 }
             }
 
-            this.reapply = (x?: boolean) => {
+            this.applyDimensionProperties = (dimension: enums.Dimension, properties: IDimensionProperties) => {
+
+                if(!this.updating) {
+                    this.object.setData(enums.Dimension[dimension], properties);
+                }
+            }
+
+            this.reapply = (horizontal?: boolean) => {
 
                 this.updating = true;
 
-                if (x == undefined || x === true) {
+                if (horizontal == undefined || horizontal === true) {
                     this.object.set('scaleX', 1);
                     this.object.setLeft(this.left.value());
                     this.object.setWidth(this.width.value());
                 }
 
-                if (x == undefined || x === false) {
+                if (horizontal == undefined || horizontal === false) {
                     this.object.set('scaleY', 1);
                     this.object.setTop(this.top.value());
                     this.object.setHeight(this.height.value());
@@ -123,7 +128,7 @@ module mapp.le {
 
                 this.updating = false;
             }
-            
+
             this.update = (reapply?: boolean) => {
 
                 this.updating = true;
@@ -144,19 +149,19 @@ module mapp.le {
                 let difRight = Util.canvas.getWidth() - this.object.getLeft() - this.object.getWidth();
                 if(this.right.value() !== difRight) {
                     this.right.value(difRight);
-                    this.object.setData(Dimension[Dimension.Right], this.right.getData());
+                    this.object.setData(enums.Dimension[enums.Dimension.Right], this.right.getProperties());
                 }
                 
                 let difBottom = Util.canvas.getHeight() - this.object.getTop() - this.object.getHeight()
                 if(this.bottom.value() !== difBottom) {
                     this.bottom.value(difBottom);
-                    this.object.setData(Dimension[Dimension.Bottom], this.bottom.getData());
+                    this.object.setData(enums.Dimension[enums.Dimension.Bottom], this.bottom.getProperties());
                 }
 
                 this.updating = false;
             }
             
-            this.setPrio = (dimension: Dimension) => {
+            this.setPrio = (dimension: enums.Dimension, resize?: boolean) => {
                 if(Util.isHorizontal(dimension) && this.prioX()[0] != dimension)
                     this.prioX.unshift(dimension);
                 else if(!(Util.isHorizontal(dimension)) && this.prioY()[0] != dimension)
@@ -167,12 +172,23 @@ module mapp.le {
 
                 if(this.prioY().length > 2) 
                     this.prioY(this.prioY().slice(0, 2));
-                    
+
+                if(!resize) {
+                    this.getDimension(dimension).isLocked(true);
+
+                    if(this.getDimension(Util.getOppositeDimension(dimension)).isLocked()) {
+                        if(Util.isHorizontal(dimension))
+                            this.width.isLocked(false);
+                        else
+                            this.height.isLocked(false);
+                    }
+                }
+
                 this.object.data['prioX'] = this.prioX().slice();
                 this.object.data['prioY'] = this.prioY().slice();
             }
 
-            this.getPrio = (dimension: Dimension) => {
+            this.getPrio = (dimension: enums.Dimension) => {
 
                 if(Util.isHorizontal(dimension)) {
                     if(this.prioX()[0] != dimension) return this.prioX()[0];
@@ -186,15 +202,15 @@ module mapp.le {
                 return 0;
             }
 
-            this.isLatestPrio = (dimension: Dimension) => {
+            // this.isLatestPrio = (dimension: Dimension) => {
                 
-                if(Util.isHorizontal(dimension))
-                    return this.prioX()[0] == dimension;
-                else
-                    return this.prioY()[0] == dimension;
-            }
+            //     if(Util.isHorizontal(dimension))
+            //         return this.prioX()[0] == dimension;
+            //     else
+            //         return this.prioY()[0] == dimension;
+            // }
 
-            this.hasPrio = (dimension: Dimension) => {
+            this.hasPrio = (dimension: enums.Dimension) => {
 
                 if(Util.isHorizontal(dimension) && $.inArray(dimension, this.prioX()) >= 0)
                     return true;
@@ -204,7 +220,7 @@ module mapp.le {
                 return false;
             }
 
-            this.isSlave = (dimension: Dimension) => {
+            this.isSlave = (dimension: enums.Dimension) => {
 
                 if(Util.isHorizontal(dimension) && this.prioX().length == 2 && $.inArray(dimension, this.prioX()) < 0)
                     return true;
@@ -219,13 +235,25 @@ module mapp.le {
                 this.prioY.removeAll();
             }
 
+            this.unlock = (dimension?: enums.Dimension) => {
+
+                if(dimension)
+                    this.getDimension(dimension).isLocked(false)
+                else {
+                    this.top.isLocked(false);
+                    this.right.isLocked(false);
+                    this.bottom.isLocked(false);
+                    this.left.isLocked(false);
+                }
+            }
+
             this.clear = () => {
 
                 this.updating = true;
                 Util.setValue(undefined, this.id, this.name, this.width.value, this.height.value, this.top.value, this.right.value, this.bottom.value, this.left.value);
-                Util.setValue(false, this.width.showRelative, this.width.isAbsolute, this.height.showRelative, this.height.isAbsolute, 
-                    this.top.showRelative, this.top.isAbsolute, this.right.showRelative, this.right.isAbsolute, 
-                    this.bottom.showRelative, this.bottom.isAbsolute, this.left.showRelative, this.left.isAbsolute);
+                Util.setValue(false, this.width.showRelative, this.width.isLocked, this.height.showRelative, this.height.isLocked, 
+                    this.top.showRelative, this.top.isLocked, this.right.showRelative, this.right.isLocked, 
+                    this.bottom.showRelative, this.bottom.isLocked, this.left.showRelative, this.left.isLocked);
                 this.updating = false;
 
                 this.prioX.removeAll();
@@ -236,12 +264,12 @@ module mapp.le {
                 
                 this.clear();
                 this.id(this.object.getId());
-                this.width.setData(this.object.data[Dimension[Dimension.Width]]);
-                this.height.setData(this.object.data[Dimension[Dimension.Height]]);
-                this.top.setData(this.object.data[Dimension[Dimension.Top]]);
-                this.right.setData(this.object.data[Dimension[Dimension.Right]]);
-                this.bottom.setData(this.object.data[Dimension[Dimension.Bottom]]);
-                this.left.setData(this.object.data[Dimension[Dimension.Left]]);
+                this.width.setProperties(this.object.data['Width']);
+                this.height.setProperties(this.object.data['Height']);
+                this.top.setProperties(this.object.data['Top']);
+                this.right.setProperties(this.object.data['Right']);
+                this.bottom.setProperties(this.object.data['Bottom']);
+                this.left.setProperties(this.object.data['Left']);
 
                 this.prioX.push.apply(this.prioX, this.object.data['prioX']);
                 this.prioY.push.apply(this.prioY, this.object.data['prioY']);
@@ -249,134 +277,161 @@ module mapp.le {
 
             this.init = () => {
 
-                this.width.getData.subscribe((data) => { this.applyChanges(Dimension.Width, data); });
-                this.height.getData.subscribe((data) => { this.applyChanges(Dimension.Height, data); });
-                this.top.getData.subscribe((data) => { this.applyChanges(Dimension.Top, data); });
-                this.right.getData.subscribe((data) => { this.applyChanges(Dimension.Right, data); });
-                this.bottom.getData.subscribe((data) => { this.applyChanges(Dimension.Bottom, data);});
-                this.left.getData.subscribe((data) => { this.applyChanges(Dimension.Left, data);});
+                this.width.value.subscribe((value) => { this.applyDimensionValue(enums.Dimension.Width, value); });
+                this.height.value.subscribe((value) => { this.applyDimensionValue(enums.Dimension.Height, value); });
+                this.top.value.subscribe((value) => { this.applyDimensionValue(enums.Dimension.Top, value); });
+                this.right.value.subscribe((value) => { this.applyDimensionValue(enums.Dimension.Right, value); });
+                this.bottom.value.subscribe((value) => { this.applyDimensionValue(enums.Dimension.Bottom, value);});
+                this.left.value.subscribe((value) => { this.applyDimensionValue(enums.Dimension.Left, value);});
+
+                this.width.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Width, data); });
+                this.height.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Height, data); });
+                this.top.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Top, data); });
+                this.right.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Right, data); });
+                this.bottom.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Bottom, data);});
+                this.left.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Left, data);});
             }
             
             this.init();
         }
 
-        private getOldValue(object: fabric.IObject, dimension: Dimension) {
+        private getOldValue(object: fabric.IObject, dimension: enums.Dimension) {
 
             switch(dimension) {
-                case Dimension.Width:
+                case enums.Dimension.Width:
                     return Math.round(object.getWidth());
-                case Dimension.Height:
+                case enums.Dimension.Height:
                     return Math.round(object.getHeight());
-                case Dimension.Top:
+                case enums.Dimension.Top:
                     return Math.round(object.getTop());
-                case Dimension.Right:
-                    return Math.round(object.getRight());
-                case Dimension.Bottom:
-                    return Math.round(object.getBottom());
-                case Dimension.Left:
+                case enums.Dimension.Right:
+                    return Math.round(Util.canvas.getWidth() - object.getRight());
+                case enums.Dimension.Bottom:
+                    return Math.round(Util.canvas.getHeight() -  object.getBottom());
+                case enums.Dimension.Left:
                     return Math.round(object.getLeft());
             }
         }
 
-        private applyWidth(dimensionData: IDimensionData) {
+        private applyWidth(value: number) {
             console.info('-- WIDTH --');
             let oldValue = this.object.getWidth();
-            console.log("Width applied: ", oldValue + ' -- > ' + dimensionData.value);
-            this.object.setWidth(dimensionData.value);
-            this.setPrio(Dimension.Width);
+            console.log("Width applied: ", oldValue + ' -- > ' + value);
+            this.object.setWidth(value);
+            this.setPrio(enums.Dimension.Width);
 
-            if(this.getPrio(Dimension.Width) == Dimension.Right) {
+            if(this.getPrio(enums.Dimension.Width) == enums.Dimension.Right) {
                 oldValue = this.object.getLeft();
-                let value = Util.canvas.getWidth() - this.width.value() - this.right.value();
-                console.log("Object docked right, left applied: ", oldValue + ' -- > ' + value);
-                this.object.setLeft(value);
+                let newValue = Util.canvas.getWidth() - value - this.right.value();
+                console.log("Object docked right, left applied: ", oldValue + ' -- > ' + newValue);
+                this.object.setLeft(newValue);
             }
         }
 
-        private applyHeight(dimensionData: IDimensionData) {
+        private applyHeight(value: number) {
             console.info('-- HEIGHT --');
             let oldValue = this.object.getHeight();
-            console.log("Height applied: ", oldValue + ' -- > ' + dimensionData.value);
-            this.object.setHeight(dimensionData.value);
-            this.setPrio(Dimension.Height);
+            console.log("Height applied: ", oldValue + ' -- > ' + value);
+            this.object.setHeight(value);
+            this.setPrio(enums.Dimension.Height);
 
-            if(this.getPrio(Dimension.Height) == Dimension.Bottom) {
+            if(this.getPrio(enums.Dimension.Height) == enums.Dimension.Bottom) {
                 oldValue = this.object.getTop();
-                let value = (Util.canvas.getHeight() - this.height.value() - this.bottom.value());
-                console.log("Object docked bottom, top applied: ", oldValue + ' -- > ' + value);
-                this.object.setTop(value);
+                let newValue = (Util.canvas.getHeight() - value - this.bottom.value());
+                console.log("Object docked bottom, top applied: ", oldValue + ' -- > ' + newValue);
+                this.object.setTop(newValue);
             }
         }
 
-        private applyTop(dimensionData: IDimensionData) {
+        private applyTop(value: number) {
             console.info('-- TOP --');
             let oldValue = this.object.getTop();
-            console.log("Top applied: ", oldValue + ' -- > ' + dimensionData.value);
-            this.object.setTop(dimensionData.value);
-            this.setPrio(Dimension.Top);
+            console.log("Top applied: ", oldValue + ' -- > ' + value);
+            this.object.setTop(value);
+            this.setPrio(enums.Dimension.Top);
 
-            if(this.getPrio(Dimension.Top) == Dimension.Bottom) {
+            if(this.getPrio(enums.Dimension.Top) == enums.Dimension.Bottom) {
                 oldValue = this.object.getHeight();
-                let value = Util.canvas.getHeight() - this.top.value() - this.bottom.value();
-                console.log("Object docked bottom, height applied: ", oldValue + ' -- > ' + value);
-                this.object.setHeight(value);
+                let newValue = Util.canvas.getHeight() - value - this.bottom.value();
+                console.log("Object docked bottom, height applied: ", oldValue + ' -- > ' + newValue);
+                this.object.setHeight(newValue);
             }
         }
 
-        private applyRight(dimensionData: IDimensionData) {
+        private applyRight(value: number) {
             console.info('-- RIGHT --');
             this.object.data['Right'] || (this.object.data['Right'] = {});
-            this.object.data['Right']['value'] = dimensionData.value;
-            this.setPrio(Dimension.Right);
+            this.object.data['Right']['value'] = value;
+            this.right.value(value);
+            this.setPrio(enums.Dimension.Right);
             
-            if(this.getPrio(Dimension.Right) == Dimension.Left) {
+            if(this.getPrio(enums.Dimension.Right) == enums.Dimension.Left) {
                 let oldValue = this.object.getWidth();
-                let value = Util.canvas.getWidth() - dimensionData.value - this.left.value();
-                console.log("Object docked left, width applied: ", oldValue + ' -- > ' + value);
-                this.object.setWidth(value);
+                let newValue = Util.canvas.getWidth() - value - this.left.value();
+                console.log("Object docked left, width applied: ", oldValue + ' -- > ' + newValue);
+                this.object.setWidth(newValue);
             }
             else {
                 let oldValue = this.object.getLeft();
-                let value = Util.getCanvasWidth() - dimensionData.value - this.object.getWidth();
-                this.left.value(value);
-                console.log("Object width set, left applied: ", oldValue + ' -- > ' + value);
-                this.object.setLeft(value);
+                let newValue = Util.getCanvasWidth() - value - this.object.getWidth();
+                console.log("Object width set, left applied: ", oldValue + ' -- > ' + newValue);
+                this.left.value(newValue);
+                this.object.setLeft(newValue);
             }
         }
 
-        private applyBottom(dimensionData: IDimensionData){
+        private applyBottom(value: number) {
             console.info('-- BOTTOM --');
             this.object.data['Bottom'] || (this.object.data['Bottom'] = {});
-            this.object.data['Bottom']['value'] = dimensionData.value;
-            this.setPrio(Dimension.Bottom);
+            this.object.data['Bottom']['value'] = value;
+            this.bottom.value(value);
+            this.setPrio(enums.Dimension.Bottom);
             
-            if(this.getPrio(Dimension.Bottom) == Dimension.Top) {
+            if(this.getPrio(enums.Dimension.Bottom) == enums.Dimension.Top) {
                 let oldValue = this.object.getHeight();
-                let value = Util.canvas.getHeight() - dimensionData.value - this.top.value();
-                console.log("Object docked top, height applied: ", oldValue + ' -- > ' + value);
-                this.object.setHeight(value);
+                let newValue = Util.canvas.getHeight() - value - this.top.value();
+                console.log("Object docked top, height applied: ", oldValue + ' -- > ' + newValue);
+                this.object.setHeight(newValue);
             }
             else {
                 let oldValue = this.object.getTop();
-                let value = Util.getCanvasHeight() - dimensionData.value - this.object.getHeight();
-                this.top.value(value);
-                console.log("Object top set, top applied: ", oldValue + ' -- > ' + value);
-                this.object.setTop(value);
+                let newValue = Util.getCanvasHeight() - value - this.object.getHeight();
+                console.log("Object top set, top applied: ", oldValue + ' -- > ' + newValue);
+                this.top.value(newValue);
+                this.object.setTop(newValue);
             }
         }
 
-        private applyLeft(dimensionData: IDimensionData) {
+        private applyLeft(value: number) {
             console.info('-- LEFT --');
             let oldValue = this.object.getLeft();
-            console.log("Left applied: ", oldValue + ' -- > ' + dimensionData.value);
-            this.object.setLeft(dimensionData.value);
-            this.setPrio(Dimension.Left);
+            console.log("Left applied: ", oldValue + ' -- > ' + value);
+            this.object.setLeft(value);
+            this.setPrio(enums.Dimension.Left);
 
-            if(this.getPrio(Dimension.Left) == Dimension.Right) {
+            if(this.getPrio(enums.Dimension.Left) == enums.Dimension.Right) {
                 oldValue = this.object.getWidth();
-                let value = Util.canvas.getWidth() - this.left.value() - this.right.value();
-                console.log("Object docked right, width applied: ", oldValue + ' -- > ' + value);
-                this.object.setWidth(value);
+                let newValue = Util.canvas.getWidth() - value - this.right.value();
+                console.log("Object docked right, width applied: ", oldValue + ' -- > ' + newValue);
+                this.object.setWidth(newValue);
+            }
+        }
+
+        private getDimension(dimension: enums.Dimension): Dimension {
+            switch(dimension) {
+                case enums.Dimension.Width:
+                    return this.width;
+                case enums.Dimension.Height:
+                    return this.height;
+                case enums.Dimension.Top:
+                    return this.top;
+                case enums.Dimension.Right:
+                    return this.right;
+                case enums.Dimension.Bottom:
+                    return this.bottom;
+                case enums.Dimension.Left:
+                    return this.left;
+                
             }
         }
     }
