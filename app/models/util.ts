@@ -105,14 +105,12 @@ module mapp.le {
 
                 if(ref.getId() == so.id() || snapped)
                     return;
-
-                // Only snap Y, X if not snapped left or right to canvas
+                    
                 if(so.object.withinX(ref, Util.snapThreshold, false)) {
                     if(snapY(false))
                         snapX(true, true); 
                 }
 
-                // Only snap X, Y if not snapped top or bottom to canvas
                 if(so.object.withinY(ref, Util.snapThreshold, false)) {
                      if(snapX(false))
                         snapY(true, true); 
@@ -121,6 +119,8 @@ module mapp.le {
                 function snapX(inside: boolean, setPrio?: boolean): boolean {
 
                     if(so.object.withinY(ref, Util.snapThreshold, false)) {
+
+                    // Only snap X if not snapped top or bottom to canvas
                         if(corner.indexOf('l') >= 0 && corner.indexOf('r') >= 0) { 
                             if(so.object.snapLeft(ref, Util.snapThreshold, inside)) {
                                 so.object.setLeft(inside ? ref.getLeft() : ref.getRight());
@@ -138,6 +138,8 @@ module mapp.le {
                 }
                 
                 function snapY(inside: boolean, setPrio?: boolean): boolean {
+                    
+                    // Only snap Y, X if not snapped left or right to canvas
                     if(corner.indexOf('t') >= 0 && corner.indexOf('b') >= 0) {
                         if(so.object.snapTop(ref, Util.snapThreshold, inside)) {
                             so.object.setTop(inside ? ref.getTop() : ref.getBottom());
