@@ -379,5 +379,41 @@ module mapp.le {
         static round(value: number) {
             return Math.round((value + 0.00001) * 100) / 100;
         }
+
+        static getDefaultPageSize(id: number): IPageSize {
+            let result: IPageSize = undefined;
+
+            Util.defaultPageSizes().forEach((pageSize: IPageSize) => {
+                if(pageSize.id == id)
+                    result = pageSize;
+            });
+
+            return result;
+        }
+
+        static defaultPageSizes(): IPageSize[] {
+            let result: IPageSize[] = [];
+
+            result.push(<IPageSize>{
+                id: 0, name: 'A2', width: 420, height: 594
+            });
+            result.push(<IPageSize>{
+                id: 1, name: 'A2 Landscape', width: 594, height: 420
+            });
+            result.push(<IPageSize>{
+                id: 2, name: 'A3', width: 297, height: 420
+            });
+            result.push(<IPageSize>{
+                id: 3, name: 'A3 Landscape', width: 420, height: 297
+            });
+            result.push(<IPageSize>{
+                id: 4, name: 'A4', width: 210, height: 297
+            });
+            result.push(<IPageSize>{
+                id: 5, name: 'A4 Landscape', width: 297, height: 210
+            });
+
+            return result;
+        }
     }
 }

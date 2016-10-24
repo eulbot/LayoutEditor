@@ -13,9 +13,26 @@
     <title>Layout Editor Demo</title>
 </head>
 
-<body>
+<body class="mapp-le">
     
-    <div class="editor" data-bind="template: { name: 'editor-template', data: Editor }"></div>
+    <header>
+        <div class="banner">
+            <i class="logo mapp-layout-editor-i-annotate"></i>
+            <div class="title">
+                <div class="first">M.App</div>
+                <div class="second">Layout Editor</div>
+            </div>
+        </div>
+        <div class="green-line"><div>
+    </header>
+
+    <content>
+        <div class="editor" data-bind="template: { name: 'editor-template', data: Editor }"></div>
+    </content>
+
+    <footer>
+    </footer>
+
     
     <script src="dist/mapp.le.js"></script>
 </body>

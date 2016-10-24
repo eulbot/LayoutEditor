@@ -1,0 +1,83 @@
+@import 'mapp.colors.less';
+
+body.mapp-le {
+
+    input[type=text] {
+        background-color: #FAFAFA;
+        height: 28px;
+        line-height: 28px;
+        font-size: 14px;
+        border: 1px solid #EDEBEB;
+        padding: 0 4px;
+        
+        &:focus {
+            border-color: @hxg-blue;
+            outline-color: @hxg-blue;
+        }
+
+        &[disabled] {
+            background-color: #FDFDFD !important;
+            color: rgb(128, 128, 128);
+        }
+    }
+
+    div.button {
+
+        background-color: @hxg-blue;
+        transition: background-color .3s;
+        font-weight: bold;
+        padding: 0px 7px;
+        font-size: 12px;
+        text-transform: uppercase;
+        background: @hxg-grey;
+        border-radius: 4px;
+        display: inline-block;
+        cursor: pointer;
+
+        &.blue {
+            color: white;
+            background-color: @hxg-blue;
+
+            &:hover {
+                background-color: darken(@hxg-blue, 5%);
+                transition: background-color .3s;
+            }
+        }
+    }
+
+    input[type=radio], input[type=checkbox] {
+        margin: 0;    
+        margin-top: -2px;
+        vertical-align: middle;
+    }
+
+    select {
+        background-color: #FAFAFA;
+        height: 28px;
+        line-height: 28px;
+        font-size: 14px;
+        border: 1px solid #EDEBEB;
+
+        &[disabled] {
+            background-color: #FDFDFD !important;
+            color: rgb(128, 128, 128);
+        }
+    }
+
+    fieldset {
+        border: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    label {
+        font-style: italic;
+    }
+
+    input, span {
+        &.short {
+            width: 60px;
+			display: inline-block;
+        }
+    }
+}
