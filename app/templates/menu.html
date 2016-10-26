@@ -1,47 +1,14 @@
 <script type="text/html" id="menu-template">
 
     <ul class="menu">
-        <li class="selected">
-            <span class="title">
-                    <i class="mapp-layout-editor-i-ptint"></i>
-                    Page Setup</span>
-            <div class="li-content">
-                <span class="sub-title">Page Size</span>
-                <div class="group border">
-                    <span>Format</span> 
-                    <select class="page-size-select" data-bind="options: defaultPageSizes, optionsText: 'name', value: pageSetup.selectedPageSize, event: {change: pageSetup.setPageSize}, disable: pageSetup.isCustomPageSize"></select><br />
-                    <input type="checkbox" id="checkbox-custom-page-size" data-bind="checked: pageSetup.isCustomPageSize">
-                    <label for="checkbox-custom-page-size">Custom</label> <br />
-                    <span class="short indent">Width</span>
-                    <input type="text" class="short custom-page-width" data-bind="value: pageSetup.width, enable: pageSetup.isCustomPageSize"><br />
-                    <span class="short indent">Height</span>
-                    <input type="text" class="short custom-page-height" data-bind="value: pageSetup.height, enable: pageSetup.isCustomPageSize">
-                </div>
-
-                <span class="sub-title">DPI</span>
-                <div class="group">
-                    <span>Default Values</span>
-                    <select class="dpi-select">
-                        <option>72</option>
-                        <option>96</option>
-                        <option>150</option>
-                        <option>300</option>
-                    </select><br />
-                    <input type="checkbox" id="checkbox-custom-dpi" data-bind="checked: pageSetup.isCustomDPI">
-                    <label for="checkbox-custom-dpi">Custom</label> <br />
-                    <span class="short indent">DPI</span><input type="text" class="short" data-bind="value: pageSetup.dpi, enable: pageSetup.isCustomPageSize">
-                </div>
-                <div class="button blue">save changes</div>
-            </div>
+        <li data-bind="click: () => {pageSetup.isToggled(!pageSetup.isToggled())}, template: {name: 'pageSetup-template', data: pageSetup}, css: pageSetup.css">
+            
         </li>
         <li>
-            <span class="title">
-                <i class="mapp-layout-editor-i-handle-streamline-vector"></i>
-                Templates<span>
+            
 
         </li>
-        <li>
-            <span class="title"><i class="elements mapp-layout-editor-i-hehe"></i>Elements<span>
+        <li data-bind="click: () => {templateList.isToggled(!templateList.isToggled())}, template: {name: 'templateList-template', data: templateList}, css: templateList.css">
 
         </li>
     </ul>

@@ -18,6 +18,8 @@ module mapp.le {
             }
 
             $.when(
+                $.get("app/templates/templateList.html", function(data) { append(data); }),
+                $.get("app/templates/pageSetup.html", function(data) { append(data); }),
                 $.get("app/templates/editor.html", function(data) { append(data); }),
                 $.get("app/templates/canvas.html", function(data) { append(data); }),
                 $.get("app/templates/menu.html", function(data) { append(data); })

@@ -104,6 +104,13 @@ ul.menu {
 			color: @hxg-darkgrey;
 			text-transform: uppercase;
 			line-height: 45px;
+			cursor: pointer;
+			transition: color .5s;
+
+			&:hover {
+				color: @hxg-blue;
+				transition: color .5s;
+			}
 
 			i {
 				font-size: 21px;
@@ -141,7 +148,7 @@ ul.menu {
 			}
 		}
 
-		&.selected {
+		&.toggled {
 			
 			.li-content {
 				display: block;

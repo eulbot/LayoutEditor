@@ -5,9 +5,17 @@ module mapp.le {
         private addFrame: (type: le.enums.ElementType) => void;
         private selectObject: (element: fabric.IObject, event) => void;
         
+        // Menu entries
+        private toggleMenuItem: (string) => void;
+        private toggleStates: KnockoutObservableArray<boolean>;
+        private toggleState: KnockoutComputed<number>;
+        public displayValue: KnockoutComputed<number>;
+
         private pageSetup: mapp.le.PageSetup;
+        private templateList: mapp.le.TemplateList;
         private selectedPageSize: KnockoutObservable<IPageSize>;
         private defaultPageSizes: IPageSize[];
+
         private init: () => void;
         
         constructor(canvas: Canvas) {
@@ -16,7 +24,9 @@ module mapp.le {
 
             this.selectedPageSize = ko.observable<IPageSize>();
             this.defaultPageSizes = Util.defaultPageSizes();
+
             this.pageSetup = new PageSetup();
+            this.templateList = new TemplateList();
 
             this.addFrame = () => {
                 
@@ -29,7 +39,6 @@ module mapp.le {
                 if(element)
                     this.canvas().selectObject(element.getId());
             }
-
             //this.init();
         }
     }
