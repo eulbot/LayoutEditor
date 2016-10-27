@@ -39,7 +39,7 @@ module mapp.le {
         public selectObject: (arg: string | fabric.IObject) => void;
         public removeObject: (id: string) => void;
         
-        constructor() {
+        constructor(editor: Editor) {
             let count = 0;
             let elementSubstription: KnockoutSubscription;
             this.domElement = ko.observable<HTMLCanvasElement>();

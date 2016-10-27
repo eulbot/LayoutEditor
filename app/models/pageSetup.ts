@@ -51,8 +51,8 @@ module mapp.le {
 
             this.savePageSize = () => {
 
-                // TODO Persist page size
-                Util.resizeCanvas
+                // TODO Persist page size and apply to Util
+                //Util.resizeCanvas
             }
 
             this.css = ko.pureComputed(() => {

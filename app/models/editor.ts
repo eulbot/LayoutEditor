@@ -2,13 +2,25 @@ module mapp.le {
 
     export class Editor {
         
-        private menu: KnockoutObservable<Menu>;
-        private canvas: KnockoutObservable<Canvas>;
+        public menu: Menu;
+        public canvas: Canvas;
+
+        public elements: SelectedObject[];
+        public selectedElement: SelectedObject;
+        
+        public addElement: (element: SelectedObject) => void;
+        public selectElement: (element: SelectedObject) => void;
 
         constructor() {
 
-            this.canvas = ko.observable(new Canvas());
-            this.menu = ko.observable(new Menu(this.canvas()));
+            this.elements = [];
+            this.canvas = new Canvas(this);
+            this.menu = new Menu(this);
+
+            this.addElement = (element: SelectedObject) => {
+                
+                this.selectedElement = element;
+            };
         }
     }
 }

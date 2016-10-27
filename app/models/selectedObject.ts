@@ -13,9 +13,6 @@ module mapp.le {
         public bottom: Dimension; 
         public left: Dimension;
 
-        // private scaleX: KnockoutObservable<number>;
-        // private scaleY: KnockoutObservable<number>;
-
         private prioX: KnockoutObservableArray<enums.Dimension>;
         private prioY: KnockoutObservableArray<enums.Dimension>;
         public setPrio: (dimension: enums.Dimension, resize?: boolean) => void;
@@ -74,7 +71,7 @@ module mapp.le {
                     if (!Util.isHorizontal(dimension)) 
                         this.object.set('scaleY', 1);
 
-                    var oldValue = this.getOldValue(this.object, dimension);
+                    var oldValue = this.getOldValue(dimension);
 
                     if(!isNaN(value) && value !== oldValue) {
 
@@ -295,21 +292,21 @@ module mapp.le {
             this.init();
         }
 
-        private getOldValue(object: fabric.IObject, dimension: enums.Dimension) {
+        private getOldValue(dimension: enums.Dimension) {
 
             switch(dimension) {
                 case enums.Dimension.Width:
-                    return Math.round(object.getWidth());
+                    return Math.round(this.object.getWidth());
                 case enums.Dimension.Height:
-                    return Math.round(object.getHeight());
+                    return Math.round(this.object.getHeight());
                 case enums.Dimension.Top:
-                    return Math.round(object.getTop());
+                    return Math.round(this.object.getTop());
                 case enums.Dimension.Right:
-                    return Math.round(Util.canvas.getWidth() - object.getRight());
+                    return Math.round(Util.canvas.getWidth() - this.object.getRight());
                 case enums.Dimension.Bottom:
-                    return Math.round(Util.canvas.getHeight() -  object.getBottom());
+                    return Math.round(Util.canvas.getHeight() - this.object.getBottom());
                 case enums.Dimension.Left:
-                    return Math.round(object.getLeft());
+                    return Math.round(this.object.getLeft());
             }
         }
 

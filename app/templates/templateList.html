@@ -1,12 +1,9 @@
 <script type="text/html" id="templateList-template">
-    <span class="title">
+    <span class="title" data-bind="click: () => { isToggled(!isToggled()) }">
         <i class="mapp-layout-editor-i-handle-streamline-vector"></i>
         Templates
     </span>
-    <div class="li-content">
-        There<br />
-        are<br />
-        my<br />
-        Templates
+    <div class="li-content" data-bind="foreach: templates">
+        <a data-bind="click: addElement"><span data-bind="text: displayText" /></a><br />
     </div>
 </script>
