@@ -1,7 +1,7 @@
 module mapp.le {
     export class Menu {
         
-        private canvas: KnockoutObservable<Canvas>;
+        private editor: Editor;
         private addFrame: (type: le.enums.ElementType) => void;
         private selectObject: (element: fabric.IObject, event) => void;
         
@@ -22,6 +22,7 @@ module mapp.le {
 
             this.pageSetup = new PageSetup();
             this.templateList = new TemplateList(editor);
+            this.editor = editor;
 
             this.addFrame = () => {
                 

@@ -12,7 +12,7 @@ module mapp.le {
 
             this.templates = [
                  <ITemplate>{ displayText: "Image", addElement: () => { editor.addElement(new Image(editor)) }},
-                 <ITemplate>{ displayText: "Text Box", addElement: () => { editor.addElement(new TextBox()) }}
+                 <ITemplate>{ displayText: "Text Box", addElement: () => { editor.addElement(new TextBox(editor)) }}
             ];
 
             this.css = ko.pureComputed(() => {

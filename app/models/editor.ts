@@ -5,7 +5,7 @@ module mapp.le {
         public menu: Menu;
         public canvas: Canvas;
 
-        public elements: SelectedObject[];
+        public elements: KnockoutObservableArray<SelectedObject>;
         public selectedElement: SelectedObject;
         
         public addElement: (element: SelectedObject) => void;
@@ -13,14 +13,18 @@ module mapp.le {
 
         constructor() {
 
-            this.elements = [];
+            this.elements = ko.observableArray<SelectedObject>([]);
             this.canvas = new Canvas(this);
             this.menu = new Menu(this);
 
             this.addElement = (element: SelectedObject) => {
-                
-                this.selectedElement = element;
+                this.elements.push(element);
+                this.selectElement(element);
             };
+
+            this.selectElement = (element: SelectedObject) => {
+                this.selectedElement = element; 
+            }
         }
     }
 }
