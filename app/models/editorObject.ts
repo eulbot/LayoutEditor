@@ -1,6 +1,6 @@
 module mapp.le {
 
-    export class SelectedObject {
+    export class EditorObject {
 
         public object: fabric.IObject;
         public id: KnockoutObservable<string>;

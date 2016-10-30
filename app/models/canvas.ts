@@ -34,7 +34,7 @@ module mapp.le {
         private canvas: fabric.ICanvas;
         private init: () => void;
 
-        public selectedObject: SelectedObject;
+        //public selectedObject: EditorObject;
         public addFrame: (options?: fabric.IRectOptions, cloneFrom?: fabric.IObject) => fabric.IObject;
         public selectObject: (arg: string | fabric.IObject) => void;
         public removeObject: (id: string) => void;
@@ -44,7 +44,7 @@ module mapp.le {
             let elementSubstription: KnockoutSubscription;
             this.domElement = ko.observable<HTMLCanvasElement>();
             this.elements = ko.observableArray<fabric.IObject>();
-            this.selectedObject = new SelectedObject();
+            //this.selectedObject = new EditorObject();
 
             this.addFrame = (options: fabric.IRectOptions, cloneFrom?: fabric.IObject) => {
 
@@ -67,10 +67,10 @@ module mapp.le {
                     newFrame.setHeight(cloneFrom.getHeight());
                     newFrame.setCoords();
                 }
-
+                
                 this.canvas.add(newFrame);
                 this.canvas.setActiveObject(newFrame);
-
+                
                 return newFrame;
             }
 
@@ -117,28 +117,28 @@ module mapp.le {
                     "object:added": () => this.elements.notifySubscribers(),
                     "object:removed": () => this.elements.notifySubscribers(),
                     "object:selected": (e: fabric.IEvent) => {
-                            this.selectedObject.apply(e.target) 
+                            editor.selectElementById(e.target.getId()); 
                     },
                     "object:moving": (e: fabric.IEvent) => {
                         
-                        Util.observeMoving(this.selectedObject);
-                        this.selectedObject.update(); 
+                        Util.observeMoving(editor.selectedElement());
+                        editor.selectedElement().update(); 
                     },
                     "object:scaling": (e: fabric.IEvent) => {
 
                         resizing = true;
                         let corner: string = e.target['__corner'] || '';
-                        Util.observeResizing(this.selectedObject, corner);
-                        this.selectedObject.update(true);
+                        Util.observeResizing(editor.selectedElement(), corner);
+                        editor.selectedElement().update(true);
                     },
-                    "selection:cleared": () => this.selectedObject.clear(),
+                    "selection:cleared": () => editor.clearSelection(),
                     "mouse:move": (e: fabric.IEvent) => {
                         
                         target = e.target;
 
                         if(target && ctrlPressed) {
                             target.hoverCursor = 'copy';
-                        }
+                        }   
                         else if (target && !ctrlPressed) {
                             target.hoverCursor = 'move';
                         }
@@ -157,7 +157,7 @@ module mapp.le {
                     },
                     "mouse:up": () => {
                         if(resizing) 
-                            this.selectedObject.reapply();
+                            editor.selectedElement().reapply();
                            
                         resizing = false;
                         
@@ -173,26 +173,26 @@ module mapp.le {
                         ctrlPressed = true;
 
                         if(e.which == 38)
-                            Util.moveStep(this.selectedObject, enums.Direction.TOP, 20);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.TOP, 20);
                         if(e.which == 39) 
-                            Util.moveStep(this.selectedObject, enums.Direction.RIGHT, 20);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.RIGHT, 20);
                         if(e.which == 40) 
-                            Util.moveStep(this.selectedObject, enums.Direction.BOTTOM, 20);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.BOTTOM, 20);
                         if(e.which == 37) 
-                            Util.moveStep(this.selectedObject, enums.Direction.LEFT, 20);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.LEFT, 20);
                     }
                     else {
 
                         if(e.keyCode == 38) 
-                            Util.moveStep(this.selectedObject, enums.Direction.TOP);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.TOP);
                         if(e.keyCode == 39) 
-                            Util.moveStep(this.selectedObject, enums.Direction.RIGHT);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.RIGHT);
                         if(e.keyCode == 40) 
-                            Util.moveStep(this.selectedObject, enums.Direction.BOTTOM);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.BOTTOM);
                         if(e.keyCode == 37) 
-                            Util.moveStep(this.selectedObject, enums.Direction.LEFT);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.LEFT);
                         if(e.keyCode == 46)
-                            this.removeObject(this.selectedObject.id());
+                            this.removeObject(editor.selectedElement().id());
                     }
                 });
 

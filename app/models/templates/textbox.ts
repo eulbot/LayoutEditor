@@ -1,6 +1,6 @@
 module mapp.le {
 
-    export class TextBox extends SelectedObject {
+    export class TextBox extends EditorObject {
     
         public content: KnockoutObservable<string>;
 

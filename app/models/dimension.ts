@@ -6,6 +6,7 @@ module mapp.le {
         public isLocked: KnockoutObservable<boolean>;
 
         public displayValue: KnockoutComputed<number>;
+        public unit: KnockoutComputed<string>;
         public isComputed: KnockoutComputed<boolean>;
         public getProperties: KnockoutComputed<IDimensionProperties>;
         public setProperties: (data: any) => any;
@@ -18,8 +19,8 @@ module mapp.le {
             this.displayValue = ko.pureComputed({
                 read: () => {
                     
-                    let result: any = this.value() !== undefined ? this.showRelative() ? Util.round((this.value() / getAbsolute() * 100)) + '%' 
-                        : Math.round(this.value()) + 'px' : undefined;
+                    let result: any = this.value() !== undefined ? this.showRelative() ? Util.round((this.value() / getAbsolute() * 100))  
+                        : Math.round(this.value()) : undefined;
                     
                     if(this.showRelative())
                         this.isLocked(false);
@@ -29,11 +30,23 @@ module mapp.le {
                 write: (value: string) => {
 
                     if(value) {
+                        this.showRelative(value.indexOf('%') >= 0 || (value.indexOf('px') < 0 && this.showRelative()) ? true : false);
                         let parsed = parseFloat(value.replace(/[^\.\d]/g, ""));
                         let result: number = this.showRelative() ? getAbsolute() * parsed / 100: parsed;
                         this.value(result);
                     }
                 }
+            });
+
+            this.unit = ko.pureComputed(() => {
+                if(this.value()) {
+                    if(this.showRelative())
+                    return '%';
+                
+                    return 'px';
+                }    
+                else             
+                    return ' ';
             });
 
             this.setProperties = (data: any) => {

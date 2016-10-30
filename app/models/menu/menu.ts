@@ -5,8 +5,9 @@ module mapp.le {
         private addFrame: (type: le.enums.ElementType) => void;
         private selectObject: (element: fabric.IObject, event) => void;
         
-        private pageSetup: mapp.le.PageSetup;
-        private templateList: mapp.le.TemplateList;
+        private pageSetup: PageSetup;
+        private templateList: TemplateList;
+        private elementList: ElementList;
 
         // Menu entries
         private toggleMenuItem: (string) => void;
@@ -22,20 +23,12 @@ module mapp.le {
 
             this.pageSetup = new PageSetup();
             this.templateList = new TemplateList(editor);
+            this.elementList = new ElementList(editor);
             this.editor = editor;
-
-            this.addFrame = () => {
-                
-                let options = $.extend({}, mapp.le.DefaultFrameOptions, {fill: Util.getRandomColor()});
-                //this.canvas().addFrame(options);
-            }
 
             this.selectObject = (element: fabric.IObject, event) => {
                 
-                //if(element)
-                    //this.canvas().selectObject(element.getId());
             }
-            //this.init();
         }
     }
 }

@@ -1,0 +1,78 @@
+<script type="text/html" id="propertiesView-template"> 
+            
+    <div data-bind="click: () => { isToggled(!isToggled()) }, css: iconCss" class="icon-collapse hamburger hamburger--collapse">
+        <div class="hamburger-box">
+            <div class="hamburger-inner"></div>
+        </div>
+    </div>
+
+    <ul class="menu" data-bind="with: editor.selectedElement">
+        <li data-bind="css: pv.css" style="position: relative">
+            <span class="title" data-bind="click: () => { pv.isToggled(!pv.isToggled()) }">
+                <i class="mapp-layout-editor-i-wrench"></i>
+                <span>Properties</span>
+            </span>
+            <div class="li-content">
+                <span class="sub-title">Dimensions</span>
+                <div class="group border">
+                    <span class="w w6 indent">Width</span>
+                    <input type="text" class="short right custom-page-width" data-bind="value: width.displayValue">
+                    <span class="unit" data-bind="text: width.unit"></span>
+                    <br />
+                    <span class="w w6 indent">Height</span>
+                    <input type="text" class="short right custom-page-height" data-bind="value: height.displayValue">
+                    <span class="unit" data-bind="text: height.unit"></span>
+                </div>
+
+                <span class="sub-title">Position</span>
+                
+                <div class="positions">    
+
+                    <div class="top">
+                        <input type="text" class="short right" data-bind="value: top.displayValue" />
+                        <span class="unit" data-bind="text: top.unit"></span>
+                    </div>
+
+                    <div class="horizons">
+
+                        <div class="left">
+                            <input type="text" class="short right" data-bind="value: left.displayValue" />
+                            <span class="unit" data-bind="text: left.unit"></span>
+                        </div>
+
+                        <table class="arrows">
+                            <tr>
+                                <td></td>
+                                <td><div class="icon top mapp-layout-editor-i-arrow-up" data-bind="click: () => {top.isLocked(!top.isLocked())}, css: { locked: top.isLocked() }"></div></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><div class="icon left mapp-layout-editor-i-arrow-up" data-bind="click: () => {left.isLocked(!left.isLocked())}, css: { locked: left.isLocked() }"></div></td>
+                                <td><div class="object"></div></td>
+                                <td><div class="icon right mapp-layout-editor-i-arrow-up" data-bind="click: () => {right.isLocked(!right.isLocked())}, css: { locked: right.isLocked() }"></div></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><div class="icon bottom mapp-layout-editor-i-arrow-up" data-bind="click: () => {bottom.isLocked(!bottom.isLocked())}, css: { locked: bottom.isLocked() }"><div></td>
+                                <td></td>
+                            </tr>
+                        </table>
+
+                        <div class="right">
+                            <input type="text" class="short right" data-bind="value: right.displayValue" />
+                            <span class="unit" data-bind="text: right.unit"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="bottom">
+                        <input type="text" class="short right" data-bind="value: bottom.displayValue" />
+                        <span class="unit" data-bind="text: bottom.unit"></span>
+                    </div>
+
+                <div>
+
+            </div>
+        <li>
+    <ul>
+</script>

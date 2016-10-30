@@ -1,6 +1,6 @@
 module mapp.le {
 
-    export class PageSetup implements IMenuEntry {
+    export class PageSetup extends AMenuEntry {
         private width: KnockoutObservable<number>;
         private height: KnockoutObservable<number>;
         private dpi: KnockoutObservable<number>;
@@ -10,15 +10,14 @@ module mapp.le {
         selectedDPI: KnockoutObservable<string>;
         isCustomPageSize: KnockoutObservable<boolean>;
         isCustomDPI: KnockoutObservable<boolean>;
-        isToggled: KnockoutObservable<boolean>;
 
         private init: () => void;
         public setPageSize: () => void;
         public savePageSize: () => void;
-        public css: KnockoutComputed<string>;
 
         constructor() {
             
+            super();
             this.width = ko.observable<number>();
             this.height = ko.observable<number>();
             this.dpi = ko.observable<number>();
@@ -54,11 +53,7 @@ module mapp.le {
                 // TODO Persist page size and apply to Util
                 //Util.resizeCanvas
             }
-
-            this.css = ko.pureComputed(() => {
-                return this.isToggled() ? 'toggled' : '';
-            });
-
+            
             this.init();
         }
     }

@@ -1,0 +1,9 @@
+<script type="text/html" id="elementList-template">
+    <span class="title" data-bind="click: () => { isToggled(!isToggled()) }">
+        <i class="elements mapp-layout-editor-i-hehe"></i>
+        Elements
+    </span>
+    <div class="li-content open-border" data-bind="foreach: editor.elements">
+        Item
+    </div>
+</script>

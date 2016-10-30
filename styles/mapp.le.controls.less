@@ -21,6 +21,14 @@ body.mapp-le {
         }
     }
 
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        // appearance: none;
+        margin: 0; 
+    }
+
     div.button {
 
         background-color: @hxg-blue;
@@ -76,8 +84,40 @@ body.mapp-le {
 
     input, span {
         &.short {
-            width: 60px;
+            width: 50px;
 			display: inline-block;
+        }
+
+        &.right {
+            text-align: right;
+        }
+    }
+
+    span.unit {
+        font-family: Courier, monospace
+    }
+
+    span.w {
+        display: inline-block;
+
+        &.w3 {
+            width: 30px;
+        }
+
+        &.w4 {
+            width: 40px;
+        }
+
+        &.w5 {
+            width: 50px;
+        }
+
+        &.w6 {
+            width: 60px;
+        }
+
+        &.w7 {
+            width: 70px;
         }
     }
 }

@@ -3,15 +3,7 @@
     <ul class="menu">
         <li data-bind="template: {name: 'pageSetup-template', data: pageSetup}, css: pageSetup.css"> </li>
         <li data-bind="template: {name: 'templateList-template', data: templateList}, css: templateList.css"> </li>
-        <li>
-            <span class="title" data-bind="click: () => { isToggled(!isToggled()) }">
-                <i class="mapp-layout-editor-i-handle-streamline-vector"></i>
-                Elements
-            </span>
-            <div data-bind="foreach: editor.elements">
-                Item<br>
-            </div>
-        </li>
+        <li data-bind="template: {name: 'elementList-template', data: elementList}, css: elementList.css"> </li>
     </ul>
 
     <!--<label>Page setup</label>

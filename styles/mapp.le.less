@@ -2,6 +2,7 @@
 @import 'mapp.le.controls.less';
 @import 'mapp.le.fonts.less';
 @import 'mapp.le.icons.less';
+@import 'mapp.le.hbg.less';
 @import 'mapp.le.mixins.less';
 
 * {
@@ -64,14 +65,20 @@ header {
 	}
 }
 
+content.editor {
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+}
+
 ul.menu {
 	margin: 0;
 	padding: 0;
 	background-color: #FFF;
 	line-height: 32px;
+	list-style: none;
 
 	li {
-		background-color: @hxg-lightgrey;
 	
 		input[type=text], select {
 			background-color: #FFF;
@@ -126,6 +133,7 @@ ul.menu {
 
 		.li-content {
 
+			background-color: @hxg-lightgrey;
 			display: none;
 			padding: 12px;
 			padding-top: 6px;
@@ -146,6 +154,10 @@ ul.menu {
 			div.button {
 				margin-top: 12px;
 			}
+
+			&.open-border {
+				border-bottom: none;
+			}
 		}
 
 		&.toggled {
@@ -155,7 +167,6 @@ ul.menu {
 			}
 
 			.title {
-				color: @hxg-blue;
 
 				&:after, &:before {
 					top: 100%;
@@ -184,16 +195,15 @@ ul.menu {
 			}
 		}
 	}
-	
-	
 
 }
 
 section.menu {
-	background-color: white;
-	position: fixed;
-	width: 300px;
-
+	background-color: @hxg-lightgrey;
+	width: 250px;
+	overflow: auto;
+	box-shadow: rgba(0, 0, 0, 0.15) 0px 1px 8px;
+	z-index: 100;
 
 	div.page-setup {
 		padding: 1rem 2rem;
@@ -203,26 +213,13 @@ section.menu {
 			padding: 2px;
 		}
 	}
-
-	ul {
-		list-style: none;
-		
-		// li:hover {
-		// 	color: @hxg-blue;
-		// 	cursor: pointer;
-		// }
-	}
 	
 	div.properties {
-		height: 300px;
+		height: 270px;
 		bottom: 0;
 		position: absolute;
 		width: 100%;
 	}
-
-	// input[type="text"] {
-	// 	width: 120px;
-	// }
 
 	input.prio {
 		font-weight: bold;
@@ -233,18 +230,62 @@ section.menu {
 	}
 }
 
+section.properties {
+	
+	background-color: @hxg-lightgrey;
+	margin-left: -218px;
+	transition: margin-left .3s;
+	width: 270px;
+	position: relative;
+	z-index: 90;
+
+	.icon-collapse {
+		position: absolute;
+		right: 0; 
+		z-index: 90;
+		padding: 9px 0;
+
+		.hamburger-box {
+			width: 36px;
+		}
+
+		&:hover {
+			.hamburger-inner, .hamburger-inner:before, .hamburger-inner:after {
+				background-color: @hxg-blue;
+			}
+		}
+
+		&, * {
+			opacity: 1 !important;
+		}
+	}
+
+	* {
+		opacity: 0;
+		transition: opacity .6s;
+	}
+
+	&.toggled {
+		margin-left: 0px;
+		transition: margin-left .3s;
+
+		> ul, ul * {
+			opacity: 1;
+			transition: opacity .6s;
+		}
+	}
+}
+
 section.canvas {
 	
-	background: @hxg-lightergrey; /* For browsers that do not support gradients */
-	background: -webkit-linear-gradient(left top, @hxg-lightergrey, #bdbdbd); /* For Safari 5.1 to 6.0 */
-	background: -o-linear-gradient(bottom right, @hxg-lightergrey, #bdbdbd); /* For Opera 11.1 to 12.0 */
-	background: -moz-linear-gradient(bottom right, @hxg-lightergrey, #bdbdbd); /* For Firefox 3.6 to 15 */
-	background: linear-gradient(to bottom right, @hxg-lightergrey, #bdbdbd); /* Standard syntax */
+	background: @hxg-lightergrey; 
+	background: -webkit-linear-gradient(left top, @hxg-lightergrey, #aaa); 
+	background: -o-linear-gradient(bottom right, @hxg-lightergrey, #aaa); 
+	background: -moz-linear-gradient(bottom right, @hxg-lightergrey, #aaa);
+	background: linear-gradient(to bottom right, @hxg-lightergrey, #aaa); 
 	
-	
-	padding-left: 300px;
-	width: 100%;
 	overflow: auto;
+	flex-grow: 1;
 
 	div.le-canvas-container {
 		padding: 20px;
@@ -264,14 +305,6 @@ section.canvas {
 	}
 }
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    // appearance: none;
-    margin: 0; 
-}
-
 div.dimensions {
 
 
@@ -288,7 +321,6 @@ div.positions {
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
-	width: 300px;
 
 	div {
 		display: flex;
@@ -296,21 +328,6 @@ div.positions {
 
 	> div {
 		align-self: center
-	}
-
-	input[type=text] {
-		width: 50px;
-		// border: none;
-		// background-color: #fafafa;
-		// border-bottom: 1px solid #eaeaea;
-		// font-size: 18px;
-		// line-height: 22px;
-		// text-align: right;
-
-		&:focus {
-			outline: none;
-			border-bottom: 1px solid #ccc;
-		}
 	}
 
 	div.horizons {
@@ -327,7 +344,14 @@ div.positions {
 			.icon {
 
 				color: #999;
+				transition: color .3s;
 				font-size: 22px;
+				cursor: pointer;
+
+				&.locked {
+					color: @hxg-blue;
+					transition: color .6s;
+				}
 
 				&.right {
 					.rotate(90deg);
