@@ -8,7 +8,6 @@ module mapp.le {
         originY: 'top',
         width: 150,
         height: 100,
-        fill: mapp.le.Util.getRandomColor(),
         lockRotation: true,
 		hasRotatingPoint: false,
 		perPixelTargetFind: true,

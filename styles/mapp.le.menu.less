@@ -1,0 +1,256 @@
+@import 'mapp.colors.less';
+
+ul.menu {
+	margin: 0;
+	padding: 0;
+	background-color: #FFF;
+	line-height: 32px;
+	list-style: none;
+
+	li {
+	
+		input[type=text], select {
+			background-color: #FFF;
+		}
+
+		div.group {
+			padding: 9px;
+			padding-top: 0;
+
+			&.border {
+				border-bottom: 1px solid @hxg-border;
+			}
+		}
+
+		span {
+
+			padding-right: 4px;
+
+			&.indent {
+				padding-left: 12px;
+			}
+		}
+
+		.title {
+			display: flex;
+			align-items: center;
+			position: relative;
+			background-color: #FFF;
+			border-bottom: 1px solid @hxg-border;
+			color: @hxg-darkgrey;
+			text-transform: uppercase;
+			line-height: 45px;
+			cursor: pointer;
+			transition: color .5s;
+
+			&:hover {
+				color: @hxg-blue;
+				transition: color .5s;
+			}
+
+			i {
+				font-size: 21px;
+				padding: 2px 16px 0 9px;
+
+				&.elements {
+					font-size: 23px;
+					line-height: 30px;
+    				padding-top: 8px;
+				}
+			}
+		}
+
+        .li-content {
+            background-color: @hxg-lightgrey;
+            display: none;
+            border-bottom: 1px solid @hxg-bordergrey;
+        }
+		
+		&.toggled {
+			
+			.li-content {
+				display: block;
+			}
+
+			.title {
+
+				position: relative;
+				z-index: 90;
+
+				&:after, &:before {
+					top: 100%;
+					right: 20px;
+					border: solid transparent;
+					content: " ";
+					height: 0;
+					width: 0;
+					position: absolute;
+					pointer-events: none;
+				}
+
+				&:after {
+					border-color: rgba(136, 183, 213, 0);
+					border-top-color: #FFF;
+					border-width: 7px;
+					margin-left: -7px;
+				}
+				&:before {
+					border-color: rgba(194, 225, 245, 0);
+					border-top-color: @hxg-border;
+					border-width: 8px;
+					margin-left: -8px;
+					right: 19px;
+				}
+			}
+		}
+
+		&:last-child {
+			.li-content {
+				border-bottom: none;
+			}
+		}
+	}
+
+}
+
+li.page-setup, section.properties {
+    .li-content {
+        background-color: @hxg-lightgrey;
+        display: none;
+        padding: 12px;
+        padding-top: 6px;
+
+        .sub-title {
+            display: block;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 12px;
+            color: @hxg-darkgrey;
+        }
+
+        .radio {
+            margin-bottom: 9px;
+        }
+
+        div.button {
+            margin-top: 12px;
+        }
+
+        &.open-border {
+            border-bottom: none;
+        }
+    }
+}
+
+li.templates {
+    div.template-item {
+        padding: 0px 8px;
+		line-height: 34px;
+
+        > div {
+            padding: 4px 0px;
+            border-bottom: 1px solid @hxg-bordergrey;
+
+            i.template-icon {
+                font-size: 19px;
+                display: inline-block;
+                vertical-align: bottom;
+                margin-bottom: -1px;
+                margin-right: 10px;
+                color: #333;
+            }
+            
+            span {
+                color: black;
+                transition: color .3s;
+            }
+        }
+        &:hover {
+            cursor: pointer;
+
+            span {
+                color: @hxg-blue;
+                transition: color .3s;
+            }
+        }
+        &:last-child {
+            > div {
+                border-bottom: none;
+            }
+        }
+    }
+}
+
+li.elements {
+	ul.elements {
+		list-style: none;
+		padding: 0;
+
+		li.element {
+			line-height: 34px;
+
+			> div {
+				padding: 3px 8px 3px 12px;
+				background-color: @hxg-lightgrey;
+				transition: background-color .3s;
+
+				i {
+					float: right;
+					color: @hxg-darkgrey;
+					opacity: 0;
+					transition: color .3s, opacity .3s;
+				}
+			}
+
+			&:hover {
+				cursor: pointer;
+				color: @hxg-blue;
+			}
+
+			&.selected {
+				color: @hxg-blue;
+
+				> div {
+					background-color: white;
+					transition: background-color .3s;
+					position: relative;
+					z-index: 80;
+
+					i {
+						opacity: 1;
+						transition: opacity .3s;
+
+						&:hover {
+							color: @hxg-red;
+							transition: color .3s;
+						}
+					}
+				}
+				> div:after, > div:before {
+					left: 100%;
+					top: 50%;
+					border: solid transparent;
+					content: " ";
+					height: 0;
+					width: 0;
+					position: absolute;
+					pointer-events: none;
+				}
+
+				> div:after {
+					border-color: transparent;
+					border-left-color: white;
+					border-width: 7px;
+					margin-top: -7px;
+				}
+				> div:before {
+					border-color: transparent;
+					border-left-color: @hxg-border;
+					border-width: 8px;
+					margin-top: -8px;
+				}
+				
+			}
+		}
+	}
+}

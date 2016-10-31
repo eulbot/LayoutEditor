@@ -12,6 +12,7 @@ module mapp.le {
         public addElement: (element: EditorObject) => void;
         public selectElement: (element: EditorObject) => void;
         public selectElementById: (id: string) => void;
+        public removeElement: (element: EditorObject) => void;
         public clearSelection: () => void;
 
         constructor() {
@@ -40,6 +41,12 @@ module mapp.le {
                         this.selectElement(element);
                 });
             };
+
+            this.removeElement = (element: EditorObject) => {
+                this.canvas.removeObject(element.object.getId());
+                this.elements.remove(element);
+                this.clearSelection();
+            }
 
             this.clearSelection = () => {
                 this.selectedElement(new EditorObject());

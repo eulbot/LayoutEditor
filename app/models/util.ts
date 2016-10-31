@@ -362,10 +362,6 @@ module mapp.le {
             return dimension == 0 || dimension == 3 || dimension == 5;
         }
 
-        static getRandomColor() {
-            return 'rgba(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ', 0.75)';
-        }
-
         static setValue(value: any, ...observables: KnockoutObservable<any>[]) {
             observables.forEach(obs => {
                 obs(value);

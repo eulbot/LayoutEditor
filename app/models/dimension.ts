@@ -32,6 +32,8 @@ module mapp.le {
                     if(value) {
                         this.showRelative(value.indexOf('%') >= 0 || (value.indexOf('px') < 0 && this.showRelative()) ? true : false);
                         let parsed = parseFloat(value.replace(/[^\.\d]/g, ""));
+                        parsed = isNaN(parsed) ? this.value() : parsed;
+                        if(parsed > 10000) parsed = 9999;
                         let result: number = this.showRelative() ? getAbsolute() * parsed / 100: parsed;
                         this.value(result);
                     }
@@ -39,14 +41,10 @@ module mapp.le {
             });
 
             this.unit = ko.pureComputed(() => {
-                if(this.value()) {
-                    if(this.showRelative())
+                 if(this.showRelative())
                     return '%';
                 
-                    return 'px';
-                }    
-                else             
-                    return ' ';
+                return 'px';
             });
 
             this.setProperties = (data: any) => {

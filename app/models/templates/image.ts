@@ -1,3 +1,5 @@
+/// <reference path="../EditorObject.ts" />
+
 module mapp.le {
 
     export class Image extends EditorObject {
@@ -6,6 +8,7 @@ module mapp.le {
 
         constructor(editor: Editor) {
             super();
+            this.name('Image' + this.name());
             this.url = ko.observable<string>();
         }
     }

@@ -9,8 +9,9 @@ module mapp.le {
             this.isToggled = ko.observable<boolean>(true);
 
             this.templates = [
-                 <ITemplate>{ displayText: "Image", addElement: () => { editor.addElement(new Image(editor)) }},
-                 <ITemplate>{ displayText: "Text Box", addElement: () => { editor.addElement(new TextBox(editor)) }}
+                 <ITemplate>{ displayText: "Image", icon: "mapp-layout-editor-i-image", addElement: () => { editor.addElement(new Image(editor)) }},
+                 <ITemplate>{ displayText: "Text Box", icon: "mapp-layout-editor-i-character", addElement: () => { editor.addElement(new TextBox(editor)) }},
+                 <ITemplate>{ displayText: "Map Section", icon: "mapp-layout-editor-i-overview", addElement: () => { editor.addElement(new TextBox(editor)) }}
             ];
         }
     }

@@ -4,6 +4,10 @@
         Templates
     </span>
     <div class="li-content" data-bind="foreach: templates">
-        <a data-bind="click: addElement"><span data-bind="text: displayText" /></a><br />
+        <div class="template-item" data-bind="click: addElement">
+            <div>
+                <i class="template-icon" data-bind="css: icon"></i><a><span data-bind="text: displayText" />
+            <div>
+        </div>
     </div>
 </script>

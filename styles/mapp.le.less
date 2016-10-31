@@ -1,9 +1,10 @@
-
+@import 'mapp.colors.less';
 @import 'mapp.le.controls.less';
 @import 'mapp.le.fonts.less';
 @import 'mapp.le.icons.less';
 @import 'mapp.le.hbg.less';
 @import 'mapp.le.mixins.less';
+@import 'mapp.le.menu.less';
 
 * {
 	box-sizing: border-box;
@@ -34,8 +35,7 @@ header {
     	width: 100%;
 
 		.logo {
-			margin: 0px 12px 0px 6px;
-			margin-top: 6px;
+			margin: 8px 10px 0px 10px;
 			font-size: 32px;
 			color: #444;
 		}
@@ -71,139 +71,19 @@ content.editor {
 	height: 100%;
 }
 
-ul.menu {
-	margin: 0;
-	padding: 0;
-	background-color: #FFF;
-	line-height: 32px;
-	list-style: none;
-
-	li {
-	
-		input[type=text], select {
-			background-color: #FFF;
-		}
-
-		div.group {
-			padding: 9px;
-			padding-top: 0;
-
-			&.border {
-				border-bottom: 1px solid @hxg-border;
-			}
-		}
-
-		span {
-
-			padding-right: 4px;
-
-			&.indent {
-				padding-left: 12px;
-			}
-		}
-
-		.title {
-			display: flex;
-			align-items: center;
-			position: relative;
-			background-color: #FFF;
-			border-bottom: 1px solid @hxg-border;
-			color: @hxg-darkgrey;
-			text-transform: uppercase;
-			line-height: 45px;
-			cursor: pointer;
-			transition: color .5s;
-
-			&:hover {
-				color: @hxg-blue;
-				transition: color .5s;
-			}
-
-			i {
-				font-size: 21px;
-				padding: 2px 16px 0 9px;
-
-				&.elements {
-					font-size: 23px;
-					line-height: 30px;
-    				padding-top: 8px;
-				}
-			}
-		}
-
-		.li-content {
-
-			background-color: @hxg-lightgrey;
-			display: none;
-			padding: 12px;
-			padding-top: 6px;
-			border-bottom: 1px solid @hxg-bordergrey;
-
-			.sub-title {
-				display: block;
-				text-transform: uppercase;
-				font-weight: bold;
-				font-size: 12px;
-				color: @hxg-darkgrey;
-			}
-
-			.radio {
-				margin-bottom: 9px;
-			}
-
-			div.button {
-				margin-top: 12px;
-			}
-
-			&.open-border {
-				border-bottom: none;
-			}
-		}
-
-		&.toggled {
-			
-			.li-content {
-				display: block;
-			}
-
-			.title {
-
-				&:after, &:before {
-					top: 100%;
-					right: 20px;
-					border: solid transparent;
-					content: " ";
-					height: 0;
-					width: 0;
-					position: absolute;
-					pointer-events: none;
-				}
-
-				&:after {
-					border-color: rgba(136, 183, 213, 0);
-					border-top-color: #FFF;
-					border-width: 7px;
-					margin-left: -7px;
-				}
-				&:before {
-					border-color: rgba(194, 225, 245, 0);
-					border-top-color: @hxg-border;
-					border-width: 8px;
-					margin-left: -8px;
-					right: 19px;
-				}
-			}
-		}
-	}
-
-}
-
 section.menu {
-	background-color: @hxg-lightgrey;
 	width: 250px;
 	overflow: auto;
-	box-shadow: rgba(0, 0, 0, 0.15) 0px 1px 8px;
+	overflow-x: hidden;
+	flex-shrink: 0;
 	z-index: 100;
+	padding-right: 8px;
+
+	div.menu-wrapper {
+		height: 100%;
+		background-color: @hxg-lightgrey;
+		box-shadow: rgba(0, 0, 0, 0.15) 0px 1px 8px;
+	}
 
 	div.page-setup {
 		padding: 1rem 2rem;
@@ -233,16 +113,17 @@ section.menu {
 section.properties {
 	
 	background-color: @hxg-lightgrey;
-	margin-left: -218px;
+	margin-left: -226px;
 	transition: margin-left .3s;
+	flex-shrink: 0;
 	width: 270px;
 	position: relative;
-	z-index: 90;
+	z-index: 70;
 
 	.icon-collapse {
 		position: absolute;
 		right: 0; 
-		z-index: 90;
+		z-index: 100;
 		padding: 9px 0;
 
 		.hamburger-box {
@@ -266,7 +147,7 @@ section.properties {
 	}
 
 	&.toggled {
-		margin-left: 0px;
+		margin-left: -8px;
 		transition: margin-left .3s;
 
 		> ul, ul * {
@@ -321,6 +202,7 @@ div.positions {
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
+	border-bottom: 1px solid @hxg-border;
 
 	div {
 		display: flex;
@@ -330,16 +212,24 @@ div.positions {
 		align-self: center
 	}
 
+	span.unit {
+		margin-left: 4px;
+	}
+
+	> div.top, > div.bottom {
+		margin-left: 20px;
+	}
+
+	> div.bottom {
+		margin-top: 2px;
+	}
+
 	div.horizons {
 		flex-direction: row;
 		align-items: center;
 
 		table.arrows {
 			table-layout: fixed;
-
-			td {
-				padding: 4px;
-			}
 
 			.icon {
 
@@ -349,7 +239,7 @@ div.positions {
 				cursor: pointer;
 
 				&.locked {
-					color: @hxg-blue;
+					color: @hxg-red;
 					transition: color .6s;
 				}
 

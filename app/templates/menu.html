@@ -1,81 +1,10 @@
 <script type="text/html" id="menu-template">
 
-    <ul class="menu">
-        <li data-bind="template: {name: 'pageSetup-template', data: pageSetup}, css: pageSetup.css"> </li>
-        <li data-bind="template: {name: 'templateList-template', data: templateList}, css: templateList.css"> </li>
-        <li data-bind="template: {name: 'elementList-template', data: elementList}, css: elementList.css"> </li>
-    </ul>
-
-    <!--<label>Page setup</label>
-    <div class="page-setup">
-        <select data-bind="options: pageSizes, optionsText: 'name', value: selectedPageSize, event:{ change: setPageSize}"></select>
-    </div>
-
-    <label>Templates</label>
-    <ul>
-        <li data-bind="click: addFrame">
-            Frame
-        </li>
-    </ul>
-
-    <label>Elements</label>
-    <div data-bind="with: canvas">
-        <ul data-bind="foreach: {data: elements, as: 'element'}">
-            <li data-bind="click: menu.selectObject">
-                <span data-bind="text: element.getName()"></span>
-                (Id: <span data-bind="text: element.getId()"></span>)
-            </li>
+    <div class="menu-wrapper">
+        <ul class="menu">
+            <li data-bind="template: {name: 'pageSetup-template', data: pageSetup}, css: pageSetup.css" class="page-setup"> </li>
+            <li data-bind="template: {name: 'templateList-template', data: templateList}, css: templateList.css" class="templates"> </li>
+            <li data-bind="template: {name: 'elementList-template', data: elementList}, css: elementList.css" class="elements"> </li>
         </ul>
     </div>
-
-    <div class="properties" data-bind="with: canvas">
-    <label>Properties</label>
-        <table>
-            <tr>
-                <td>Width</td>
-                <td><input type="text" data-bind="value: selectedObject.width.displayValue, css: { prio: selectedObject.hasPrio(0), slave: selectedObject.isSlave(0) }" /></td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.width.showRelative" />%</td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.width.isLocked, disable: selectedObject.width.showRelative()" />L</td>
-            </tr>
-            
-            <tr>
-                <td>Height</td>
-                <td><input type="text" data-bind="value: selectedObject.height.displayValue, css: { prio: selectedObject.hasPrio(1), slave: selectedObject.isSlave(1) }" /></td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.height.showRelative" />%</td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.height.isLocked, disable: selectedObject.height.showRelative()" />L</td>
-            </tr>
-            
-            
-            <tr>
-                <td>Top</td>
-                <td><input type="text" data-bind="value: selectedObject.top.displayValue, css: { prio: selectedObject.hasPrio(2), slave: selectedObject.isSlave(2) }" /></td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.top.showRelative" />%</td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.top.isLocked, disable: selectedObject.top.showRelative()" />L</td>
-            </tr>
-
-            <tr>
-                <td>Right</td>
-                <td><input type="text" data-bind="value: selectedObject.right.displayValue, css: { prio: selectedObject.hasPrio(3), slave: selectedObject.isSlave(3) }" /></td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.right.showRelative" />%</td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.right.isLocked, disable: selectedObject.right.showRelative()" />L</td>
-            </tr>
-
-            <tr>
-                <td>Bottom</td>
-                <td><input type="text" data-bind="value: selectedObject.bottom.displayValue, css: { prio: selectedObject.hasPrio(4), slave: selectedObject.isSlave(4) }" /></td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.bottom.showRelative" />%</td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.bottom.isLocked, disable: selectedObject.bottom.showRelative()" />L</td>
-            </tr>
-
-            <tr>
-                <td>Left</td>
-                <td><input type="text" data-bind="value: selectedObject.left.displayValue, css: { prio: selectedObject.hasPrio(5), slave: selectedObject.isSlave(5) }" /></td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.left.showRelative" />%</td>
-                <td><input type="checkbox" data-bind="checked: selectedObject.left.isLocked, disable: selectedObject.left.showRelative()" />L</td>
-            </tr>
-        </table>
-
-        scaleX <span data-bind="text: selectedObject.prioX"></span><br />
-        scaleY <span data-bind="text: selectedObject.prioY"></span>
-    </div>-->
 </script>

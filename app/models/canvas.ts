@@ -34,7 +34,6 @@ module mapp.le {
         private canvas: fabric.ICanvas;
         private init: () => void;
 
-        //public selectedObject: EditorObject;
         public addFrame: (options?: fabric.IRectOptions, cloneFrom?: fabric.IObject) => fabric.IObject;
         public selectObject: (arg: string | fabric.IObject) => void;
         public removeObject: (id: string) => void;
@@ -44,12 +43,11 @@ module mapp.le {
             let elementSubstription: KnockoutSubscription;
             this.domElement = ko.observable<HTMLCanvasElement>();
             this.elements = ko.observableArray<fabric.IObject>();
-            //this.selectedObject = new EditorObject();
 
             this.addFrame = (options: fabric.IRectOptions, cloneFrom?: fabric.IObject) => {
 
                 count++;
-                options = $.extend(mapp.le.DefaultFrameOptions, options);
+                options = $.extend(mapp.le.DefaultFrameOptions, options, {fill:'rgba(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',0.75)'});
                 let newFrame = new fabric.Rect(options);
                 newFrame.data = {id: count.toString(), name: 'Frame', 
                     Width: {
@@ -147,7 +145,7 @@ module mapp.le {
                         if(ctrlPressed && e.target) {
                             ctrlPressed = false;
                             
-                            let options = $.extend({}, mapp.le.DefaultFrameOptions, {fill: Util.getRandomColor()});
+                            let options = $.extend({}, mapp.le.DefaultFrameOptions, {});//  {fill: Util.getRandomColor()});
                             let clone = this.addFrame(options, e.target);
                             this.canvas.bringToFront(clone);
                             

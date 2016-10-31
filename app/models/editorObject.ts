@@ -4,7 +4,8 @@ module mapp.le {
 
         public object: fabric.IObject;
         public id: KnockoutObservable<string>;
-        private name: KnockoutObservable<string>;
+        public name: KnockoutObservable<string>;
+        private static count: number = -1;
 
         public width: Dimension;
         public height: Dimension;
@@ -30,7 +31,7 @@ module mapp.le {
 
         public update: (reapply?: boolean) => void;
         public resize: () => void;
-        public clear: () => void;
+        //public clear: () => void;
         private init: () => void;
         private initSelectdProperties: () => void;
         private updating: boolean;
@@ -38,8 +39,9 @@ module mapp.le {
 
         constructor() {            
 
+            EditorObject.count++;
             this.id = ko.observable<string>();
-            this.name = ko.observable<string>();
+            this.name = ko.observable<string>(EditorObject.count.toString());
             this.width = new Dimension(Util.getCanvasWidth);
             this.height = new Dimension(Util.getCanvasHeight);
             this.top = new Dimension(Util.getCanvasHeight);
@@ -58,6 +60,7 @@ module mapp.le {
             this.apply = (object: fabric.IObject) => {
 
                 this.object = object;
+                this.id(object.getId());
                 this.initSelectdProperties();
                 this.update();
             }
@@ -244,23 +247,23 @@ module mapp.le {
                 }
             }
 
-            this.clear = () => {
+            // this.clear = () => {
 
-                this.updating = true;
-                Util.setValue(undefined, this.id, this.name, this.width.value, this.height.value, this.top.value, this.right.value, this.bottom.value, this.left.value);
-                Util.setValue(false, this.width.showRelative, this.width.isLocked, this.height.showRelative, this.height.isLocked, 
-                    this.top.showRelative, this.top.isLocked, this.right.showRelative, this.right.isLocked, 
-                    this.bottom.showRelative, this.bottom.isLocked, this.left.showRelative, this.left.isLocked);
-                this.updating = false;
+            //     this.updating = true;
+            //     Util.setValue(undefined, this.id, this.name, this.width.value, this.height.value, this.top.value, this.right.value, this.bottom.value, this.left.value);
+            //     Util.setValue(false, this.width.showRelative, this.width.isLocked, this.height.showRelative, this.height.isLocked, 
+            //         this.top.showRelative, this.top.isLocked, this.right.showRelative, this.right.isLocked, 
+            //         this.bottom.showRelative, this.bottom.isLocked, this.left.showRelative, this.left.isLocked);
+            //     this.updating = false;
 
-                this.prioX.removeAll();
-                this.prioY.removeAll();
-            }
+            //     this.prioX.removeAll();
+            //     this.prioY.removeAll();
+            // }
 
             this.initSelectdProperties = () => {
                 
-                this.clear();
-                this.id(this.object.getId());
+                //this.clear();
+                //this.id(this.object.getId());
                 this.width.setProperties(this.object.data['Width']);
                 this.height.setProperties(this.object.data['Height']);
                 this.top.setProperties(this.object.data['Top']);

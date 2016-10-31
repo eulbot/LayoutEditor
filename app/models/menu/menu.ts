@@ -3,20 +3,15 @@ module mapp.le {
         
         private editor: Editor;
         private addFrame: (type: le.enums.ElementType) => void;
-        private selectObject: (element: fabric.IObject, event) => void;
         
         private pageSetup: PageSetup;
         private templateList: TemplateList;
         private elementList: ElementList;
 
-        // Menu entries
-        private toggleMenuItem: (string) => void;
-        private toggleStates: KnockoutObservableArray<boolean>;
-        private toggleState: KnockoutComputed<number>;
-        public displayValue: KnockoutComputed<number>;
+        public selectElement: (element: EditorObject) => void;
+        public removeElement: (element: EditorObject) => void;
+        public isSelected: (element: EditorObject) => boolean;
 
-        private init: () => void;
-        
         constructor(editor: Editor) {
             
             //this.canvas = ko.observable<Canvas>(canvas);
@@ -26,8 +21,18 @@ module mapp.le {
             this.elementList = new ElementList(editor);
             this.editor = editor;
 
-            this.selectObject = (element: fabric.IObject, event) => {
-                
+            this.selectElement = (element: EditorObject) => {
+                editor.selectedElement(element);
+                this.editor.propertiesView.isToggled(true);
+            }
+
+            this.removeElement = (element: EditorObject) => {
+                editor.removeElement(element);
+                this.editor.propertiesView.isToggled(false);
+            }
+
+            this.isSelected = (element: EditorObject) => {
+                return element == editor.selectedElement();
             }
         }
     }
