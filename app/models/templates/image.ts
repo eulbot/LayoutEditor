@@ -8,8 +8,9 @@ module mapp.le {
 
         constructor(editor: Editor) {
             super();
-            this.name('Image' + this.name());
             this.url = ko.observable<string>();
+
+            this.attributes.push(new Attribute<string>(this.url, 'URL', enums.AttributeTemplates.INPUT));
         }
     }
 

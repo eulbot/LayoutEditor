@@ -14,12 +14,7 @@ ul.menu {
 		}
 
 		div.group {
-			padding: 9px;
-			padding-top: 0;
-
-			&.border {
-				border-bottom: 1px solid @hxg-border;
-			}
+			padding: 0 9px;
 		}
 
 		span {
@@ -63,7 +58,6 @@ ul.menu {
         .li-content {
             background-color: @hxg-lightgrey;
             display: none;
-            border-bottom: 1px solid @hxg-bordergrey;
         }
 		
 		&.toggled {
@@ -117,8 +111,16 @@ li.page-setup, section.properties {
     .li-content {
         background-color: @hxg-lightgrey;
         display: none;
-        padding: 12px;
-        padding-top: 6px;
+        padding: 0 12px;
+
+		.sub-group {
+			padding: 9px 0;
+			border-bottom: 1px solid #dbdbdb;
+
+			&:last-child {
+				border-bottom: none;
+			}
+		}
 
         .sub-title {
             display: block;
@@ -194,17 +196,27 @@ li.elements {
 				background-color: @hxg-lightgrey;
 				transition: background-color .3s;
 
+				span {
+					color: black;
+					transition: color .3s;
+				}
+
 				i {
 					float: right;
 					color: @hxg-darkgrey;
 					opacity: 0;
-					transition: color .3s, opacity .3s;
+					visibility: hidden;
+					transition: color .3s, opacity .3s, visibility 0s;
 				}
 			}
 
 			&:hover {
 				cursor: pointer;
-				color: @hxg-blue;
+
+				span {
+					color: @hxg-blue;
+					transition: color .3s;
+				}
 			}
 
 			&.selected {
@@ -218,6 +230,7 @@ li.elements {
 
 					i {
 						opacity: 1;
+						visibility: visible;
 						transition: opacity .3s;
 
 						&:hover {

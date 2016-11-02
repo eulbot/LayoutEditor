@@ -4,31 +4,33 @@
         Page Setup
     </span>
     <div class="li-content">
-        <span class="sub-title">Page Size</span>
-        <div class="group border">
-            <span>Format</span> 
-            <select class="page-size-select" data-bind="options: defaultPageSizes, optionsText: 'name', value: selectedPageSize, event: {change: setPageSize}, disable: isCustomPageSize"></select><br />
-            <input type="checkbox" id="checkbox-custom-page-size" data-bind="checked: isCustomPageSize">
-            <label for="checkbox-custom-page-size">Custom</label> <br />
-            <span class="short indent">Width</span>
-            <input type="text" class="short custom-page-width" data-bind="value: width, enable: isCustomPageSize"><br />
-            <span class="short indent">Height</span>
-            <input type="text" class="short custom-page-height" data-bind="value: height, enable: isCustomPageSize">
+        <div class="sub-group">
+            <span class="sub-title">Page Size</span>
+            <div class="group border">
+                <span>Format</span> 
+                <select class="page-size-select" data-bind="options: defaultPageSizes, optionsText: 'name', value: selectedPageSize, event: {change: setPageSize}, disable: isCustomPageSize"></select><br />
+                <input type="checkbox" id="checkbox-custom-page-size" data-bind="checked: isCustomPageSize">
+                <label for="checkbox-custom-page-size">Custom</label> <br />
+                <span class="w w6 indent">Width</span>
+                <input type="text" class="short custom-page-width" data-bind="value: width, enable: isCustomPageSize"><br />
+                <span class="w w6 indent">Height</span>
+                <input type="text" class="short custom-page-height" data-bind="value: height, enable: isCustomPageSize">
+            </div>
         </div>
-
-        <span class="sub-title">DPI</span>
-        <div class="group">
-            <span>Default Values</span>
-            <select class="dpi-select" data-bind="value: selectedDPI, event: {change: setPageSize}, disable: isCustomDPI">
-                <option type="number">72</option>
-                <option>96</option>
-                <option>150</option>
-                <option>300</option>
-            </select><br />
-            <input type="checkbox" id="checkbox-custom-dpi" data-bind="checked: isCustomDPI">
-            <label for="checkbox-custom-dpi">Custom</label> <br />
-            <span class="short indent">DPI</span><input type="text" class="short" data-bind="value: dpi, enable: isCustomDPI">
+        <div class="sub-group">
+            <span class="sub-title">DPI</span>
+            <div class="group">
+                <span>Default Values</span>
+                <select class="dpi-select" data-bind="value: selectedDPI, event: {change: setPageSize}, disable: isCustomDPI">
+                    <option type="number">72</option>
+                    <option>96</option>
+                    <option>150</option>
+                    <option>300</option>
+                </select><br />
+                <input type="checkbox" id="checkbox-custom-dpi" data-bind="checked: isCustomDPI">
+                <label for="checkbox-custom-dpi">Custom</label> <br />
+                <span class="short indent">DPI</span><input type="text" class="short" data-bind="value: dpi, enable: isCustomDPI">
+            </div>
         </div>
-        <div class="button blue">save changes</div>
     </div>
 </script>

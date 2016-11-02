@@ -411,5 +411,31 @@ module mapp.le {
 
             return result;
         }
+
+        static getTemplate(template: enums.AttributeTemplates): string {
+            switch(template) {
+                case enums.AttributeTemplates.INPUT:
+                    return 'input-template';
+                case enums.AttributeTemplates.INPUT_NUMERIC:
+                    return 'input_numeric-template';
+                case enums.AttributeTemplates.RADIO:
+                    return 'input-radio';
+            }
+        } 
+        
+        static subscribe(observables: KnockoutObservable<any>[], subscribtion: (newValue: any) => void, delay?: number) {
+            observables.forEach(observable => {
+                observable.subscribe(subscribtion);
+                if (delay) {
+                    observable.extend({ rateLimit: { method: 'notifyWhenChangesStop', timeout: delay } });
+                }
+            });
+        }
+
+        static getClassName(object: any) {
+            var funcNameRegex = /function (.{1,})\(/;
+            var results = (funcNameRegex).exec(object.constructor.toString());
+            return (results && results.length > 1) ? results[1] : "";
+        }
     }
 }

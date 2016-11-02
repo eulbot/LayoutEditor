@@ -22,13 +22,12 @@ module mapp.le {
             this.editor = editor;
 
             this.selectElement = (element: EditorObject) => {
-                editor.selectedElement(element);
+                editor.selectElement(element);
                 this.editor.propertiesView.isToggled(true);
             }
 
             this.removeElement = (element: EditorObject) => {
                 editor.removeElement(element);
-                this.editor.propertiesView.isToggled(false);
             }
 
             this.isSelected = (element: EditorObject) => {

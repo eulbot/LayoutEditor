@@ -18,6 +18,9 @@ module mapp.le {
             }
 
             $.when(
+                $.get("app/templates/controls/input.html", function(data) { append(data); }),
+                $.get("app/templates/controls/input_numeric.html", function(data) { append(data); }),
+                $.get("app/templates/controls/radio.html", function(data) { append(data); }),
                 $.get("app/templates/propertiesView.html", function(data) { append(data); }),
                 $.get("app/templates/elementList.html", function(data) { append(data); }),
                 $.get("app/templates/templateList.html", function(data) { append(data); }),

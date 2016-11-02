@@ -8,12 +8,6 @@ module mapp.le {
 
         public elements: KnockoutObservableArray<EditorObject>;
         public selectedElement: KnockoutObservable<EditorObject>;
-        
-        public addElement: (element: EditorObject) => void;
-        public selectElement: (element: EditorObject) => void;
-        public selectElementById: (id: string) => void;
-        public removeElement: (element: EditorObject) => void;
-        public clearSelection: () => void;
 
         constructor() {
 
@@ -23,34 +17,52 @@ module mapp.le {
             this.menu = new Menu(this);
             this.propertiesView = new PropertiesView(this);
             this.canvas = new Canvas(this);
+            
+        }
 
-            this.addElement = (element: EditorObject) => {
-                this.elements.push(element);
-                this.selectElement(element);
-                this.selectedElement().apply(this.canvas.addFrame(DefaultFrameOptions));
-                this.propertiesView.isToggled(true);
-            };
+        public addElement = (element: EditorObject) => {
+            let x = this.getNextId(Util.getClassName(element));
+            element.id(x);
+            this.elements.push(element);
 
-            this.selectElement = (element: EditorObject) => {
-                this.selectedElement(element); 
-            };
+            element.apply(this.canvas.addFrame(DefaultFrameOptions));
+            this.selectedElement(element);
+            this.propertiesView.isToggled(true);
+        };
 
-            this.selectElementById = (id: string) => {
-                $.each(this.elements(), (i: number, element: EditorObject) => {
-                    if(element.object && element.object.getId() == id)
-                        this.selectElement(element);
-                });
-            };
+        public selectElement = (element: EditorObject) => {
+            this.selectedElement(element); 
+            this.canvas.selectObject(this.selectedElement().object);
+        };
 
-            this.removeElement = (element: EditorObject) => {
-                this.canvas.removeObject(element.object.getId());
-                this.elements.remove(element);
-                this.clearSelection();
-            }
+        public selectElementById = (id: string) => {
+            $.each(this.elements(), (i: number, element: EditorObject) => {
+                if(element.object && element.object.getId() == id)
+                    this.selectElement(element);
+            });
+        };
 
-            this.clearSelection = () => {
-                this.selectedElement(new EditorObject());
-            };
+        public removeElement = (element: EditorObject) => {
+            this.canvas.removeObject(element.object.getId());
+            this.elements.remove(element);
+            this.clearSelection();
+        }
+
+        public clearSelection = () => {
+            this.selectedElement(new EditorObject());
+        };
+
+        private getNextId = (prefix: string): string => {
+            let result = 1;
+            
+            $.each(this.elements(), (i: number, element: EditorObject) => {
+                if(element.id().lastIndexOf(prefix) == 0) {
+                    let max = parseInt(element.id().replace(prefix, ''));
+                    result = max >= result ? max + 1 : result;
+                }
+            });
+
+            return prefix + result.toString();
         }
     }
 }

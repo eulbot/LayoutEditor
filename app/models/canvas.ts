@@ -36,7 +36,7 @@ module mapp.le {
 
         public addFrame: (options?: fabric.IRectOptions, cloneFrom?: fabric.IObject) => fabric.IObject;
         public selectObject: (arg: string | fabric.IObject) => void;
-        public removeObject: (id: string) => void;
+        public removeObject: (arg: string | fabric.IObject) => void;
         
         constructor(editor: Editor) {
             let count = 0;
@@ -72,10 +72,17 @@ module mapp.le {
                 return newFrame;
             }
 
-            this.selectObject = (id: string) => {
+            this.selectObject = (arg: string | fabric.IObject) => {
 
-                let element = this.canvas.getObject(id);
-                this.canvas.setActiveObject(element);
+                let element: fabric.IObject;
+
+                if(typeof arg == 'string')
+                    element = this.canvas.getObject(arg);
+                else
+                    element = arg;
+
+                if(this.canvas.getActiveObject() != element)
+                    this.canvas.setActiveObject(element);
             };
 
             this.removeObject = (arg: string | fabric.IObject) => {

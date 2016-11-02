@@ -36,6 +36,8 @@ module mapp.le {
         private initSelectdProperties: () => void;
         private updating: boolean;
 
+        protected attributes: KnockoutObservableArray<Attribute<any>>;
+
 
         constructor() {            
 
@@ -48,9 +50,8 @@ module mapp.le {
             this.right = new Dimension(Util.getCanvasWidth);
             this.bottom = new Dimension(Util.getCanvasHeight);
             this.left = new Dimension(Util.getCanvasWidth);
-
-            // this.scaleX = ko.observable<number>();
-            // this.scaleY = ko.observable<number>();
+            this.attributes = ko.observableArray<Attribute<any>>();
+            this.attributes.push(new Attribute<string>(this.id, 'Name', enums.AttributeTemplates.INPUT));
 
             this.prioX = ko.observableArray<enums.Dimension>();
             this.prioY = ko.observableArray<enums.Dimension>();
@@ -60,7 +61,6 @@ module mapp.le {
             this.apply = (object: fabric.IObject) => {
 
                 this.object = object;
-                this.id(object.getId());
                 this.initSelectdProperties();
                 this.update();
             }
