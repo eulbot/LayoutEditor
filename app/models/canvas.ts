@@ -49,7 +49,7 @@ module mapp.le {
                 count++;
                 options = $.extend(mapp.le.DefaultFrameOptions, options, {fill:'rgba(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',0.75)'});
                 let newFrame = new fabric.Rect(options);
-                newFrame.data = {id: count.toString(), name: 'Frame', 
+                newFrame.data = {//id: count.toString(), name: 'Frame', 
                     Width: {
                         isLocked: true
                     },
