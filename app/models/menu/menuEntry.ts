@@ -1,6 +1,6 @@
 module mapp.le {
 
-    export abstract class AMenuEntry implements ISerializable {
+    export abstract class AMenuEntry {
         
         isToggled: KnockoutObservable<boolean>;
         public css: KnockoutComputed<string>;
@@ -12,12 +12,6 @@ module mapp.le {
             this.css = ko.pureComputed(() => {
                 return this.isToggled() ? 'toggled' : '';
             });
-        }
-
-        public serialize = () => {
-            return {
-                isToggled: this.isToggled()
-            }
         }
     }
 }

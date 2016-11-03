@@ -1,11 +1,11 @@
 declare namespace fabric {
     export interface ICanvas {
-        getObject: (id: any) => IObject;
+        getObject: (id: number) => IObject;
         getItemByAttr: (attr: string, value: any) => IObject;
     }
 
     export interface IObject {
-        getId: () => string;
+        getId: () => number;
         getName: () => string;
         getRight:() => number;
         setRight: (value: number) => void;
@@ -35,8 +35,8 @@ module mapp.le {
         private init: () => void;
 
         public addFrame: (options?: fabric.IRectOptions, cloneFrom?: fabric.IObject) => fabric.IObject;
-        public selectObject: (arg: string | fabric.IObject) => void;
-        public removeObject: (arg: string | fabric.IObject) => void;
+        public selectObject: (arg: number | fabric.IObject) => void;
+        public removeObject: (arg: number | fabric.IObject) => void;
         
         constructor(editor: Editor) {
             let count = 0;
@@ -67,16 +67,15 @@ module mapp.le {
                 }
                 
                 this.canvas.add(newFrame);
-                this.canvas.setActiveObject(newFrame);
                 
                 return newFrame;
             }
 
-            this.selectObject = (arg: string | fabric.IObject) => {
+            this.selectObject = (arg: number | fabric.IObject) => {
 
                 let element: fabric.IObject;
 
-                if(typeof arg == 'string')
+                if(typeof arg == 'number')
                     element = this.canvas.getObject(arg);
                 else
                     element = arg;
@@ -85,9 +84,9 @@ module mapp.le {
                     this.canvas.setActiveObject(element);
             };
 
-            this.removeObject = (arg: string | fabric.IObject) => {
+            this.removeObject = (arg: number | fabric.IObject) => {
 
-                if(typeof arg == 'string')
+                if(typeof arg == 'number')
                     this.canvas.remove(this.canvas.getObject(arg));
                 else
                     this.canvas.remove(arg)
@@ -122,7 +121,7 @@ module mapp.le {
                     "object:added": () => this.elements.notifySubscribers(),
                     "object:removed": () => this.elements.notifySubscribers(),
                     "object:selected": (e: fabric.IEvent) => {
-                            editor.selectElementById(e.target.getId()); 
+                            editor.selectElement(e.target); 
                     },
                     "object:moving": (e: fabric.IEvent) => {
                         
@@ -152,9 +151,11 @@ module mapp.le {
                         if(ctrlPressed && e.target) {
                             ctrlPressed = false;
                             
-                            let options = $.extend({}, mapp.le.DefaultFrameOptions, {});//  {fill: Util.getRandomColor()});
+                            let options = $.extend({}, mapp.le.DefaultFrameOptions, {});
                             let clone = this.addFrame(options, e.target);
                             this.canvas.bringToFront(clone);
+
+                            editor.addClonedObject(e.target, clone);
                             
                             // Not good but there is no public method to override the current tansform object
                             (<any>(this.canvas))._setupCurrentTransform(e.e, clone);
@@ -197,7 +198,7 @@ module mapp.le {
                         if(e.keyCode == 37) 
                             Util.moveStep(editor.selectedElement(), enums.Direction.LEFT);
                         if(e.keyCode == 46)
-                            this.removeObject(editor.selectedElement().id());
+                            this.removeObject(editor.selectedElement().object);
                     }
                 });
 

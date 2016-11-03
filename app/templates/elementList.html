@@ -7,7 +7,7 @@
         <ul class="elements" data-bind="element: domElementList, foreach: editor.elements">
             <li class="element" class="ui-state-default" data-bind="click: () => { menu.selectElement($data) } , css: { selected: menu.isSelected($data) }">
                 <div>
-                    <span data-bind="text: id"></span><i data-bind="click: () => { if(menu.isSelected($data)) menu.removeElement($data) }" class="elements mapp-layout-editor-i-remove"></i>
+                    <span data-bind="text: name"></span><i data-bind="click: () => { if(menu.isSelected($data)) menu.removeElement($data) }" class="elements mapp-layout-editor-i-remove"></i>
                 </div>
             </li>
         </ul>

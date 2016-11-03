@@ -1,6 +1,6 @@
 module mapp.le {
 
-    export class Dimension {
+    export class Dimension implements ISerializable {
         public value: KnockoutObservable<number>;
         public showRelative: KnockoutObservable<boolean>;
         public isLocked: KnockoutObservable<boolean>;
@@ -62,6 +62,14 @@ module mapp.le {
                     isLocked: this.isLocked()
                 }
             }); 
+        }
+
+        serialize = () => {
+            return {
+                value: this.value(),
+                showRelative: this.showRelative(),
+                isLocked: this.isLocked                
+            }
         }
     }
 }

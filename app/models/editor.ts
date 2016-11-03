@@ -21,25 +21,40 @@ module mapp.le {
         }
 
         public addElement = (element: EditorObject) => {
-            let x = this.getNextId(Util.getClassName(element));
-            element.id(x);
-            this.elements.push(element);
+            
+            let elementType = Util.getClassName(element);
+            let nextId = this.getNextId(elementType);
+            element.id(nextId);
+            element.name(elementType + nextId);
 
+            this.elements.push(element);
             element.apply(this.canvas.addFrame(DefaultFrameOptions));
-            this.selectedElement(element);
+            
+            this.selectElement(element);
             this.propertiesView.isToggled(true);
         };
 
-        public selectElement = (element: EditorObject) => {
-            this.selectedElement(element); 
-            this.canvas.selectObject(this.selectedElement().object);
-        };
+        public addClonedObject = (source: fabric.IObject, clone: fabric.IObject) => {
 
-        public selectElementById = (id: string) => {
-            $.each(this.elements(), (i: number, element: EditorObject) => {
-                if(element.object && element.object.getId() == id)
-                    this.selectElement(element);
-            });
+            let element = this.getElementByObject(source);
+            let cloned: EditorObject = ko['mapping'].fromJS(ko.toJS(element));
+            
+            
+            cloned.id(this.getNextId(Util.getClassName(element)));
+            cloned.name(element.name() + 'copy');
+
+            this.elements.splice(this.elements.indexOf(element), 0, cloned);
+            this.selectedElement(cloned);
+        }
+
+        public selectElement = (element: EditorObject | fabric.IObject) => {
+
+            if(!(element instanceof EditorObject)) 
+                this.selectedElement(this.getElementByObject(element));
+            else
+                this.selectedElement(element);
+
+            this.canvas.selectObject(this.selectedElement().object);
         };
 
         public removeElement = (element: EditorObject) => {
@@ -52,17 +67,46 @@ module mapp.le {
             this.selectedElement(new EditorObject());
         };
 
-        private getNextId = (prefix: string): string => {
+        private getNextId = (prefix: string): number => {
+
             let result = 1;
             
             $.each(this.elements(), (i: number, element: EditorObject) => {
-                if(element.id().lastIndexOf(prefix) == 0) {
-                    let max = parseInt(element.id().replace(prefix, ''));
+                if(element.name().lastIndexOf(prefix) == 0) {
+                    let max = parseInt(element.name().replace(prefix, ''));
                     result = max >= result ? max + 1 : result;
                 }
             });
 
-            return prefix + result.toString();
+            return result;
         }
+
+        private getElementByObject = (object: fabric.IObject): EditorObject => {
+
+            let result: EditorObject = undefined;
+
+            $.each(this.elements(), (i: number, element: EditorObject) => {
+                if(element.object && element.object == object) {
+                    result = element;
+                    return false;
+                }
+            });
+
+            return result;
+        };
+
+        private getElementById = (id: number) => {
+
+            let result: EditorObject = undefined;
+
+            $.each(this.elements(), (i: number, element: EditorObject) => {
+                if(element.object && element.object.getId() == id) {
+                    result = element;
+                    return false;
+                }
+            });
+
+            return result;
+        };
     }
 }

@@ -3,10 +3,8 @@ module mapp.le {
     export class EditorObject {
 
         public object: fabric.IObject;
-        public id: KnockoutObservable<string>;
+        public id: KnockoutObservable<number>;
         public name: KnockoutObservable<string>;
-        private static count: number = -1;
-
         public width: Dimension;
         public height: Dimension;
         public top: Dimension; 
@@ -38,12 +36,10 @@ module mapp.le {
 
         protected attributes: KnockoutObservableArray<Attribute<any>>;
 
-
         constructor() {            
 
-            EditorObject.count++;
-            this.id = ko.observable<string>();
-            this.name = ko.observable<string>(EditorObject.count.toString());
+            this.id = ko.observable<number>();
+            this.name = ko.observable<string>();
             this.width = new Dimension(Util.getCanvasWidth);
             this.height = new Dimension(Util.getCanvasHeight);
             this.top = new Dimension(Util.getCanvasHeight);
@@ -51,7 +47,7 @@ module mapp.le {
             this.bottom = new Dimension(Util.getCanvasHeight);
             this.left = new Dimension(Util.getCanvasWidth);
             this.attributes = ko.observableArray<Attribute<any>>();
-            this.attributes.push(new Attribute<string>(this.id, 'Name', enums.AttributeTemplates.INPUT));
+            this.attributes.push(new Attribute<string>(this.name, 'Name', enums.AttributeTemplates.INPUT));
 
             this.prioX = ko.observableArray<enums.Dimension>();
             this.prioY = ko.observableArray<enums.Dimension>();

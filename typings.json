@@ -4,6 +4,7 @@
     "interact": "registry:dt/interact#1.0.25+20160613160313",
     "jquery": "registry:dt/jquery#1.10.0+20160908203239",
     "jqueryui": "registry:dt/jqueryui#1.11.0+20160727153854",
-    "knockout": "registry:dt/knockout#0.0.0+20160914182733"
+    "knockout": "registry:dt/knockout#0.0.0+20160914182733",
+    "knockout.mapping": "registry:dt/knockout.mapping#2.0.0+20160316155526"
   }
 }
