@@ -26,7 +26,7 @@ module mapp.le {
 
             for(let i = 0; i < elements.length; i++) {
 
-                let element = elements[0];
+                let element = elements[i];
 
                 if(!(element.width.isLocked())) 
                     element.object.setWidth(element.object.getWidth() * fx);
@@ -59,8 +59,8 @@ module mapp.le {
                     element.object.setTop(ch - h - element.bottom.value());
                 } 
                 
-                element.object.setScaleX(1);
-                element.object.setScaleY(1);
+                // element.object.setScaleX(1);
+                // element.object.setScaleY(1);
                 element.object.setCoords();
                 element.update();
             }
