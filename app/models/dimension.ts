@@ -1,6 +1,6 @@
 module mapp.le {
 
-    export class Dimension implements ISerializable {
+    export class Dimension implements ISerializable<IDimensionData> {
         public value: KnockoutObservable<number>;
         public showRelative: KnockoutObservable<boolean>;
         public isLocked: KnockoutObservable<boolean>;
@@ -8,8 +8,8 @@ module mapp.le {
         public displayValue: KnockoutComputed<number>;
         public unit: KnockoutComputed<string>;
         public isComputed: KnockoutComputed<boolean>;
-        public getProperties: KnockoutComputed<IDimensionProperties>;
-        public setProperties: (data: any) => any;
+        // public getProperties: KnockoutComputed<IDimensionProperties>;
+        // public setProperties: (data: any) => any;
 
         constructor(getAbsolute: () => number) {
             
@@ -47,29 +47,35 @@ module mapp.le {
                 return 'px';
             });
 
-            this.setProperties = (data: any) => {
-                if(data) {
-                    data = <IDimensionProperties>data;
-                    this.showRelative(data.showRelative);
-                    this.isLocked(data.isLocked);
-                }
-            };
+            // this.setProperties = (data: any) => {
+            //     if(data) {
+            //         data = <IDimensionProperties>data;
+            //         this.showRelative(data.showRelative);
+            //         this.isLocked(data.isLocked);
+            //     }
+            // };
 
-            this.getProperties = ko.computed(() => {
-                return <IDimensionProperties>{
-                    value: this.value(),
-                    showRelative: this.showRelative(),
-                    isLocked: this.isLocked()
-                }
-            }); 
+            // this.getProperties = ko.computed(() => {
+            //     return <IDimensionProperties>{
+            //         value: this.value(),
+            //         showRelative: this.showRelative(),
+            //         isLocked: this.isLocked()
+            //     }
+            // }); 
         }
 
-        serialize = () => {
+        serialize = (): IDimensionData => {
             return {
                 value: this.value(),
                 showRelative: this.showRelative(),
-                isLocked: this.isLocked                
+                isLocked: this.isLocked()                
             }
+        }
+
+        deserialize = (dimensionData: IDimensionData) => {
+            this.value(dimensionData.value);
+            this.showRelative(dimensionData.showRelative);
+            this.isLocked(dimensionData.isLocked);
         }
     }
 }

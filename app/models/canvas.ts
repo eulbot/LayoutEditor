@@ -84,12 +84,9 @@ module mapp.le {
                     this.canvas.setActiveObject(element);
             };
 
-            this.removeObject = (arg: number | fabric.IObject) => {
+            this.removeObject = (object: fabric.IObject) => {
 
-                if(typeof arg == 'number')
-                    this.canvas.remove(this.canvas.getObject(arg));
-                else
-                    this.canvas.remove(arg)
+                this.canvas.remove(object);
             };
 
             // Init canvas when DOM element is rendered 
@@ -151,14 +148,8 @@ module mapp.le {
                         if(ctrlPressed && e.target) {
                             ctrlPressed = false;
                             
-                            let options = $.extend({}, mapp.le.DefaultFrameOptions, {});
-                            let clone = this.addFrame(options, e.target);
-                            this.canvas.bringToFront(clone);
-
-                            editor.addClonedObject(e.target, clone);
-                            
-                            // Not good but there is no public method to override the current tansform object
-                            (<any>(this.canvas))._setupCurrentTransform(e.e, clone);
+                            this.canvas.deactivateAll();
+                            editor.cloneObject(e);
                         }
                     },
                     "mouse:up": () => {
@@ -198,7 +189,7 @@ module mapp.le {
                         if(e.keyCode == 37) 
                             Util.moveStep(editor.selectedElement(), enums.Direction.LEFT);
                         if(e.keyCode == 46)
-                            this.removeObject(editor.selectedElement().object);
+                            editor.removeElement(editor.selectedElement());
                     }
                 });
 

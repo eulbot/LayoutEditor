@@ -6,7 +6,7 @@ module mapp.le {
     
         public content: KnockoutObservable<string>;
 
-        constructor(editor: Editor) {
+        constructor() {
             super();
             this.content = ko.observable<string>();
         }

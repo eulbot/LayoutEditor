@@ -1,12 +1,11 @@
 module mapp.le {
 
-    export class PageSetup extends AMenuEntry implements ISerializable {
+    export class PageSetup extends AMenuEntry implements ISerializable<IPageSizeData> {
+        
+        private editor: Editor;
         private width: KnockoutObservable<number>;
         private height: KnockoutObservable<number>;
         private dpi: KnockoutObservable<number>;
-
-        // private watch: KnockoutComputed<any>;
-        // private hasChanges: KnockoutObservable<boolean>;
         
         defaultPageSizes: KnockoutObservableArray<IPageSize>;
         selectedPageSize: KnockoutObservable<IPageSize>;
@@ -17,12 +16,13 @@ module mapp.le {
         private init: () => void;
         public savePageSize: () => void;
 
-        constructor() {
+        constructor(editor: Editor) {
             
             super();
             this.width = ko.observable<number>();
             this.height = ko.observable<number>();
             this.dpi = ko.observable<number>();
+            this.editor = editor;
 
             this.defaultPageSizes = ko.observableArray<IPageSize>(Util.defaultPageSizes());
             this.selectedPageSize = ko.observable<IPageSize>();
@@ -59,15 +59,22 @@ module mapp.le {
             let newWidth = this.width() / 25.4 * this.dpi();
             let newHeight = this.height() / 25.4 * this.dpi();
 
-            Util.resizeCanvas(newWidth, newHeight);
+            this.editor.resize(newWidth, newHeight);
         }
 
-        public serialize = () => {
-            $.extend({}, {
+        serialize = (): IPageSizeData => {
+            return {
                 width: this.width(),
                 height: this.height(),
                 dpi: this.dpi()
-            });
+            };
         }
+
+        deserialize = (pageSizeData: IPageSizeData) => {
+            this.width(pageSizeData.width);
+            this.height(pageSizeData.height);
+            this.dpi(pageSizeData.dpi);
+        }
+        
     }
 }

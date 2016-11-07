@@ -34,17 +34,22 @@ module mapp.le {
             this.propertiesView.isToggled(true);
         };
 
-        public addClonedObject = (source: fabric.IObject, clone: fabric.IObject) => {
+        public cloneObject = (e: fabric.IEvent) => {
 
-            let element = this.getElementByObject(source);
-            let cloned: EditorObject = ko['mapping'].fromJS(ko.toJS(element));
-            
-            
-            cloned.id(this.getNextId(Util.getClassName(element)));
-            cloned.name(element.name() + 'copy');
+            let element = this.getElementByObject(e.target);
+            let serialized = element.serialize();
+            let newElement = EditorObject.newInstance(serialized.type);
+            let clonedObject = fabric.util.object.clone(e.target);
 
-            this.elements.splice(this.elements.indexOf(element), 0, cloned);
-            this.selectedElement(cloned);
+            serialized.id = this.getNextId(Util.getClassName(element));
+            serialized.name = serialized.name.concat('.', this.getNextId(serialized.name.concat('.')).toString());
+            newElement.deserialize(serialized);
+            Util.canvas.add(clonedObject);
+            (<any>Util.canvas)._setupCurrentTransform(e.e, clonedObject);
+            newElement.object = clonedObject;
+
+            this.elements.splice(this.elements.indexOf(element), 0, newElement);
+            this.selectElement(newElement);
         }
 
         public selectElement = (element: EditorObject | fabric.IObject) => {
@@ -58,9 +63,13 @@ module mapp.le {
         };
 
         public removeElement = (element: EditorObject) => {
-            this.canvas.removeObject(element.object.getId());
+            this.canvas.removeObject(element.object);
             this.elements.remove(element);
             this.clearSelection();
+        }
+
+        public resize = (width: number, height: number) => {
+            Util.resizeCanvas(this.elements(), width, height);
         }
 
         public clearSelection = () => {

@@ -1,6 +1,6 @@
 module mapp.le {
-    export interface ISerializable {
-        serialize(...params: any[]): any;
+    export interface ISerializable<T> {
+        serialize(...params: any[]): T;
         deserialize(data: any)
     }
 }

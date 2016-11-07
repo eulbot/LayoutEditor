@@ -13,51 +13,57 @@ module mapp.le {
             return Util.canvas.getHeight();
         }
 
-        static resizeCanvas(width: number, heigth: number) {
+        static resizeCanvas(elements: EditorObject[], width: number, heigth: number) {
             
             let fx = width / Util.canvas.getWidth();
             let fy = heigth / Util.canvas.getHeight();
 
+            if(fx == 1 && fy == 1)
+                return;
+
             Util.canvas.setWidth(width);
             Util.canvas.setHeight(heigth);
 
-            Util.canvas.forEachObject((object: fabric.IObject) => {
+            for(let i = 0; i < elements.length; i++) {
 
-                if(!(object.isDimensionLocked(enums.Dimension.Width))) 
-                    object.setWidth(object.getWidth() * fx);
-                if(!(object.isDimensionLocked(enums.Dimension.Height))) 
-                    object.setHeight(object.getHeight() * fy);
-                if(!(object.isDimensionLocked(enums.Dimension.Top))) 
-                    object.setTop(object.getTop() * fy);
-                if(!(object.isDimensionLocked(enums.Dimension.Left))) 
-                    object.setLeft(object.getLeft() * fx);
+                let element = elements[0];
+
+                if(!(element.width.isLocked())) 
+                    element.object.setWidth(element.object.getWidth() * fx);
+                if(!(element.height.isLocked())) 
+                    element.object.setHeight(element.object.getHeight() * fy);
+                if(!(element.top.isLocked())) 
+                    element.object.setTop(element.object.getTop() * fy);
+                if(!(element.left.isLocked())) 
+                    element.object.setLeft(element.object.getLeft() * fx);
 
                 var cw = Util.canvas.getWidth();
                 var ch = Util.canvas.getHeight();
-                var l = object.getLeft();
-                var t = object.getTop();
-                var w = object.getWidth();
-                var h = object.getHeight();
+                var l = element.object.getLeft();
+                var t = element.object.getTop();
+                var w = element.object.getWidth();
+                var h = element.object.getHeight();
 
-                let ia = object.isDimensionLocked(enums.Dimension.Right);
+                let ia = element.object.isDimensionLocked(enums.Dimension.Right);
 
-                if(object.isDimensionLocked(enums.Dimension.Left) && object.isDimensionLocked(enums.Dimension.Right)) {
-                    object.setWidth(cw - l - object.data['Right']['value']);
+                if(element.left.isLocked() && element.right.isLocked()) {
+                    element.object.setWidth(cw - l - element.right.value());
                 }
-                else if(object.isDimensionLocked(enums.Dimension.Right)) { 
-                    object.setLeft(cw - w - object.data['Right']['value']);
+                else if(element.right.isLocked()) { 
+                    element.object.setLeft(cw - w - element.right.value());
                 }
-                if(object.isDimensionLocked(enums.Dimension.Top) && object.isDimensionLocked(enums.Dimension.Bottom)) {
-                    object.setHeight(ch - t - object.data['Bottom']['value']);
+                if(element.top.isLocked() && element.bottom.isLocked()) {
+                    element.object.setHeight(ch - t - element.bottom.value());
                 }
-                else if(object.isDimensionLocked(enums.Dimension.Bottom)) { 
-                    object.setTop(ch - h - object.data['Bottom']['value']);
+                else if(element.bottom.isLocked()) { 
+                    element.object.setTop(ch - h - element.bottom.value());
                 } 
                 
-                object.setScaleX(1);
-                object.setScaleY(1);
-                object.setCoords();
-            });
+                element.object.setScaleX(1);
+                element.object.setScaleY(1);
+                element.object.setCoords();
+                element.update();
+            }
 
             Util.canvas.renderAll();
         }

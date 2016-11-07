@@ -1,10 +1,11 @@
 module mapp.le {
 
-    export class EditorObject {
+    export class EditorObject implements ISerializable<IEditorObjectData> {
 
-        public object: fabric.IObject;
         public id: KnockoutObservable<number>;
         public name: KnockoutObservable<string>;
+        public object: fabric.IObject;
+
         public width: Dimension;
         public height: Dimension;
         public top: Dimension; 
@@ -24,7 +25,7 @@ module mapp.le {
 
         public apply: (object: fabric.IObject) => void;
         public applyDimensionValue: (dimension: enums.Dimension, value: number) => void;
-        public applyDimensionProperties: (dimension: enums.Dimension, properties: IDimensionProperties) => void;
+        public applyDimensionProperties: (dimension: enums.Dimension, properties: IDimensionData) => void;
         public reapply: (horizontal?: boolean) => void;
 
         public update: (reapply?: boolean) => void;
@@ -33,6 +34,7 @@ module mapp.le {
         private init: () => void;
         private initSelectdProperties: () => void;
         private updating: boolean;
+        public resizing: boolean;
 
         protected attributes: KnockoutObservableArray<Attribute<any>>;
 
@@ -40,8 +42,12 @@ module mapp.le {
 
             this.id = ko.observable<number>();
             this.name = ko.observable<string>();
+            
             this.width = new Dimension(Util.getCanvasWidth);
+            this.width.isLocked(true);
             this.height = new Dimension(Util.getCanvasHeight);
+            this.height.isLocked(true);
+
             this.top = new Dimension(Util.getCanvasHeight);
             this.right = new Dimension(Util.getCanvasWidth);
             this.bottom = new Dimension(Util.getCanvasHeight);
@@ -58,7 +64,7 @@ module mapp.le {
 
                 this.object = object;
                 this.initSelectdProperties();
-                this.update();
+                this.update(); 
             }
 
             this.applyDimensionValue = (dimension: enums.Dimension, value: number) => {
@@ -99,7 +105,7 @@ module mapp.le {
                 }
             }
 
-            this.applyDimensionProperties = (dimension: enums.Dimension, properties: IDimensionProperties) => {
+            this.applyDimensionProperties = (dimension: enums.Dimension, properties: IDimensionData) => {
 
                 if(!this.updating) {
                     this.object.setData(enums.Dimension[dimension], properties);
@@ -145,13 +151,13 @@ module mapp.le {
                 let difRight = Util.canvas.getWidth() - this.object.getLeft() - this.object.getWidth();
                 if(this.right.value() !== difRight) {
                     this.right.value(difRight);
-                    this.object.setData(enums.Dimension[enums.Dimension.Right], this.right.getProperties());
+                    //this.object.setData(enums.Dimension[enums.Dimension.Right], this.right.getProperties());
                 }
                 
                 let difBottom = Util.canvas.getHeight() - this.object.getTop() - this.object.getHeight()
                 if(this.bottom.value() !== difBottom) {
                     this.bottom.value(difBottom);
-                    this.object.setData(enums.Dimension[enums.Dimension.Bottom], this.bottom.getProperties());
+                    //this.object.setData(enums.Dimension[enums.Dimension.Bottom], this.bottom.getProperties());
                 }
 
                 this.updating = false;
@@ -169,15 +175,13 @@ module mapp.le {
                 if(this.prioY().length > 2) 
                     this.prioY(this.prioY().slice(0, 2));
 
-                if(!resize) {
-                    this.getDimension(dimension).isLocked(true);
+                this.getDimension(dimension).isLocked(true);
 
-                    if(this.getDimension(Util.getOppositeDimension(dimension)).isLocked()) {
-                        if(Util.isHorizontal(dimension))
-                            this.width.isLocked(false);
-                        else
-                            this.height.isLocked(false);
-                    }
+                if(this.getDimension(Util.getOppositeDimension(dimension)).isLocked()) {
+                    if(Util.isHorizontal(dimension))
+                        this.width.isLocked(false);
+                    else
+                        this.height.isLocked(false);
                 }
 
                 this.object.data['prioX'] = this.prioX().slice();
@@ -260,12 +264,12 @@ module mapp.le {
                 
                 //this.clear();
                 //this.id(this.object.getId());
-                this.width.setProperties(this.object.data['Width']);
-                this.height.setProperties(this.object.data['Height']);
-                this.top.setProperties(this.object.data['Top']);
-                this.right.setProperties(this.object.data['Right']);
-                this.bottom.setProperties(this.object.data['Bottom']);
-                this.left.setProperties(this.object.data['Left']);
+                // this.width.setProperties(this.object.data['Width']);
+                // this.height.setProperties(this.object.data['Height']);
+                // this.top.setProperties(this.object.data['Top']);
+                // this.right.setProperties(this.object.data['Right']);
+                // this.bottom.setProperties(this.object.data['Bottom']);
+                // this.left.setProperties(this.object.data['Left']);
 
                 this.prioX.push.apply(this.prioX, this.object.data['prioX']);
                 this.prioY.push.apply(this.prioY, this.object.data['prioY']);
@@ -280,12 +284,12 @@ module mapp.le {
                 this.bottom.value.subscribe((value) => { this.applyDimensionValue(enums.Dimension.Bottom, value);});
                 this.left.value.subscribe((value) => { this.applyDimensionValue(enums.Dimension.Left, value);});
 
-                this.width.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Width, data); });
-                this.height.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Height, data); });
-                this.top.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Top, data); });
-                this.right.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Right, data); });
-                this.bottom.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Bottom, data);});
-                this.left.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Left, data);});
+                // this.width.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Width, data); });
+                // this.height.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Height, data); });
+                // this.top.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Top, data); });
+                // this.right.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Right, data); });
+                // this.bottom.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Bottom, data);});
+                // this.left.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Left, data);});
             }
             
             this.init();
@@ -429,6 +433,51 @@ module mapp.le {
                     return this.left;
                 
             }
+        }
+
+        public serialize(): IEditorObjectData {
+            return {
+                type: undefined,
+                id: this.id(),
+                name: this.name(),
+                object: JSON.stringify(this.object),
+                width: this.width.serialize(),
+                height: this.height.serialize(),
+                top: this.top.serialize(),
+                right: this.right.serialize(),
+                bottom: this.bottom.serialize(),
+                left: this.left.serialize()
+            }
+        }
+
+        public deserialize (editorObjectData: IEditorObjectData) {
+            this.id(editorObjectData.id);
+            this.name(editorObjectData.name);
+            this.width.deserialize(editorObjectData.width);
+            this.height.deserialize(editorObjectData.height);
+            this.top.deserialize(editorObjectData.top);
+            this.right.deserialize(editorObjectData.right);
+            this.bottom.deserialize(editorObjectData.bottom);
+            this.left.deserialize(editorObjectData.left);
+
+        }
+
+        public static newInstance (type: enums.ElementType) {
+            let result: EditorObject = undefined;
+
+            switch(type) {
+                // case enums.ElementType.FRAME:
+                //     result = new Frame();
+                //     break;
+                case enums.ElementType.IMAGE:
+                    result = new Image();
+                    break;
+                case enums.ElementType.TEXTBOX:
+                    result = new TextBox();
+                    break;
+            }
+
+            return result;
         }
     }
 }

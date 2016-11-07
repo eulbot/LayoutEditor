@@ -1,5 +1,8 @@
 module mapp.le.enums {
     export enum ElementType {
-        FRAME
+        FRAME,
+        IMAGE,
+        TEXTBOX,
+        MAP
     }
 }

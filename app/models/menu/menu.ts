@@ -16,7 +16,7 @@ module mapp.le {
             
             //this.canvas = ko.observable<Canvas>(canvas);
 
-            this.pageSetup = new PageSetup();
+            this.pageSetup = new PageSetup(editor);
             this.templateList = new TemplateList(editor);
             this.elementList = new ElementList(editor);
             this.editor = editor;
