@@ -24,10 +24,7 @@ module mapp.le {
             Util.canvas.setWidth(width);
             Util.canvas.setHeight(heigth);
 
-            for(let i = 0; i < elements.length; i++) {
-
-                let element = elements[i];
-
+            $.each(elements, (i, element) => {
                 if(!(element.width.isLocked())) 
                     element.object.setWidth(element.object.getWidth() * fx);
                 if(!(element.height.isLocked())) 
@@ -44,8 +41,6 @@ module mapp.le {
                 var w = element.object.getWidth();
                 var h = element.object.getHeight();
 
-                let ia = element.object.isDimensionLocked(enums.Dimension.Right);
-
                 if(element.left.isLocked() && element.right.isLocked()) {
                     element.object.setWidth(cw - l - element.right.value());
                 }
@@ -59,12 +54,9 @@ module mapp.le {
                     element.object.setTop(ch - h - element.bottom.value());
                 } 
                 
-                // element.object.setScaleX(1);
-                // element.object.setScaleY(1);
                 element.object.setCoords();
                 element.update();
-            }
-
+            });
             Util.canvas.renderAll();
         }
 
