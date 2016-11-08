@@ -25,6 +25,7 @@ module mapp.le {
             Util.canvas.setHeight(heigth);
 
             $.each(elements, (i, element) => {
+
                 if(!(element.width.isLocked())) 
                     element.object.setWidth(element.object.getWidth() * fx);
                 if(!(element.height.isLocked())) 
@@ -34,24 +35,18 @@ module mapp.le {
                 if(!(element.left.isLocked())) 
                     element.object.setLeft(element.object.getLeft() * fx);
 
-                var cw = Util.canvas.getWidth();
-                var ch = Util.canvas.getHeight();
-                var l = element.object.getLeft();
-                var t = element.object.getTop();
-                var w = element.object.getWidth();
-                var h = element.object.getHeight();
-
                 if(element.left.isLocked() && element.right.isLocked()) {
-                    element.object.setWidth(cw - l - element.right.value());
+                    element.object.setWidth(Util.canvas.getWidth() - element.object.getLeft() - element.right.value());
                 }
                 else if(element.right.isLocked()) { 
-                    element.object.setLeft(cw - w - element.right.value());
+                    element.object.setLeft(Util.canvas.getWidth() - element.object.getWidth() - element.right.value());
                 }
+
                 if(element.top.isLocked() && element.bottom.isLocked()) {
-                    element.object.setHeight(ch - t - element.bottom.value());
+                    element.object.setHeight(Util.canvas.getHeight() - element.object.getTop() - element.bottom.value());
                 }
                 else if(element.bottom.isLocked()) { 
-                    element.object.setTop(ch - h - element.bottom.value());
+                    element.object.setTop(Util.canvas.getHeight() - element.object.getHeight() - element.bottom.value());
                 } 
                 
                 element.object.setCoords();
