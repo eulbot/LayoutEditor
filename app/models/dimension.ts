@@ -1,28 +1,46 @@
 module mapp.le {
 
     export class Dimension implements ISerializable<IDimensionData> {
-        public value: KnockoutObservable<number>;
-        public showRelative: KnockoutObservable<boolean>;
+        private _value: Value;
+        private getAbsolute: () => number;
         public isLocked: KnockoutObservable<boolean>;
-
+        public isCompound: KnockoutComputed<boolean>;
+        public value: KnockoutComputed<number>;
         public displayValue: KnockoutComputed<number>;
         public unit: KnockoutComputed<string>;
-        public isComputed: KnockoutComputed<boolean>;
-        // public getProperties: KnockoutComputed<IDimensionProperties>;
-        // public setProperties: (data: any) => any;
 
         constructor(getAbsolute: () => number) {
             
-            this.value = ko.observable<number>();
+            this._value = new Value();
+            this.getAbsolute = getAbsolute;
             this.isLocked = ko.observable<boolean>(false);
-            this.showRelative = ko.observable<boolean>(false);
+
+            this.value = ko.pureComputed({
+                read: () => {
+                    return this._value.abs() + (this._value.rel() != 0 ? this._value.rel() * getAbsolute() : 0);
+                },
+                write: (value: number) => {
+                    this._value.rel(0);
+                    this._value.abs(value);
+                }
+            });
+
             this.displayValue = ko.pureComputed({
                 read: () => {
                     
-                    let result: any = this.value() !== undefined ? this.showRelative() ? Util.round((this.value() / getAbsolute() * 100))  
-                        : Math.round(this.value()) : undefined;
+                    let result: any;
+
+                    // Value is compund (i.e. 20% + 30px)
+                    if(this._value.abs() !== 0 && this._value.rel() != 0) 
+                        result = Util.round(this._value.rel() * 100) + '% + ' + this._value.abs() + 'px';
+                    // Value is relative
+                    else if(this._value.rel() != 0)
+                        result = Util.round(this._value.rel() * 100);
+                    // Value is absolute
+                    else if(this._value.abs() !== undefined)
+                        result = Math.round(this._value.abs());
                     
-                    if(this.showRelative())
+                    if(this._value.rel() != 0)
                         this.isLocked(false);
 
                     return result;
@@ -30,51 +48,58 @@ module mapp.le {
                 write: (value: string) => {
 
                     if(value) {
-                        this.showRelative(value.indexOf('%') >= 0 || (value.indexOf('px') < 0 && this.showRelative()) ? true : false);
+                        let isRelative = value.indexOf('%') >= 0 || (value.indexOf('px') < 0 && this._value.rel() != 0) ? true : false;
                         let parsed = parseFloat(value.replace(/[^\.\d]/g, ""));
                         parsed = isNaN(parsed) ? this.value() : parsed;
-                        if(parsed > 10000) parsed = 9999;
-                        let result: number = this.showRelative() ? getAbsolute() * parsed / 100: parsed;
-                        this.value(result);
+
+                        if(!isNaN(parsed)) {
+                            if(parsed > 10000) parsed = 9999;
+                            if(isRelative) {
+                                this._value.abs(0);
+                                this._value.rel(parsed / 100)
+                            }
+                            else {
+                                this._value.abs(parsed);
+                                this._value.rel(0);
+                            }
+                        }
                     }
                 }
             });
 
-            this.unit = ko.pureComputed(() => {
-                 if(this.showRelative())
-                    return '%';
-                
-                return 'px';
+            this.isCompound = ko.pureComputed(() => {
+                return this._value.abs() !== 0 && this._value.rel() !== 0
             });
 
-            // this.setProperties = (data: any) => {
-            //     if(data) {
-            //         data = <IDimensionProperties>data;
-            //         this.showRelative(data.showRelative);
-            //         this.isLocked(data.isLocked);
-            //     }
-            // };
+            this.unit = ko.pureComputed(() => {
+                if(!this._value.abs() && this._value.rel() != 0)
+                    return '%';
+                // if(this._value.abs() && this._value.rel() == 0)
+                //     return 'px';
 
-            // this.getProperties = ko.computed(() => {
-            //     return <IDimensionProperties>{
-            //         value: this.value(),
-            //         showRelative: this.showRelative(),
-            //         isLocked: this.isLocked()
-            //     }
-            // }); 
+                return 'px';
+            });
+        }
+
+        public getValue() {
+            return this._value;
+        }
+
+        public solve() {
+            this._value.abs(this._value.abs() + this._value.rel() * this.getAbsolute());
+            this._value.rel(0);
+            this.isLocked(false);
         }
 
         serialize = (): IDimensionData => {
             return {
-                value: this.value(),
-                showRelative: this.showRelative(),
+                value: this._value.serialize(),
                 isLocked: this.isLocked()                
             }
         }
 
         deserialize = (dimensionData: IDimensionData) => {
-            this.value(dimensionData.value);
-            this.showRelative(dimensionData.showRelative);
+            this._value.deserialize(dimensionData.value);
             this.isLocked(dimensionData.isLocked);
         }
     }

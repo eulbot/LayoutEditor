@@ -1,6 +1,7 @@
 module mapp.le {
     export class Util {
        
+        public static editor: Editor;
         public static canvas: fabric.ICanvas;
         public static snapThreshold: number = 8;
         public static snap: boolean = true;
@@ -96,7 +97,7 @@ module mapp.le {
             
             Util.canvas.forEachObject((ref: fabric.IObject) => {
 
-                if(ref.getId() == eo.id() || snapped)
+                if(ref == eo.object || snapped)
                     return;
                     
                 if(eo.object.withinX(ref, Util.snapThreshold, false)) {
@@ -117,11 +118,13 @@ module mapp.le {
                         if(corner.indexOf('l') >= 0 && corner.indexOf('r') >= 0) { 
                             if(eo.object.snapLeft(ref, Util.snapThreshold, inside)) {
                                 eo.object.setLeft(inside ? ref.getLeft() : ref.getRight());
+                                eo.snaptTo(Util.editor.getElementByObject(ref), enums.Direction.LEFT);
                                 eo.setPrio(enums.Dimension.Left);
                                 return true;   
                             }
                             else if(eo.object.snapRight(ref, Util.snapThreshold, inside)) {
                                 eo.object.setRight(inside ? ref.getRight() : ref.getLeft());
+                                eo.snaptTo(Util.editor.getElementByObject(ref), enums.Direction.RIGHT);
                                 eo.setPrio(enums.Dimension.Right);
                                 return true;   
                             }
@@ -136,11 +139,13 @@ module mapp.le {
                     if(corner.indexOf('t') >= 0 && corner.indexOf('b') >= 0) {
                         if(eo.object.snapTop(ref, Util.snapThreshold, inside)) {
                             eo.object.setTop(inside ? ref.getTop() : ref.getBottom());
+                            eo.snaptTo(Util.editor.getElementByObject(ref), enums.Direction.TOP);
                             eo.setPrio(enums.Dimension.Top);
                             return true;    
                         }
                         else if(eo.object.snapBottom(ref, Util.snapThreshold, inside)) {
                             eo.object.setBottom(inside ? ref.getBottom() : ref.getTop());
+                            eo.snaptTo(Util.editor.getElementByObject(ref), enums.Direction.BOTTOM);
                             eo.setPrio(enums.Dimension.Bottom);
                             return true;    
                         }
@@ -353,6 +358,20 @@ module mapp.le {
 
         static isHorizontal = (dimension: number) => {
             return dimension == 0 || dimension == 3 || dimension == 5;
+        }
+
+        static addDimensionValues = (value1: Value, value2: Value) => {
+            return <IValueData>{
+                abs: value1.abs() + value2.abs(),
+                rel: value1.rel() + value2.rel()
+            }
+        }
+
+        static substractDimensionValues = (value1: Value, value2: Value) => {
+            return <IValueData>{
+                abs: value1.abs() - value2.abs(),
+                rel: value1.rel() - value2.rel()
+            }
         }
 
         static setValue(value: any, ...observables: KnockoutObservable<any>[]) {

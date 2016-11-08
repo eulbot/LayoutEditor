@@ -32,45 +32,45 @@
                 
                     <div class="positions">    
 
-                        <div class="top">
-                            <input type="text" class="short right" data-bind="value: top.displayValue" />
+                        <div class="top" data-bind="css: {compound: top.isCompound()}">
+                            <input type="text" class="short right" data-bind="value: top.displayValue, disable: top.isCompound()" />
                             <span class="unit" data-bind="text: top.unit"></span>
                         </div>
 
                         <div class="horizons">
 
-                            <div class="left">
-                                <input type="text" class="short right" data-bind="value: left.displayValue" />
+                            <div class="left" data-bind="css: {compound: left.isCompound()}">
+                                <input type="text" class="short right" data-bind="value: left.displayValue, disable: left.isCompound()" />
                                 <span class="unit" data-bind="text: left.unit"></span>
                             </div>
 
                             <table class="arrows">
                                 <tr>
                                     <td></td>
-                                    <td><div class="icon top mapp-layout-editor-i-arrow-up" data-bind="click: () => {top.isLocked(!top.isLocked())}, css: { locked: top.isLocked() }"></div></td>
+                                    <td><div class="icon arrow-top mapp-layout-editor-i-arrow-up" data-bind="click: () => {top.isLocked(!top.isLocked()), top.solve()}, css: { locked: top.isLocked() }"></div></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td><div class="icon left mapp-layout-editor-i-arrow-up" data-bind="click: () => {left.isLocked(!left.isLocked())}, css: { locked: left.isLocked() }"></div></td>
+                                    <td><div class="icon arrow-left mapp-layout-editor-i-arrow-up" data-bind="click: () => {left.isLocked(!left.isLocked()), left.solve()}, css: { locked: left.isLocked() }"></div></td>
                                     <td><div class="object"></div></td>
-                                    <td><div class="icon right mapp-layout-editor-i-arrow-up" data-bind="click: () => {right.isLocked(!right.isLocked())}, css: { locked: right.isLocked() }"></div></td>
+                                    <td><div class="icon arrow-right mapp-layout-editor-i-arrow-up" data-bind="click: () => {right.isLocked(!right.isLocked()), right.solve()}, css: { locked: right.isLocked() }"></div></td>
                                 </tr>
                                 <tr>
                                     <td></td>
-                                    <td><div class="icon bottom mapp-layout-editor-i-arrow-up" data-bind="click: () => {bottom.isLocked(!bottom.isLocked())}, css: { locked: bottom.isLocked() }"><div></td>
+                                    <td><div class="icon arrow-bottom mapp-layout-editor-i-arrow-up" data-bind="click: () => {bottom.isLocked(!bottom.isLocked()), bottom.solve()}, css: { locked: bottom.isLocked() }"><div></td>
                                     <td></td>
                                 </tr>
                             </table>
 
-                            <div class="right">
-                                <input type="text" class="short right" data-bind="value: right.displayValue" />
+                            <div class="right" data-bind="css: {compound: right.isCompound()}">
+                                <input type="text" class="short right" data-bind="value: right.displayValue, disable: right.isCompound()" />
                                 <span class="unit" data-bind="text: right.unit"></span>
                             </div>
 
                         </div>
 
-                        <div class="bottom">
-                            <input type="text" class="short right" data-bind="value: bottom.displayValue" />
+                        <div class="bottom" data-bind="css: {compound: bottom.isCompound()}">
+                            <input type="text" class="short right" data-bind="value: bottom.displayValue, disable: bottom.isCompound()" />
                             <span class="unit" data-bind="text: bottom.unit"></span>
                         </div>
 
@@ -78,7 +78,6 @@
                 </div>
                 <div class="sub-group">
                     <span class="sub-title">Attributes</span>
-
                     <div class="element-attributes" data-bind="foreach: attributes">
                         <div data-bind="template: { name: template }"></div>
                     <div>

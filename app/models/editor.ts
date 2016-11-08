@@ -11,6 +11,7 @@ module mapp.le {
 
         constructor() {
 
+            Util.editor = this;
             this.selectedElement = ko.observable<EditorObject>(new EditorObject());
             this.elements = ko.observableArray<EditorObject>([]);
 
@@ -90,7 +91,7 @@ module mapp.le {
             return result;
         }
 
-        private getElementByObject = (object: fabric.IObject): EditorObject => {
+        public getElementByObject = (object: fabric.IObject): EditorObject => {
 
             let result: EditorObject = undefined;
 
@@ -112,7 +113,7 @@ module mapp.le {
                 if(element.object && element.object.getId() == id) {
                     result = element;
                     return false;
-                }
+                }   
             });
 
             return result;

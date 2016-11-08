@@ -72,6 +72,8 @@
         else
             return (this.getLeft() < ref.getRight() + threshold && this.getLeft() > ref.getLeft() - threshold) 
                 || (this.getRight() > ref.getLeft() - threshold && this.getRight() < ref.getRight() + threshold);
+
+            //return Math.abs(this.getLeft() - ref.getRight()) < threshold || Math.abs(this.getRight() - ref.getLeft()) < threshold;
     }
 
     fabric.Object.prototype.withinY = function(ref, threshold, inside) {
@@ -80,6 +82,8 @@
         else {
             return (this.getTop() < ref.getBottom() + threshold && this.getTop() > ref.getTop() - threshold)  
                 || (this.getBottom() > ref.getTop() - threshold && this.getBottom() < ref.getBottom() + threshold);
+                
+            //return Math.abs(this.getTop() - ref.getBottom()) < threshold || Math.abs(this.getBottom() - ref.getTop()) < threshold;
         }
     }
 

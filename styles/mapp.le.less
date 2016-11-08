@@ -93,13 +93,6 @@ section.menu {
 			padding: 2px;
 		}
 	}
-	
-	div.properties {
-		height: 270px;
-		bottom: 0;
-		position: absolute;
-		width: 100%;
-	}
 
 	input.prio {
 		font-weight: bold;
@@ -116,7 +109,7 @@ section.properties {
 	margin-left: -226px;
 	transition: margin-left .3s;
 	flex-shrink: 0;
-	width: 270px;
+	width: 280px;
 	position: relative;
 	z-index: 70;
 
@@ -207,19 +200,39 @@ div.positions {
 		display: flex;
 	}
 
-	> div {
-		align-self: center
+	div.top, div.right, div.bottom, div.left {
+		align-self: center;
+		height: 32px;
+		width: 90px;
+		&.compound {
+			margin-left: 0 !important;
+
+			> input {
+				border: none;
+				font-size: 13px;
+				width: 85px;
+				padding-top: 2px;
+			}
+
+			> span {
+				display: none;
+			}
+		}
 	}
 
 	span.unit {
 		margin-left: 4px;
 	}
 
-	> div.top, > div.bottom {
+	div.left {
+		justify-content: flex-end;
+	}
+
+	div.top, div.bottom {
 		margin-left: 20px;
 	}
 
-	> div.bottom {
+	div.bottom {
 		margin-top: 2px;
 	}
 
@@ -242,13 +255,13 @@ div.positions {
 					transition: color .6s;
 				}
 
-				&.right {
+				&.arrow-right {
 					.rotate(90deg);
 				}
-				&.bottom {
+				&.arrow-bottom {
 					.rotate(180deg);
 				}
-				&.left {
+				&.arrow-left {
 					.rotate(270deg);
 				}
 			}

@@ -44,12 +44,12 @@ module mapp.le {
             this.domElement = ko.observable<HTMLCanvasElement>();
             this.elements = ko.observableArray<fabric.IObject>();
 
-            this.addFrame = (options: fabric.IRectOptions, cloneFrom?: fabric.IObject) => {
+            this.addFrame = (options: fabric.IRectOptions) => {
 
                 count++;
                 options = $.extend(mapp.le.DefaultFrameOptions, options, {fill:'rgba(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',0.75)'});
                 let newFrame = new fabric.Rect(options);
-                newFrame.data = {//id: count.toString(), name: 'Frame', 
+                newFrame.data = {
                     Width: {
                         isLocked: true
                     },
@@ -57,15 +57,6 @@ module mapp.le {
                         isLocked: true
                     }
                 };
-                
-                if(cloneFrom) {
-                    newFrame.setLeft(cloneFrom.getLeft());
-                    newFrame.setTop(cloneFrom.getTop());
-                    newFrame.setWidth(cloneFrom.getWidth());
-                    newFrame.setHeight(cloneFrom.getHeight());
-                    newFrame.setCoords();
-                }
-                
                 this.canvas.add(newFrame);
                 
                 return newFrame;
@@ -130,7 +121,7 @@ module mapp.le {
                         resizing = true;
                         let corner: string = e.target['__corner'] || '';
                         Util.observeResizing(editor.selectedElement(), corner);
-                        editor.selectedElement().update(true);
+                        //editor.selectedElement().update(true);
                     },
                     "selection:cleared": () => editor.clearSelection(),
                     "mouse:move": (e: fabric.IEvent) => {

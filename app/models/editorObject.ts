@@ -247,29 +247,7 @@ module mapp.le {
                 }
             }
 
-            // this.clear = () => {
-
-            //     this.updating = true;
-            //     Util.setValue(undefined, this.id, this.name, this.width.value, this.height.value, this.top.value, this.right.value, this.bottom.value, this.left.value);
-            //     Util.setValue(false, this.width.showRelative, this.width.isLocked, this.height.showRelative, this.height.isLocked, 
-            //         this.top.showRelative, this.top.isLocked, this.right.showRelative, this.right.isLocked, 
-            //         this.bottom.showRelative, this.bottom.isLocked, this.left.showRelative, this.left.isLocked);
-            //     this.updating = false;
-
-            //     this.prioX.removeAll();
-            //     this.prioY.removeAll();
-            // }
-
             this.initSelectdProperties = () => {
-                
-                //this.clear();
-                //this.id(this.object.getId());
-                // this.width.setProperties(this.object.data['Width']);
-                // this.height.setProperties(this.object.data['Height']);
-                // this.top.setProperties(this.object.data['Top']);
-                // this.right.setProperties(this.object.data['Right']);
-                // this.bottom.setProperties(this.object.data['Bottom']);
-                // this.left.setProperties(this.object.data['Left']);
 
                 this.prioX.push.apply(this.prioX, this.object.data['prioX']);
                 this.prioY.push.apply(this.prioY, this.object.data['prioY']);
@@ -293,6 +271,29 @@ module mapp.le {
             }
             
             this.init();
+        }
+
+        public snaptTo(element: EditorObject, edge: enums.Direction) {
+
+            this.updating = true;
+
+            switch(edge) {
+                case enums.Direction.TOP: 
+                    this.top.getValue().deserialize(Util.addDimensionValues(element.top.getValue(), element.height.getValue()));
+                    break;
+                case enums.Direction.RIGHT: 
+                    this.right.getValue().deserialize(Util.addDimensionValues(element.right.getValue(), element.width.getValue()));
+                    break;
+                case enums.Direction.BOTTOM: 
+                    this.bottom.getValue().deserialize(Util.addDimensionValues(element.bottom.getValue(), element.height.getValue()));
+                    break;
+                case enums.Direction.LEFT: 
+                    this.left.getValue().deserialize(Util.addDimensionValues(element.left.getValue(), element.width.getValue()));
+                    break;
+            }
+
+            this.update();
+            this.updating = false;
         }
 
         private getOldValue(dimension: enums.Dimension) {
