@@ -30,9 +30,7 @@ module mapp.le {
 
         public update: (reapply?: boolean) => void;
         public resize: () => void;
-        //public clear: () => void;
         private init: () => void;
-        private initSelectdProperties: () => void;
         private updating: boolean;
         public resizing: boolean;
 
@@ -43,15 +41,15 @@ module mapp.le {
             this.id = ko.observable<number>();
             this.name = ko.observable<string>();
             
-            this.width = new Dimension(Util.getCanvasWidth);
+            this.width = new Dimension(Util.canvasWidth);
             this.width.isLocked(true);
-            this.height = new Dimension(Util.getCanvasHeight);
+            this.height = new Dimension(Util.canvasHeight);
             this.height.isLocked(true);
 
-            this.top = new Dimension(Util.getCanvasHeight);
-            this.right = new Dimension(Util.getCanvasWidth);
-            this.bottom = new Dimension(Util.getCanvasHeight);
-            this.left = new Dimension(Util.getCanvasWidth);
+            this.top = new Dimension(Util.canvasHeight);
+            this.right = new Dimension(Util.canvasWidth);
+            this.bottom = new Dimension(Util.canvasHeight);
+            this.left = new Dimension(Util.canvasWidth);
             this.attributes = ko.observableArray<Attribute<any>>();
             this.attributes.push(new Attribute<string>(this.name, 'Name', enums.AttributeTemplates.INPUT));
 
@@ -63,7 +61,6 @@ module mapp.le {
             this.apply = (object: fabric.IObject) => {
 
                 this.object = object;
-                this.initSelectdProperties();
                 this.update(); 
             }
 
@@ -101,6 +98,7 @@ module mapp.le {
                         
                         this.object.setCoords();
                         Util.canvas.renderAll();
+                        this.update();
                     }
                 }
             }
@@ -131,7 +129,7 @@ module mapp.le {
                 this.updating = false;
             }
 
-            this.update = (reapply?: boolean) => {
+            this.update = () => {
 
                 this.updating = true;
 
@@ -151,13 +149,11 @@ module mapp.le {
                 let difRight = Util.canvas.getWidth() - this.object.getLeft() - this.object.getWidth();
                 if(this.right.value() !== difRight) {
                     this.right.value(difRight);
-                    //this.object.setData(enums.Dimension[enums.Dimension.Right], this.right.getProperties());
                 }
                 
-                let difBottom = Util.canvas.getHeight() - this.object.getTop() - this.object.getHeight()
+                let difBottom = Util.canvas.getHeight() - this.object.getTop() - this.object.getHeight();
                 if(this.bottom.value() !== difBottom) {
                     this.bottom.value(difBottom);
-                    //this.object.setData(enums.Dimension[enums.Dimension.Bottom], this.bottom.getProperties());
                 }
 
                 this.updating = false;
@@ -175,17 +171,14 @@ module mapp.le {
                 if(this.prioY().length > 2) 
                     this.prioY(this.prioY().slice(0, 2));
 
-                this.getDimension(dimension).isLocked(true);
+                // this.getDimension(dimension).isLocked(true);
 
-                if(this.getDimension(Util.getOppositeDimension(dimension)).isLocked()) {
-                    if(Util.isHorizontal(dimension))
-                        this.width.isLocked(false);
-                    else
-                        this.height.isLocked(false);
-                }
-
-                this.object.data['prioX'] = this.prioX().slice();
-                this.object.data['prioY'] = this.prioY().slice();
+                // if(this.getDimension(Util.getOppositeDimension(dimension)).isLocked()) {
+                //     if(Util.isHorizontal(dimension))
+                //         this.width.isLocked(false);
+                //     else
+                //         this.height.isLocked(false);
+                // }
             }
 
             this.getPrio = (dimension: enums.Dimension) => {
@@ -201,14 +194,6 @@ module mapp.le {
                 
                 return 0;
             }
-
-            // this.isLatestPrio = (dimension: Dimension) => {
-                
-            //     if(Util.isHorizontal(dimension))
-            //         return this.prioX()[0] == dimension;
-            //     else
-            //         return this.prioY()[0] == dimension;
-            // }
 
             this.hasPrio = (dimension: enums.Dimension) => {
 
@@ -247,12 +232,6 @@ module mapp.le {
                 }
             }
 
-            this.initSelectdProperties = () => {
-
-                this.prioX.push.apply(this.prioX, this.object.data['prioX']);
-                this.prioY.push.apply(this.prioY, this.object.data['prioY']);
-            }
-
             this.init = () => {
 
                 this.width.value.subscribe((value) => { this.applyDimensionValue(enums.Dimension.Width, value); });
@@ -261,39 +240,41 @@ module mapp.le {
                 this.right.value.subscribe((value) => { this.applyDimensionValue(enums.Dimension.Right, value); });
                 this.bottom.value.subscribe((value) => { this.applyDimensionValue(enums.Dimension.Bottom, value);});
                 this.left.value.subscribe((value) => { this.applyDimensionValue(enums.Dimension.Left, value);});
-
-                // this.width.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Width, data); });
-                // this.height.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Height, data); });
-                // this.top.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Top, data); });
-                // this.right.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Right, data); });
-                // this.bottom.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Bottom, data);});
-                // this.left.getProperties.subscribe((data) => { this.applyDimensionProperties(enums.Dimension.Left, data);});
             }
             
             this.init();
         }
 
-        public snaptTo(element: EditorObject, edge: enums.Direction) {
+        public snaptTo(arg: number | EditorObject, edge: enums.Dimension, inside?: boolean) {
 
-            this.updating = true;
+            let element: EditorObject;
+            let value: number;
+
+            if(typeof arg != 'number') 
+                element = arg;
+            else
+                value = arg;
 
             switch(edge) {
-                case enums.Direction.TOP: 
-                    this.top.getValue().deserialize(Util.addDimensionValues(element.top.getValue(), element.height.getValue()));
+                case enums.Dimension.Top: 
+                    element ? this.top.getValue().deserialize(inside ? element.top.getValue().serialize() : 
+                        Util.addDimensionValues(element.top.getValue(), element.height.getValue())) : this.top.value(value);
                     break;
-                case enums.Direction.RIGHT: 
-                    this.right.getValue().deserialize(Util.addDimensionValues(element.right.getValue(), element.width.getValue()));
+                case enums.Dimension.Right: 
+                    element ? this.right.getValue().deserialize(inside ? element.right.getValue().serialize() : 
+                        Util.addDimensionValues(element.right.getValue(), element.width.getValue())) : this.right.value(value);
                     break;
-                case enums.Direction.BOTTOM: 
-                    this.bottom.getValue().deserialize(Util.addDimensionValues(element.bottom.getValue(), element.height.getValue()));
+                case enums.Dimension.Bottom: 
+                    element ? this.bottom.getValue().deserialize(inside ? element.bottom.getValue().serialize() : 
+                        Util.addDimensionValues(element.bottom.getValue(), element.height.getValue())) : this.bottom.value(value);
                     break;
-                case enums.Direction.LEFT: 
-                    this.left.getValue().deserialize(Util.addDimensionValues(element.left.getValue(), element.width.getValue()));
+                case enums.Dimension.Left: 
+                    element ? this.left.getValue().deserialize(inside ? element.left.getValue().serialize() : 
+                        Util.addDimensionValues(element.left.getValue(), element.width.getValue())) : this.left.value(value);
                     break;
             }
 
-            this.update();
-            this.updating = false;
+            this.getDimension(edge).isLocked(true);
         }
 
         private getOldValue(dimension: enums.Dimension) {
@@ -314,32 +295,51 @@ module mapp.le {
             }
         }
 
+        public toggleLock(ed: enums.Dimension) {
+
+            let dimension = this.getDimension(ed);
+
+            if(dimension.isLocked()) {
+                dimension.solve();
+                dimension.isLocked(false);
+            }
+            else
+                dimension.isLocked(true);
+        }
+
+        public widthComputed() {
+            return this.left.isLocked() && this.right.isLocked();
+        }
+
+        public heightComputed() {
+            return this.top.isLocked() && this.bottom.isLocked();
+        }
+
         private applyWidth(value: number) {
             console.info('-- WIDTH --');
             let oldValue = this.object.getWidth();
-            console.log("Width applied: ", oldValue + ' -- > ' + value);
+            Util.log("Width applied: ", oldValue + ' --> ' + value);
             this.object.setWidth(value);
-            this.setPrio(enums.Dimension.Width);
 
             if(this.getPrio(enums.Dimension.Width) == enums.Dimension.Right) {
                 oldValue = this.object.getLeft();
                 let newValue = Util.canvas.getWidth() - value - this.right.value();
-                console.log("Object docked right, left applied: ", oldValue + ' -- > ' + newValue);
+                Util.log("Object docked right, left applied: ", oldValue + ' --> ' + newValue);
                 this.object.setLeft(newValue);
+                
             }
         }
 
         private applyHeight(value: number) {
             console.info('-- HEIGHT --');
             let oldValue = this.object.getHeight();
-            console.log("Height applied: ", oldValue + ' -- > ' + value);
+            Util.log("Height applied: ", oldValue + ' --> ' + value);
             this.object.setHeight(value);
-            this.setPrio(enums.Dimension.Height);
 
             if(this.getPrio(enums.Dimension.Height) == enums.Dimension.Bottom) {
                 oldValue = this.object.getTop();
                 let newValue = (Util.canvas.getHeight() - value - this.bottom.value());
-                console.log("Object docked bottom, top applied: ", oldValue + ' -- > ' + newValue);
+                Util.log("Object docked bottom, top applied: ", oldValue + ' --> ' + newValue);
                 this.object.setTop(newValue);
             }
         }
@@ -347,35 +347,31 @@ module mapp.le {
         private applyTop(value: number) {
             console.info('-- TOP --');
             let oldValue = this.object.getTop();
-            console.log("Top applied: ", oldValue + ' -- > ' + value);
+            Util.log("Top applied: ", oldValue + ' --> ' + value);
             this.object.setTop(value);
-            this.setPrio(enums.Dimension.Top);
 
             if(this.getPrio(enums.Dimension.Top) == enums.Dimension.Bottom) {
                 oldValue = this.object.getHeight();
                 let newValue = Util.canvas.getHeight() - value - this.bottom.value();
-                console.log("Object docked bottom, height applied: ", oldValue + ' -- > ' + newValue);
+                Util.log("Object docked bottom, height applied: ", oldValue + ' --> ' + newValue);
                 this.object.setHeight(newValue);
             }
         }
 
         private applyRight(value: number) {
             console.info('-- RIGHT --');
-            this.object.data['Right'] || (this.object.data['Right'] = {});
-            this.object.data['Right']['value'] = value;
-            this.right.value(value);
-            this.setPrio(enums.Dimension.Right);
-            
+
             if(this.getPrio(enums.Dimension.Right) == enums.Dimension.Left) {
                 let oldValue = this.object.getWidth();
                 let newValue = Util.canvas.getWidth() - value - this.left.value();
-                console.log("Object docked left, width applied: ", oldValue + ' -- > ' + newValue);
+                Util.log("Object docked left, width applied: ", oldValue + ' --> ' + newValue);
+                this.width.value(newValue);
                 this.object.setWidth(newValue);
             }
             else {
                 let oldValue = this.object.getLeft();
-                let newValue = Util.getCanvasWidth() - value - this.object.getWidth();
-                console.log("Object width set, left applied: ", oldValue + ' -- > ' + newValue);
+                let newValue = Util.canvasWidth() - value - this.object.getWidth();
+                Util.log("Object width set, left applied: ", oldValue + ' --> ' + newValue);
                 this.left.value(newValue);
                 this.object.setLeft(newValue);
             }
@@ -383,21 +379,18 @@ module mapp.le {
 
         private applyBottom(value: number) {
             console.info('-- BOTTOM --');
-            this.object.data['Bottom'] || (this.object.data['Bottom'] = {});
-            this.object.data['Bottom']['value'] = value;
-            this.bottom.value(value);
-            this.setPrio(enums.Dimension.Bottom);
             
             if(this.getPrio(enums.Dimension.Bottom) == enums.Dimension.Top) {
                 let oldValue = this.object.getHeight();
                 let newValue = Util.canvas.getHeight() - value - this.top.value();
-                console.log("Object docked top, height applied: ", oldValue + ' -- > ' + newValue);
+                Util.log("Object docked top, height applied: ", oldValue + ' --> ' + newValue);
+                this.height.value(newValue);
                 this.object.setHeight(newValue);
             }
             else {
                 let oldValue = this.object.getTop();
-                let newValue = Util.getCanvasHeight() - value - this.object.getHeight();
-                console.log("Object top set, top applied: ", oldValue + ' -- > ' + newValue);
+                let newValue = Util.canvasHeight() - value - this.object.getHeight();
+                Util.log("Object top set, top applied: ", oldValue + ' --> ' + newValue);
                 this.top.value(newValue);
                 this.object.setTop(newValue);
             }
@@ -406,14 +399,13 @@ module mapp.le {
         private applyLeft(value: number) {
             console.info('-- LEFT --');
             let oldValue = this.object.getLeft();
-            console.log("Left applied: ", oldValue + ' -- > ' + value);
+            Util.log("Left applied: ", oldValue + ' --> ' + value);
             this.object.setLeft(value);
-            this.setPrio(enums.Dimension.Left);
 
             if(this.getPrio(enums.Dimension.Left) == enums.Dimension.Right) {
                 oldValue = this.object.getWidth();
                 let newValue = Util.canvas.getWidth() - value - this.right.value();
-                console.log("Object docked right, width applied: ", oldValue + ' -- > ' + newValue);
+                Util.log("Object docked right, width applied: ", oldValue + ' --> ' + newValue);
                 this.object.setWidth(newValue);
             }
         }

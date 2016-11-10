@@ -5,54 +5,36 @@ module mapp.le {
         public static canvas: fabric.ICanvas;
         public static snapThreshold: number = 8;
         public static snap: boolean = true;
+        public static logEnabled: boolean = true;
+        public static canvasWidth: KnockoutObservable<number> = ko.observable(0);
+        public static canvasHeight: KnockoutObservable<number> = ko.observable(0);
 
-        static getCanvasWidth(): number {
-            return Util.canvas.getWidth();
-        }
-
-        static getCanvasHeight(): number {
-            return Util.canvas.getHeight();
-        }
-
-        static resizeCanvas(elements: EditorObject[], width: number, heigth: number) {
-            
-            let fx = width / Util.canvas.getWidth();
-            let fy = heigth / Util.canvas.getHeight();
-
-            if(fx == 1 && fy == 1)
-                return;
-
+        static resizeCanvas(width: number, heigth: number) {
             Util.canvas.setWidth(width);
             Util.canvas.setHeight(heigth);
-
-            $.each(elements, (i, element) => {
-
-                if(!(element.width.isLocked())) 
-                    element.object.setWidth(element.object.getWidth() * fx);
-                if(!(element.height.isLocked())) 
-                    element.object.setHeight(element.object.getHeight() * fy);
-                if(!(element.top.isLocked())) 
-                    element.object.setTop(element.object.getTop() * fy);
-                if(!(element.left.isLocked())) 
-                    element.object.setLeft(element.object.getLeft() * fx);
+            Util.canvasWidth(width);
+            Util.canvasHeight(heigth);
+            
+            $.each(Util.editor.elements(), (i, element) => {
 
                 if(element.left.isLocked() && element.right.isLocked()) {
-                    element.object.setWidth(Util.canvas.getWidth() - element.object.getLeft() - element.right.value());
+                    element.object.setWidth(width - element.object.getLeft() - element.right.value());
                 }
                 else if(element.right.isLocked()) { 
-                    element.object.setLeft(Util.canvas.getWidth() - element.object.getWidth() - element.right.value());
+                    element.object.setLeft(width - element.object.getWidth() - element.right.value());
                 }
 
                 if(element.top.isLocked() && element.bottom.isLocked()) {
-                    element.object.setHeight(Util.canvas.getHeight() - element.object.getTop() - element.bottom.value());
+                    element.object.setHeight(heigth - element.object.getTop() - element.bottom.value());
                 }
                 else if(element.bottom.isLocked()) { 
-                    element.object.setTop(Util.canvas.getHeight() - element.object.getHeight() - element.bottom.value());
+                    element.object.setTop(heigth - element.object.getHeight() - element.bottom.value());
                 } 
-                
+
                 element.object.setCoords();
                 element.update();
             });
+
             Util.canvas.renderAll();
         }
 
@@ -69,22 +51,22 @@ module mapp.le {
 
             if (eo.object.getTop() < Util.snapThreshold) {
                 eo.object.setTop(0);
-                eo.setPrio(enums.Dimension.Top);
+                eo.top.isLocked(true);
                 corner = corner.replace('t', '');
             }
             if (eo.object.getRight() > (Util.canvas.getWidth() - Util.snapThreshold)) {
                 eo.object.setLeft(Util.canvas.getWidth() - eo.object.getWidth());
-                eo.setPrio(enums.Dimension.Right);
+                eo.right.isLocked(true);
                 corner = corner.replace('r', '');
             }
             if (eo.object.getBottom() > (Util.canvas.getHeight() - Util.snapThreshold)) {
                 eo.object.setTop(Util.canvas.getHeight() - eo.object.getHeight());
-                eo.setPrio(enums.Dimension.Bottom);
+                eo.bottom.isLocked(true);
                 corner = corner.replace('b', '');
             }
             if (eo.object.getLeft() < Util.snapThreshold) {
                 eo.object.setLeft(0);
-                eo.setPrio(enums.Dimension.Left);
+                eo.left.isLocked(true);
                 corner = corner.replace('l', '');
             }
 
@@ -118,14 +100,14 @@ module mapp.le {
                         if(corner.indexOf('l') >= 0 && corner.indexOf('r') >= 0) { 
                             if(eo.object.snapLeft(ref, Util.snapThreshold, inside)) {
                                 eo.object.setLeft(inside ? ref.getLeft() : ref.getRight());
-                                eo.snaptTo(Util.editor.getElementByObject(ref), enums.Direction.LEFT);
-                                eo.setPrio(enums.Dimension.Left);
-                                return true;   
+                                eo.snaptTo(Util.editor.getElementByObject(ref), enums.Dimension.Left, inside);
+                                corner = corner.replace('r', '');
+                                return true;
                             }
                             else if(eo.object.snapRight(ref, Util.snapThreshold, inside)) {
                                 eo.object.setRight(inside ? ref.getRight() : ref.getLeft());
-                                eo.snaptTo(Util.editor.getElementByObject(ref), enums.Direction.RIGHT);
-                                eo.setPrio(enums.Dimension.Right);
+                                eo.snaptTo(Util.editor.getElementByObject(ref), enums.Dimension.Right, inside);
+                                corner = corner.replace('l', '');
                                 return true;   
                             }
                         }
@@ -139,14 +121,14 @@ module mapp.le {
                     if(corner.indexOf('t') >= 0 && corner.indexOf('b') >= 0) {
                         if(eo.object.snapTop(ref, Util.snapThreshold, inside)) {
                             eo.object.setTop(inside ? ref.getTop() : ref.getBottom());
-                            eo.snaptTo(Util.editor.getElementByObject(ref), enums.Direction.TOP);
-                            eo.setPrio(enums.Dimension.Top);
+                            eo.snaptTo(Util.editor.getElementByObject(ref), enums.Dimension.Top, inside);
+                            corner = corner.replace('t', '');
                             return true;    
                         }
                         else if(eo.object.snapBottom(ref, Util.snapThreshold, inside)) {
                             eo.object.setBottom(inside ? ref.getBottom() : ref.getTop());
-                            eo.snaptTo(Util.editor.getElementByObject(ref), enums.Direction.BOTTOM);
-                            eo.setPrio(enums.Dimension.Bottom);
+                            eo.snaptTo(Util.editor.getElementByObject(ref), enums.Dimension.Bottom, inside);
+                            corner = corner.replace('b', '');
                             return true;    
                         }
                     }
@@ -164,26 +146,27 @@ module mapp.le {
 
         static stayInCanvasWhileResizing = (eo: EditorObject, corner: string) => {
             
-
             if(corner.indexOf('t') >= 0 && eo.object.getTop() < Util.snapThreshold) {
-                
                 eo.reapply(false);
                 eo.setPrio(enums.Dimension.Bottom, true);
                 eo.top.value(0);
+                eo.top.isLocked(true);
                 eo.setPrio(enums.Dimension.Top);
             }
             
-            if(corner.indexOf('r') >= 0 && eo.object.getLeft() + eo.object.getWidth() + Util.snapThreshold > Util.getCanvasWidth()) {
+            if(corner.indexOf('r') >= 0 && eo.object.getLeft() + eo.object.getWidth() + Util.snapThreshold > Util.canvasWidth()) {
                 eo.reapply(true);
                 eo.setPrio(enums.Dimension.Left, true);
                 eo.right.value(0);
+                eo.right.isLocked(true);
                 eo.setPrio(enums.Dimension.Right);
             }
             
-            if(corner.indexOf('b') >= 0 && eo.object.getTop() + eo.object.getHeight() + Util.snapThreshold > Util.getCanvasHeight()) {
+            if(corner.indexOf('b') >= 0 && eo.object.getTop() + eo.object.getHeight() + Util.snapThreshold > Util.canvasHeight()) {
                 eo.reapply(false);
                 eo.setPrio(enums.Dimension.Top, true);
                 eo.bottom.value(0);
+                eo.bottom.isLocked(true);
                 eo.setPrio(enums.Dimension.Bottom);
             }
 
@@ -191,6 +174,7 @@ module mapp.le {
                 eo.reapply(true);
                 eo.setPrio(enums.Dimension.Right, true);
                 eo.left.value(0);
+                eo.left.isLocked(true);
                 eo.setPrio(enums.Dimension.Left);
             }
         }
@@ -202,7 +186,7 @@ module mapp.le {
 
             Util.canvas.forEachObject((ref: fabric.IObject) => {
 
-                if (ref.getId() == eo.id() || snapped)
+                if (ref == eo.object || snapped) 
                     return;
 
                 if(!fullySnapped)
@@ -226,11 +210,11 @@ module mapp.le {
                         }
                         if (corner.indexOf('r') >= 0) { 
                             if(eo.object.snapRight(ref, Util.snapThreshold, true)) {
-                                apply(enums.Dimension.Right, Util.getCanvasWidth() - ref.getLeft() - ref.getWidth());
+                                apply(enums.Dimension.Right, Util.canvasWidth() - ref.getLeft() - ref.getWidth());
                                 corner = corner.replace('r', '');
                             }
                             if(eo.object.snapRight(ref, Util.snapThreshold, false)) {
-                                apply(enums.Dimension.Right, Util.getCanvasWidth() - ref.getLeft());
+                                apply(enums.Dimension.Right, Util.canvasWidth() - ref.getLeft());
                                 corner = corner.replace('r', '');
                             }
                         }
@@ -243,21 +227,25 @@ module mapp.le {
                     if(eo.object.withinX(ref, Util.snapThreshold)) {
                         if (corner.indexOf('t') >= 0) {
                             if (eo.object.snapTop(ref, Util.snapThreshold, true)) {
-                                apply(enums.Dimension.Top, ref.getTop());
+                                //apply(enums.Dimension.Top, ref.getTop());
+                                apply2(ref, enums.Dimension.Top, true);
                                 corner = corner.replace('t', '');
                             }
                             if (eo.object.snapTop(ref, Util.snapThreshold, false)) {
-                                apply(enums.Dimension.Top, ref.getBottom());
+                                //apply(enums.Dimension.Top, ref.getBottom());
+                                apply2(ref, enums.Dimension.Top, false);
                                 corner = corner.replace('t', '');
                             }
                         }
                         if (corner.indexOf('b') >= 0) {
                             if(eo.object.snapBottom(ref, Util.snapThreshold, true)) {
-                                apply(enums.Dimension.Bottom, Util.getCanvasHeight() - ref.getTop() - ref.getHeight());
+                                //apply(enums.Dimension.Bottom, Util.canvasHeight() - ref.getTop() - ref.getHeight());
+                                apply2(ref, enums.Dimension.Bottom, true);
                                 corner = corner.replace('b', '');
                             }
                             if(eo.object.snapBottom(ref, Util.snapThreshold, false)) {
-                                apply(enums.Dimension.Bottom, Util.getCanvasHeight() - ref.getTop());
+                                //apply(enums.Dimension.Bottom, Util.canvasHeight() - ref.getTop());
+                                apply2(ref, enums.Dimension.Bottom, false);
                                 corner = corner.replace('b', '');
                             }
                         }
@@ -268,7 +256,15 @@ module mapp.le {
                 function apply(dimension: enums.Dimension, value) {
                     eo.reapply(Util.isHorizontal(dimension));
                     eo.setPrio(Util.getOppositeDimension(dimension), true);
-                    Util.setDimension(eo, dimension, value);
+                    Util.setDimension(eo, dimension, value, true);
+                    eo.setPrio(dimension);
+                    return true;
+                }
+
+                function apply2(ref: fabric.IObject, dimension: enums.Dimension, inside?: boolean) {
+                    eo.reapply(Util.isHorizontal(dimension));
+                    eo.setPrio(Util.getOppositeDimension(dimension), true);
+                    eo.snaptTo(Util.editor.getElementByObject(ref), dimension, inside);
                     eo.setPrio(dimension);
                     return true;
                 }
@@ -285,25 +281,31 @@ module mapp.le {
             if(corner.indexOf('l') > 0) eo.unlock(enums.Dimension.Left);
         }
 
-        static setDimension (eo: EditorObject, dimension: enums.Dimension, value: number) {
+        static setDimension (eo: EditorObject, dimension: enums.Dimension, value: number, lock?: boolean) {
             switch(dimension) {
                 case enums.Dimension.Width:
                     eo.width.value(value);
+                    eo.width.isLocked(lock);
                     break;
                 case enums.Dimension.Height:
                     eo.height.value(value);
+                    eo.height.isLocked(lock);
                     break;
                 case enums.Dimension.Top:
                     eo.top.value(value);
+                    eo.top.isLocked(lock);
                     break;
                 case enums.Dimension.Right:
                     eo.right.value(value);
+                    eo.right.isLocked(lock);
                     break;
                 case enums.Dimension.Bottom:
                     eo.bottom.value(value);
+                    eo.bottom.isLocked(lock);
                     break;
                 case enums.Dimension.Left:
                     eo.left.value(value);
+                    eo.left.isLocked(lock);
                     break;
             }
         }
@@ -334,16 +336,16 @@ module mapp.le {
                     eo.setPrio(enums.Dimension.Height);
 
                 switch(direction) {
-                    case enums.Direction.TOP:
+                    case enums.Direction.Top:
                         eo.top.value(eo.top.value() - distance);
                         break;
-                    case enums.Direction.RIGHT:
+                    case enums.Direction.Right:
                         eo.left.value(eo.left.value() + distance);
                         break;
-                    case enums.Direction.BOTTOM:
+                    case enums.Direction.Bottom:
                         eo.top.value(eo.top.value() + distance);
                         break;
-                    case enums.Direction.LEFT:
+                    case enums.Direction.Left:
                         eo.left.value(eo.left.value() - distance);
                         break;
                 }
@@ -448,6 +450,11 @@ module mapp.le {
             var funcNameRegex = /function (.{1,})\(/;
             var results = (funcNameRegex).exec(object.constructor.toString());
             return (results && results.length > 1) ? results[1] : "";
+        }
+
+        static log (message?: any, ...optionalParams: any[]): void {
+            if(Util.logEnabled)
+                console.log(message, optionalParams);
         }
     }
 }

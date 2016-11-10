@@ -69,8 +69,8 @@ module mapp.le {
             this.clearSelection();
         }
 
-        public resize = (width: number, height: number) => {
-            Util.resizeCanvas(this.elements(), width, height);
+        public initCanvasSize = () => {
+            this.menu.pageSetup.updateCanvas();
         }
 
         public clearSelection = () => {

@@ -103,6 +103,7 @@ module mapp.le {
                 this.elements(this.canvas.getObjects());
 
                 Util.canvas = this.canvas;
+                editor.initCanvasSize();
 
                 // Event handler
                 this.canvas.on({
@@ -121,7 +122,7 @@ module mapp.le {
                         resizing = true;
                         let corner: string = e.target['__corner'] || '';
                         Util.observeResizing(editor.selectedElement(), corner);
-                        //editor.selectedElement().update(true);
+                        editor.selectedElement().update();
                     },
                     "selection:cleared": () => editor.clearSelection(),
                     "mouse:move": (e: fabric.IEvent) => {
@@ -144,10 +145,10 @@ module mapp.le {
                         }
                     },
                     "mouse:up": () => {
-                        if(resizing) 
-                            editor.selectedElement().reapply();
+                        // if(resizing) 
+                        //     editor.selectedElement().update();
                            
-                        resizing = false;
+                        // resizing = false;
                         
                     }
                 });
@@ -161,24 +162,24 @@ module mapp.le {
                         ctrlPressed = true;
 
                         if(e.which == 38)
-                            Util.moveStep(editor.selectedElement(), enums.Direction.TOP, 20);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.Top, 20);
                         if(e.which == 39) 
-                            Util.moveStep(editor.selectedElement(), enums.Direction.RIGHT, 20);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.Right, 20);
                         if(e.which == 40) 
-                            Util.moveStep(editor.selectedElement(), enums.Direction.BOTTOM, 20);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.Bottom, 20);
                         if(e.which == 37) 
-                            Util.moveStep(editor.selectedElement(), enums.Direction.LEFT, 20);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.Left, 20);
                     }
                     else {
 
                         if(e.keyCode == 38) 
-                            Util.moveStep(editor.selectedElement(), enums.Direction.TOP);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.Top);
                         if(e.keyCode == 39) 
-                            Util.moveStep(editor.selectedElement(), enums.Direction.RIGHT);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.Right);
                         if(e.keyCode == 40) 
-                            Util.moveStep(editor.selectedElement(), enums.Direction.BOTTOM);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.Bottom);
                         if(e.keyCode == 37) 
-                            Util.moveStep(editor.selectedElement(), enums.Direction.LEFT);
+                            Util.moveStep(editor.selectedElement(), enums.Direction.Left);
                         if(e.keyCode == 46)
                             editor.removeElement(editor.selectedElement());
                     }

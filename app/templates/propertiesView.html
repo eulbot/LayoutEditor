@@ -17,11 +17,11 @@
                     <span class="sub-title">Dimensions</span>
                     <div class="group border">
                         <span class="w w6 indent">Width</span>
-                        <input type="text" class="short right custom-page-width" data-bind="value: width.displayValue" />
+                        <input type="text" class="short right custom-page-width" data-bind="value: width.displayValue, disable: widthComputed()" />
                         <span class="unit" data-bind="text: width.unit"></span>
                         <br />
                         <span class="w w6 indent">Height</span>
-                        <input type="text" class="short right custom-page-height" data-bind="value: height.displayValue" />
+                        <input type="text" class="short right custom-page-height" data-bind="value: height.displayValue, disable: heightComputed()" />
                         <span class="unit" data-bind="text: height.unit"></span>
                     </div>
                 </div>
@@ -47,17 +47,17 @@
                             <table class="arrows">
                                 <tr>
                                     <td></td>
-                                    <td><div class="icon arrow-top mapp-layout-editor-i-arrow-up" data-bind="click: () => {top.isLocked(!top.isLocked()), top.solve()}, css: { locked: top.isLocked() }"></div></td>
+                                    <td><div class="icon arrow-top mapp-layout-editor-i-arrow-up" data-bind="click: () => { toggleLock(2) }, css: { locked: top.isLocked() }"></div></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td><div class="icon arrow-left mapp-layout-editor-i-arrow-up" data-bind="click: () => {left.isLocked(!left.isLocked()), left.solve()}, css: { locked: left.isLocked() }"></div></td>
+                                    <td><div class="icon arrow-left mapp-layout-editor-i-arrow-up" data-bind="click: () => { toggleLock(5) }, css: { locked: left.isLocked() }"></div></td>
                                     <td><div class="object"></div></td>
-                                    <td><div class="icon arrow-right mapp-layout-editor-i-arrow-up" data-bind="click: () => {right.isLocked(!right.isLocked()), right.solve()}, css: { locked: right.isLocked() }"></div></td>
+                                    <td><div class="icon arrow-right mapp-layout-editor-i-arrow-up" data-bind="click: () => { toggleLock(3) }, css: { locked: right.isLocked() }"></div></td>
                                 </tr>
                                 <tr>
                                     <td></td>
-                                    <td><div class="icon arrow-bottom mapp-layout-editor-i-arrow-up" data-bind="click: () => {bottom.isLocked(!bottom.isLocked()), bottom.solve()}, css: { locked: bottom.isLocked() }"><div></td>
+                                    <td><div class="icon arrow-bottom mapp-layout-editor-i-arrow-up" data-bind="click: () => { toggleLock(4) }, css: { locked: bottom.isLocked() }"><div></td>
                                     <td></td>
                                 </tr>
                             </table>

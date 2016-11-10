@@ -4,7 +4,7 @@ module mapp.le {
         private editor: Editor;
         private addFrame: (type: le.enums.ElementType) => void;
         
-        private pageSetup: PageSetup;
+        public pageSetup: PageSetup;
         private templateList: TemplateList;
         private elementList: ElementList;
 
@@ -13,8 +13,6 @@ module mapp.le {
         public isSelected: (element: EditorObject) => boolean;
 
         constructor(editor: Editor) {
-            
-            //this.canvas = ko.observable<Canvas>(canvas);
 
             this.pageSetup = new PageSetup(editor);
             this.templateList = new TemplateList(editor);

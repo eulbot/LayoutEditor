@@ -54,12 +54,12 @@ module mapp.le {
             }
         }
 
-        private updateCanvas = () => {
+        public updateCanvas = () => {
 
             let newWidth = this.width() / 25.4 * this.dpi();
             let newHeight = this.height() / 25.4 * this.dpi();
 
-            this.editor.resize(newWidth, newHeight);
+            Util.resizeCanvas(newWidth, newHeight);
         }
 
         serialize = (): IPageSizeData => {
